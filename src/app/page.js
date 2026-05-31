@@ -19,6 +19,30 @@ export default function Home() {
 
   const [showViewersModal, setShowViewersModal] = useState(false);
   const [showImpressionsModal, setShowImpressionsModal] = useState(false);
+  
+  // Dynamic header and chat cockpit states
+  const [showNotificationsDropdown, setShowNotificationsDropdown] = useState(false);
+  const [chatExpanded, setChatExpanded] = useState(false);
+  const [activeChatRecipient, setActiveChatRecipient] = useState(null);
+  const [chatInputText, setChatInputText] = useState('');
+  const [chatThreads, setChatThreads] = useState({});
+
+  // Sync chats with localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedChats = localStorage.getItem('pb_chats');
+      if (storedChats) {
+        setChatThreads(JSON.parse(storedChats));
+      }
+    }
+  }, []);
+
+  const syncChats = (threads) => {
+    setChatThreads(threads);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('pb_chats', JSON.stringify(threads));
+    }
+  };
 
   // Discovery Search Hub states
   const [searchTab, setSearchTab] = useState('people'); // 'people' | 'investments' | 'advisors'
@@ -1118,27 +1142,63 @@ export default function Home() {
                                 </span>
                                 
                                 {searchTab === 'people' ? (
-                                  <button 
-                                    onClick={() => {
-                                      state.setProfileActiveSubTab('network-directory');
-                                      state.setInspectedCustomer(item);
-                                      state.setActiveModule('profile');
-                                    }}
-                                    className="btn-primary" 
-                                    style={{ padding: '0.35rem 0.85rem', fontSize: '0.7rem' }}
-                                  >
-                                    Inspect Profile
-                                  </button>
+                                  <div style={{ display: 'flex', gap: '0.4rem' }}>
+                                    <button 
+                                      onClick={() => {
+                                        state.setProfileActiveSubTab('network-directory');
+                                        state.setInspectedCustomer(item);
+                                        state.setActiveModule('profile');
+                                      }}
+                                      className="btn-secondary" 
+                                      style={{ padding: '0.35rem 0.65rem', fontSize: '0.7rem', whiteSpace: 'nowrap' }}
+                                    >
+                                      🔍 Inspect
+                                    </button>
+                                    {item.customer_id !== state.customer.customer_id && (
+                                      <button 
+                                        onClick={() => state.toggleConnectionNode(item.customer_id)}
+                                        className={state.connections.includes(item.customer_id) ? "btn-secondary" : "btn-primary"}
+                                        style={{ 
+                                          padding: '0.35rem 0.65rem', 
+                                          fontSize: '0.7rem',
+                                          whiteSpace: 'nowrap',
+                                          background: state.connections.includes(item.customer_id) ? 'rgba(16, 185, 129, 0.1)' : '',
+                                          color: state.connections.includes(item.customer_id) ? '#10b981' : '',
+                                          border: state.connections.includes(item.customer_id) ? '1px solid rgba(16, 185, 129, 0.3)' : ''
+                                        }}
+                                      >
+                                        {state.connections.includes(item.customer_id) ? '🤝 Connected' : '➕ Connect'}
+                                      </button>
+                                    )}
+                                  </div>
                                 ) : (
-                                  <button 
-                                    onClick={() => {
-                                      state.setActiveModule('affiliate');
-                                    }}
-                                    className="btn-primary" 
-                                    style={{ padding: '0.35rem 0.85rem', fontSize: '0.7rem' }}
-                                  >
-                                    Consult Advisor
-                                  </button>
+                                  <div style={{ display: 'flex', gap: '0.4rem' }}>
+                                    <button 
+                                      onClick={() => {
+                                        state.setActiveModule('affiliate');
+                                      }}
+                                      className="btn-secondary" 
+                                      style={{ padding: '0.35rem 0.65rem', fontSize: '0.7rem', whiteSpace: 'nowrap' }}
+                                    >
+                                      Consult Advisor
+                                    </button>
+                                    {item.customer_id !== state.customer.customer_id && (
+                                      <button 
+                                        onClick={() => state.toggleConnectionNode(item.customer_id)}
+                                        className={state.connections.includes(item.customer_id) ? "btn-secondary" : "btn-primary"}
+                                        style={{ 
+                                          padding: '0.35rem 0.65rem', 
+                                          fontSize: '0.7rem',
+                                          whiteSpace: 'nowrap',
+                                          background: state.connections.includes(item.customer_id) ? 'rgba(16, 185, 129, 0.1)' : '',
+                                          color: state.connections.includes(item.customer_id) ? '#10b981' : '',
+                                          border: state.connections.includes(item.customer_id) ? '1px solid rgba(16, 185, 129, 0.3)' : ''
+                                        }}
+                                      >
+                                        {state.connections.includes(item.customer_id) ? '🤝 Connected' : '➕ Connect'}
+                                      </button>
+                                    )}
+                                  </div>
                                 )}
                               </div>
                             </div>
@@ -1227,6 +1287,270 @@ export default function Home() {
       default:
         return <InvestorModule state={state} />;
     }
+  };
+
+  const handleSendMessage = (e) => {
+    e.preventDefault();
+    if (!chatInputText.trim() || !activeChatRecipient) return;
+
+    const recipientId = activeChatRecipient.customer_id;
+    const userMsg = { sender: 'me', text: chatInputText.trim() };
+
+    const currentThread = chatThreads[recipientId] || [
+      { sender: 'them', text: `Hi! I am ${activeChatRecipient.first_name}. Thanks for connecting! Let me know if you have questions regarding our work.` }
+    ];
+
+    const nextThread = [...currentThread, userMsg];
+    const nextThreads = { ...chatThreads, [recipientId]: nextThread };
+    syncChats(nextThreads);
+    setChatInputText('');
+
+    setTimeout(() => {
+      const container = document.getElementById('chat-bubbles-container');
+      if (container) container.scrollTop = container.scrollHeight;
+    }, 50);
+
+    setTimeout(() => {
+      let replyText = "Understood. Our team will review the ledger data shortly.";
+      const query = chatInputText.trim().toLowerCase();
+
+      if (recipientId === 'dir-cust-marcus') {
+        if (query.includes('sec') || query.includes('spv') || query.includes('limit') || query.includes('crowd')) {
+          replyText = "The SEC crowdfunding SPV limit under 2021 amendments permits co-issuing vehicles up to $5M in a 12-month window. We structure these cap tables cleanly with Vance CPAs to consolidate the crowd into one single node line-item.";
+        } else if (query.includes('fee') || query.includes('charge') || query.includes('cost')) {
+          replyText = "We charge a standard 2.5% platform placement fee on successfully funded rounds, alongside a flat $1,500 onboarding cap table compliance audit fee. This includes automated Form C preparations.";
+        } else {
+          replyText = "Excellent inquiry. Under securities auditing benchmarks, we audit cap tables to ensure clean Reg CF compliance check Sweeps. Let's arrange a deeper review of your cap sheet.";
+        }
+      } else if (recipientId === 'db-cust-evelyn') {
+        if (query.includes('algae') || query.includes('carbon') || query.includes('bioreactor') || query.includes('photo')) {
+          replyText = "Our photo-bioreactor sleeve engineered at EcoSphere utilizes genetically optimized algae strands that maximize light absorption. We achieve up to 400x carbon sequestration rates compared to land forestry. The biomass produced is dried and processed for bio-fertilizers.";
+        } else if (query.includes('funding') || query.includes('valuation') || query.includes('equity')) {
+          replyText = "We are currently raising our $250k seed placement round on a $6.25M pre-money valuation. We've raised $125k so far, and the minimum entry is $500. This equity allocations provides direct dilution options on our Form C ledger.";
+        } else {
+          replyText = "Our bioreactor scale-up operations are entering field testing in urban carbon corridors. Happy to sync the performance documents or discuss our micro-algae growth curves!";
+        }
+      } else if (recipientId === 'db-cust-jenkins') {
+        if (query.includes('legal') || query.includes('placement') || query.includes('law') || query.includes('audit')) {
+          replyText = "Securities placements under exempt Reg CF/D must carefully navigate disclosure limits. We compile the SEC subscription agreements, verify accredited investor checks, and handle the formal ledger integration compliance scans.";
+        } else if (query.includes('tax') || query.includes('1099') || query.includes('irs')) {
+          replyText = "We automatically compile 1099-DIV schedules for active equity distribution rounds. The IRS compliance ledgers are audited directly within our Node Vetting suite to simplify tax sweep reporting.";
+        } else {
+          replyText = "I oversee the formal ecosystem compliance checks at Peer Bridge. All subscription documents and securities disclosures are locked in our high-density vault. Let me know if you need our briefing schedules.";
+        }
+      } else {
+        replyText = `Thank you for the message. I would be happy to discuss our credentials, active placements, or collaborate on deal-flow pipelines inside the Peer Bridge network!`;
+      }
+
+      const currentThreadUpdated = chatThreads[recipientId] || nextThread;
+      const nextThreadWithReply = [...currentThreadUpdated, { sender: 'them', text: replyText }];
+      const nextThreadsWithReply = { ...chatThreads, [recipientId]: nextThreadWithReply };
+      
+      setChatThreads(nextThreadsWithReply);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('pb_chats', JSON.stringify(nextThreadsWithReply));
+      }
+
+      setTimeout(() => {
+        const container = document.getElementById('chat-bubbles-container');
+        if (container) container.scrollTop = container.scrollHeight;
+      }, 50);
+    }, 1000);
+  };
+
+  const renderFloatingChatWidget = () => {
+    const connectionMembers = state.directory.filter(member => 
+      state.connections.includes(member.customer_id)
+    );
+
+    return (
+      <div 
+        className="glass-panel" 
+        style={{
+          position: 'fixed',
+          bottom: 0,
+          right: '30px',
+          width: '320px',
+          height: chatExpanded ? '420px' : '44px',
+          background: 'rgba(10, 10, 10, 0.95)',
+          backdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+          borderBottom: 'none',
+          borderRadius: '12px 12px 0 0',
+          boxShadow: '0 -10px 25px -5px rgba(0,0,0,0.5), 0 -5px 10px -5px rgba(0,0,0,0.4)',
+          zIndex: 99999,
+          display: 'flex',
+          flexDirection: 'column',
+          transition: 'height 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+          overflow: 'hidden'
+        }}
+      >
+        <div 
+          onClick={() => setChatExpanded(!chatExpanded)}
+          style={{
+            height: '44px',
+            padding: '0 0.85rem',
+            background: 'linear-gradient(90deg, #070a0e 0%, #171c26 100%)',
+            borderBottom: '1px solid rgba(255,255,255,0.06)',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            cursor: 'pointer',
+            userSelect: 'none',
+            flexShrink: 0
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+            <span style={{ fontSize: '1rem' }}>💬</span>
+            <strong style={{ fontSize: '0.78rem', color: '#ffffff' }}>
+              {activeChatRecipient ? `Chat: ${activeChatRecipient.first_name}` : 'Peer Bridge DMs'}
+            </strong>
+            <span style={{
+              width: '7px',
+              height: '7px',
+              borderRadius: '50%',
+              background: '#10b981',
+              boxShadow: '0 0 8px #10b981'
+            }} />
+          </div>
+          <span style={{ color: '#8a8a8a', fontSize: '0.75rem', fontWeight: 'bold' }}>
+            {chatExpanded ? '▼' : '▲'}
+          </span>
+        </div>
+
+        {chatExpanded && (
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: 'rgba(0,0,0,0.2)' }}>
+            {!activeChatRecipient ? (
+              <div style={{ flex: 1, overflowY: 'auto', padding: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                <div style={{ fontSize: '0.64rem', color: '#525252', fontWeight: '800', textTransform: 'uppercase', padding: '0.25rem' }}>
+                  Select Connection to Chat
+                </div>
+                {connectionMembers.length === 0 ? (
+                  <div style={{ padding: '2rem 1rem', textShadow: 'none', textAlign: 'center', fontSize: '0.72rem', color: '#525252' }}>
+                    No connections synced. Go to the Network Directory or Ecosystem Search to connect with nodes.
+                  </div>
+                ) : (
+                  connectionMembers.map(member => {
+                    const latestMsg = chatThreads[member.customer_id]?.slice(-1)[0];
+                    return (
+                      <div
+                        key={member.customer_id}
+                        onClick={() => setActiveChatRecipient(member)}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.65rem',
+                          padding: '0.5rem',
+                          borderRadius: '8px',
+                          background: 'rgba(255,255,255,0.01)',
+                          border: '1px solid rgba(255,255,255,0.03)',
+                          cursor: 'pointer',
+                          transition: 'background 0.2s'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}
+                        onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.01)'}
+                      >
+                        <div style={{ width: '32px', height: '32px', borderRadius: '50%', overflow: 'hidden', background: '#111', flexShrink: 0, position: 'relative' }}>
+                          <img 
+                            src={member.basicProfile?.profile_picture_url || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop&q=80'} 
+                            alt={member.first_name}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                          />
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <h4 style={{ fontSize: '0.76rem', color: '#ffffff', fontWeight: '800', margin: 0 }}>
+                            {member.first_name} {member.last_name}
+                          </h4>
+                          <p style={{ fontSize: '0.64rem', color: '#8a8a8a', margin: 0, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                            {latestMsg ? latestMsg.text : member.professionalProfile?.headline || 'Peer Bridge Node'}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            ) : (
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+                <div style={{ display: 'flex', alignItems: 'center', background: 'rgba(0,0,0,0.2)', borderBottom: '1px solid rgba(255,255,255,0.04)', padding: '0.35rem 0.5rem', flexShrink: 0 }}>
+                  <button
+                    onClick={() => setActiveChatRecipient(null)}
+                    style={{
+                      background: 'transparent',
+                      border: 'none',
+                      color: '#00f2fe',
+                      fontSize: '0.68rem',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.2rem'
+                    }}
+                  >
+                    ◀ Back to Chats
+                  </button>
+                </div>
+
+                <div 
+                  id="chat-bubbles-container"
+                  style={{ flex: 1, overflowY: 'auto', padding: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}
+                >
+                  {(chatThreads[activeChatRecipient.customer_id] || [
+                    { sender: 'them', text: `Hi! I am ${activeChatRecipient.first_name}. Thanks for connecting! Let me know if you have questions regarding our work.` }
+                  ]).map((msg, idx) => (
+                    <div 
+                      key={idx}
+                      style={{
+                        alignSelf: msg.sender === 'me' ? 'flex-end' : 'flex-start',
+                        maxWidth: '80%',
+                        background: msg.sender === 'me' ? '#00f2fe' : 'rgba(255,255,255,0.04)',
+                        border: msg.sender === 'me' ? 'none' : '1px solid rgba(255,255,255,0.06)',
+                        color: msg.sender === 'me' ? '#000000' : '#ffffff',
+                        padding: '0.45rem 0.65rem',
+                        borderRadius: msg.sender === 'me' ? '12px 12px 2px 12px' : '12px 12px 12px 2px',
+                        fontSize: '0.7rem',
+                        lineHeight: '1.3'
+                      }}
+                    >
+                      {msg.text}
+                    </div>
+                  ))}
+                </div>
+
+                <form 
+                  onSubmit={handleSendMessage}
+                  style={{ display: 'flex', borderTop: '1px solid rgba(255,255,255,0.05)', padding: '0.5rem', gap: '0.4rem', background: 'rgba(10,10,10,0.8)', flexShrink: 0 }}
+                >
+                  <input
+                    type="text"
+                    placeholder="Type P2P message..."
+                    value={chatInputText}
+                    onChange={(e) => setChatInputText(e.target.value)}
+                    style={{
+                      flex: 1,
+                      background: 'rgba(0,0,0,0.4)',
+                      border: '1px solid rgba(255,255,255,0.06)',
+                      borderRadius: '6px',
+                      padding: '0.4rem 0.5rem',
+                      color: '#ffffff',
+                      fontSize: '0.72rem',
+                      outline: 'none'
+                    }}
+                  />
+                  <button
+                    type="submit"
+                    className="btn-primary"
+                    style={{ padding: '0.4rem 0.8rem', fontSize: '0.7rem', height: 'auto' }}
+                  >
+                    Send
+                  </button>
+                </form>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -1337,6 +1661,151 @@ export default function Home() {
               🔑 Admissions
             </button>
           )}
+
+          <div style={{ position: 'relative', display: 'inline-block' }}>
+            <button
+              onClick={() => setShowNotificationsDropdown(!showNotificationsDropdown)}
+              style={{
+                background: showNotificationsDropdown ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.02)',
+                border: '1px solid rgba(255,255,255,0.05)',
+                color: '#ffffff',
+                padding: '0.45rem 0.85rem',
+                borderRadius: '6px',
+                fontSize: '0.74rem',
+                fontWeight: '700',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+                transition: 'all 0.2s',
+                height: '32px'
+              }}
+              title="Ecosystem Notifications center"
+            >
+              🔔
+              {state.notifications.filter(n => !n.read_status).length > 0 && (
+                <span style={{
+                  background: '#f43f5e',
+                  color: '#ffffff',
+                  fontSize: '0.58rem',
+                  fontWeight: '800',
+                  borderRadius: '10px',
+                  padding: '0.05rem 0.3rem',
+                  marginLeft: '0.15rem'
+                }}>
+                  {state.notifications.filter(n => !n.read_status).length}
+                </span>
+              )}
+            </button>
+            {showNotificationsDropdown && (
+              <div 
+                className="glass-panel" 
+                style={{
+                  position: 'absolute',
+                  top: '40px',
+                  right: '0',
+                  width: '320px',
+                  maxHeight: '400px',
+                  overflowY: 'auto',
+                  background: 'rgba(10, 10, 10, 0.95)',
+                  backdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  borderRadius: '12px',
+                  boxShadow: '0 20px 25px -5px rgba(0,0,0,0.5), 0 10px 10px -5px rgba(0,0,0,0.4)',
+                  padding: '0.75rem',
+                  zIndex: 10000,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.5rem'
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.5rem', marginBottom: '0.25rem' }}>
+                  <span style={{ fontSize: '0.76rem', fontWeight: '800', color: '#ffffff' }}>Ecosystem Alerts</span>
+                  {state.notifications.length > 0 && (
+                    <button
+                      onClick={() => {
+                        state.setNotifications([]);
+                        if (typeof window !== 'undefined') {
+                          localStorage.setItem('pb_notifications', JSON.stringify([]));
+                        }
+                      }}
+                      style={{
+                        background: 'transparent',
+                        border: 'none',
+                        color: '#00f2fe',
+                        fontSize: '0.66rem',
+                        cursor: 'pointer',
+                        fontWeight: '700'
+                      }}
+                    >
+                      Clear All
+                    </button>
+                  )}
+                </div>
+
+                {state.notifications.length === 0 ? (
+                  <div style={{ padding: '2rem 1rem', textAlign: 'center', fontSize: '0.72rem', color: '#525252' }}>
+                    No unread compliance or node alert logs in ledger.
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                    {state.notifications.map((notif) => (
+                      <div 
+                        key={notif.notification_id} 
+                        style={{
+                          background: 'rgba(255,255,255,0.01)',
+                          border: '1px solid rgba(255,255,255,0.03)',
+                          borderRadius: '8px',
+                          padding: '0.5rem',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '0.2rem',
+                          position: 'relative'
+                        }}
+                      >
+                        <button
+                          onClick={() => {
+                            const updated = state.notifications.filter(n => n.notification_id !== notif.notification_id);
+                            state.setNotifications(updated);
+                            if (typeof window !== 'undefined') {
+                              localStorage.setItem('pb_notifications', JSON.stringify(updated));
+                            }
+                          }}
+                          style={{
+                            position: 'absolute',
+                            top: '0.35rem',
+                            right: '0.35rem',
+                            background: 'transparent',
+                            border: 'none',
+                            color: '#525252',
+                            fontSize: '0.66rem',
+                            cursor: 'pointer',
+                            padding: '0 0.2rem'
+                          }}
+                        >
+                          ✕
+                        </button>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                          <span style={{
+                            width: '5px',
+                            height: '5px',
+                            borderRadius: '50%',
+                            background: notif.type === 'investment' ? '#10b981' : notif.type === 'system' ? '#00f2fe' : '#8f00ff'
+                          }} />
+                          <span style={{ fontSize: '0.58rem', fontWeight: '800', textTransform: 'uppercase', color: '#8a8a8a' }}>
+                            {notif.type}
+                          </span>
+                        </div>
+                        <p style={{ fontSize: '0.7rem', color: '#ffffff', margin: 0, paddingRight: '1rem', lineHeight: '1.3' }}>
+                          {notif.message}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
 
           <button 
             onClick={() => state.setActiveModule('support')} 
@@ -1505,6 +1974,10 @@ export default function Home() {
               onClick={() => {
                 state.setActiveModule('profile');
                 state.setProfileActiveSubTab('network-directory');
+                state.setDirectoryRoleFilter('Connections');
+                if (typeof window !== 'undefined') {
+                  localStorage.setItem('pb_directory_filter', JSON.stringify('Connections'));
+                }
               }} 
               style={styles.sidebarRowItem}
               title="Inspect network nodes in Directory"
@@ -1693,6 +2166,9 @@ export default function Home() {
       {showViewersModal && renderViewersModal()}
       {showImpressionsModal && renderImpressionsModal()}
       {state.inspectedCustomer && renderInspectedCustomerModal()}
+
+      {/* Render Floating Chat Widget */}
+      {renderFloatingChatWidget()}
     </div>
   );
 }

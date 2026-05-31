@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { db, isFirebaseConfigured } from './firebase';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 
 // Initial Mock Datasets representing Database Tables
 
@@ -242,6 +244,33 @@ const DEFAULT_QA = [
 const DEFAULT_INVITES = [
   { code: 'PEER-BRIDGE-2026', createdBy: 'System', usedCount: 1, maxUses: 999, logs: ['System Initialized'] },
   { code: 'INV-DEMO-7721', createdBy: 'Admin', usedCount: 0, maxUses: 1, logs: [] }
+];
+
+const INITIAL_NOTIFICATIONS = [
+  {
+    notification_id: 'notif-init-1',
+    customer_id: 'db-cust-7718',
+    message: 'Compliance: Offering round Form C successfully registered with the SEC.',
+    type: 'investment',
+    read_status: false,
+    created_at: '2026-05-30T18:50:00Z'
+  },
+  {
+    notification_id: 'notif-init-2',
+    customer_id: 'db-cust-7718',
+    message: 'Vetting: Ecosystem biometrics verification complete. 2-Factor Auth enabled.',
+    type: 'system',
+    read_status: false,
+    created_at: '2026-05-30T08:30:00Z'
+  },
+  {
+    notification_id: 'notif-init-3',
+    customer_id: 'db-cust-7718',
+    message: 'Security: Connection node invitation request accepted by Marcus Vance.',
+    type: 'connection',
+    read_status: false,
+    created_at: '2026-05-29T14:20:00Z'
+  }
 ];
 
 const INITIAL_DOCUMENTATION = [
@@ -523,7 +552,7 @@ export function usePeerBridge() {
   const [documentation, setDocumentation] = useState(INITIAL_DOCUMENTATION);
   
   // notifications table
-  const [notifications, setNotifications] = useState([]);
+  const [notifications, setNotifications] = useState(INITIAL_NOTIFICATIONS);
   
   // help_tickets table
   const [helpTickets, setHelpTickets] = useState([]);
@@ -533,6 +562,7 @@ export function usePeerBridge() {
 
   // LinkedIn profile integrations
   const [profileActiveSubTab, setProfileActiveSubTab] = useState('my-profile');
+  const [directoryRoleFilter, setDirectoryRoleFilter] = useState('All');
   const [savedCampaignIds, setSavedCampaignIds] = useState(['camp-1']); // EcoSphere bookmarked by default
   const [connections, setConnections] = useState(['db-cust-evelyn', 'db-cust-jenkins']); // initially 2 connections
   const [profileViewers, setProfileViewers] = useState(61);
@@ -593,12 +623,105 @@ export function usePeerBridge() {
   };
 
   const toggleConnectionNode = (memberId) => {
+    let nextConnections;
     if (connections.includes(memberId)) {
-      setConnections(connections.filter(id => id !== memberId));
+      nextConnections = connections.filter(id => id !== memberId);
+      sync('pb_connections', nextConnections, setConnections);
       addNotification('Connection', `Removed connection node.`);
     } else {
-      setConnections([...connections, memberId]);
+      nextConnections = [...connections, memberId];
+      sync('pb_connections', nextConnections, setConnections);
       addNotification('Connection', `Added connection node successfully.`);
+    }
+  };
+
+  const writeToFirestore = async (key, val) => {
+    if (!isFirebaseConfigured || !db || !customer || !customer.customer_id) return;
+    try {
+      const collectionMap = {
+        'pb_cust': 'customers',
+        'pb_basic': 'basic_profiles',
+        'pb_prof': 'professional_profiles',
+        'pb_ent': 'entrepreneur_profiles',
+        'pb_inv_prof': 'investor_profiles',
+        'pb_aff_prof': 'affiliate_profiles',
+        'pb_settings': 'settings',
+        'pb_balance': 'balances',
+        'pb_bank': 'banks',
+        'pb_connections': 'connections',
+        'pb_notifications': 'notifications',
+        'pb_chats': 'chats',
+        'pb_transactions': 'transactions',
+        'pb_portfolio': 'portfolios',
+        'pb_docs': 'documents'
+      };
+
+      const collectionName = collectionMap[key];
+      if (collectionName) {
+        const docRef = doc(db, collectionName, customer.customer_id);
+        const dataToSave = typeof val === 'object' && val !== null ? val : { value: val };
+        await setDoc(docRef, dataToSave);
+      }
+    } catch (err) {
+      console.error(`Firestore save failed for ${key}:`, err);
+    }
+  };
+
+  const loadUserDataFromFirestore = async (userId) => {
+    if (!isFirebaseConfigured || !db || !userId) return false;
+    try {
+      const collectionMap = {
+        'pb_cust': 'customers',
+        'pb_basic': 'basic_profiles',
+        'pb_prof': 'professional_profiles',
+        'pb_ent': 'entrepreneur_profiles',
+        'pb_inv_prof': 'investor_profiles',
+        'pb_aff_prof': 'affiliate_profiles',
+        'pb_settings': 'settings',
+        'pb_balance': 'balances',
+        'pb_bank': 'banks',
+        'pb_connections': 'connections',
+        'pb_notifications': 'notifications',
+        'pb_transactions': 'transactions',
+        'pb_portfolio': 'portfolios',
+        'pb_docs': 'documents'
+      };
+
+      const settersMap = {
+        'pb_cust': setCustomer,
+        'pb_basic': setBasicProfile,
+        'pb_prof': setProfessionalProfile,
+        'pb_ent': setEntrepreneurProfile,
+        'pb_inv_prof': setInvestorProfile,
+        'pb_aff_prof': setAffiliateProfile,
+        'pb_settings': setSettings,
+        'pb_balance': (data) => setWalletBalance(data.value !== undefined ? data.value : data),
+        'pb_bank': setConnectedBank,
+        'pb_connections': (data) => setConnections(Array.isArray(data) ? data : Object.values(data)),
+        'pb_notifications': (data) => setNotifications(Array.isArray(data) ? data : Object.values(data)),
+        'pb_transactions': (data) => setTransactions(Array.isArray(data) ? data : Object.values(data)),
+        'pb_portfolio': (data) => setPortfolio(Array.isArray(data) ? data : Object.values(data)),
+        'pb_docs': (data) => setDocumentation(Array.isArray(data) ? data : Object.values(data))
+      };
+
+      for (const [key, collectionName] of Object.entries(collectionMap)) {
+        const docRef = doc(db, collectionName, userId);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          const setter = settersMap[key];
+          if (setter) {
+            setter(data);
+            if (typeof window !== 'undefined') {
+              localStorage.setItem(key, JSON.stringify(data));
+            }
+          }
+        }
+      }
+      return true;
+    } catch (err) {
+      console.error("Failed to load user data from Firestore:", err);
+      return false;
     }
   };
 
@@ -625,6 +748,8 @@ export function usePeerBridge() {
       const storedNotifications = localStorage.getItem('pb_notifications');
       const storedQA = localStorage.getItem('pb_qa');
       const storedResources = localStorage.getItem('pb_resources');
+      const storedConnections = localStorage.getItem('pb_connections');
+      const storedDirFilter = localStorage.getItem('pb_directory_filter');
 
       if (storedAuth) setIsAuthenticated(JSON.parse(storedAuth));
       if (storedCust) setCustomer(JSON.parse(storedCust));
@@ -646,6 +771,16 @@ export function usePeerBridge() {
       if (storedNotifications) setNotifications(JSON.parse(storedNotifications));
       if (storedQA) setQaFeed(JSON.parse(storedQA));
       if (storedResources) setResources(JSON.parse(storedResources));
+      if (storedConnections) setConnections(JSON.parse(storedConnections));
+      if (storedDirFilter) setDirectoryRoleFilter(JSON.parse(storedDirFilter));
+
+      // Trigger asynchronous live Firestore data recovery to fetch most up-to-date cloud records!
+      if (storedCust) {
+        const parsed = JSON.parse(storedCust);
+        if (parsed && parsed.customer_id && isFirebaseConfigured) {
+          loadUserDataFromFirestore(parsed.customer_id);
+        }
+      }
     }
   }, []);
 
@@ -655,6 +790,7 @@ export function usePeerBridge() {
     if (typeof window !== 'undefined') {
       localStorage.setItem(key, JSON.stringify(val));
     }
+    writeToFirestore(key, val);
   };
 
   const loginWithInvite = (code, name, email, selectedRole) => {
@@ -1383,6 +1519,8 @@ export function usePeerBridge() {
     // LinkedIn profile integrations
     profileActiveSubTab,
     setProfileActiveSubTab,
+    directoryRoleFilter,
+    setDirectoryRoleFilter,
     savedCampaignIds,
     setSavedCampaignIds,
     connections,

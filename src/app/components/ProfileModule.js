@@ -11,7 +11,11 @@ export default function ProfileModule({ state }) {
     settings, 
     updateProfiles, 
     updateSettings,
-    directory 
+    directory,
+    connections,
+    toggleConnectionNode,
+    directoryRoleFilter,
+    setDirectoryRoleFilter
   } = state;
   
   // Local profile sub-tabs
@@ -24,7 +28,6 @@ export default function ProfileModule({ state }) {
   }, [state.profileActiveSubTab]);
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [roleFilter, setRoleFilter] = useState('All');
 
 
 
@@ -199,8 +202,11 @@ export default function ProfileModule({ state }) {
       `${member.first_name} ${member.last_name}`.toLowerCase().includes(searchQuery.toLowerCase()) ||
       member.professionalProfile?.headline?.toLowerCase().includes(searchQuery.toLowerCase());
     
-    if (roleFilter === 'All') return matchesSearch;
-    return matchesSearch && member.role_flags?.includes(roleFilter);
+    if (directoryRoleFilter === 'All') return matchesSearch;
+    if (directoryRoleFilter === 'Connections') {
+      return matchesSearch && connections.includes(member.customer_id);
+    }
+    return matchesSearch && member.role_flags?.includes(directoryRoleFilter);
   });
 
   return (
@@ -750,11 +756,17 @@ export default function ProfileModule({ state }) {
                 style={styles.searchInput}
               />
               <select
-                value={roleFilter}
-                onChange={(e) => setRoleFilter(e.target.value)}
+                value={directoryRoleFilter}
+                onChange={(e) => {
+                  setDirectoryRoleFilter(e.target.value);
+                  if (typeof window !== 'undefined') {
+                    localStorage.setItem('pb_directory_filter', JSON.stringify(e.target.value));
+                  }
+                }}
                 style={styles.filterSelect}
               >
                 <option value="All">All Listing Roles</option>
+                <option value="Connections">🤝 My Connections Only</option>
                 <option value="Investor">Accredited Investors Only</option>
                 <option value="Entrepreneur">Ecosystem Entrepreneurs Only</option>
                 <option value="Affiliate">Professional Affiliates Only</option>
@@ -800,15 +812,35 @@ export default function ProfileModule({ state }) {
                     ))}
                   </div>
 
-                  <button 
-                    onClick={() => {
-                      state.setInspectedCustomer(member);
-                    }}
-                    className="btn-primary"
-                    style={{ width: '100%', justifyContent: 'center', padding: '0.45rem' }}
-                  >
-                    Inspect Node Credentials →
-                  </button>
+                  <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+                    <button 
+                      onClick={() => {
+                        state.setInspectedCustomer(member);
+                      }}
+                      className="btn-secondary"
+                      style={{ flex: 1, justifyContent: 'center', padding: '0.45rem', fontSize: '0.7rem', whiteSpace: 'nowrap' }}
+                    >
+                      🔍 Inspect
+                    </button>
+                    {member.customer_id !== customer.customer_id && (
+                      <button 
+                        onClick={() => toggleConnectionNode(member.customer_id)}
+                        className={connections.includes(member.customer_id) ? "btn-secondary" : "btn-primary"}
+                        style={{ 
+                          flex: 1.2, 
+                          justifyContent: 'center', 
+                          padding: '0.45rem', 
+                          fontSize: '0.7rem',
+                          whiteSpace: 'nowrap',
+                          background: connections.includes(member.customer_id) ? 'rgba(16, 185, 129, 0.1)' : '',
+                          color: connections.includes(member.customer_id) ? '#10b981' : '',
+                          border: connections.includes(member.customer_id) ? '1px solid rgba(16, 185, 129, 0.3)' : ''
+                        }}
+                      >
+                        {connections.includes(member.customer_id) ? '🤝 Connected' : '➕ Connect'}
+                      </button>
+                    )}
+                  </div>
                 </div>
               ))
             )}
