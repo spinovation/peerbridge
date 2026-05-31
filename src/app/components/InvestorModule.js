@@ -56,6 +56,17 @@ export default function InvestorModule({ state }) {
     setInvestSuccess('');
   };
 
+  useEffect(() => {
+    if (state.targetCampaignId) {
+      const camp = campaigns.find(c => c.id === state.targetCampaignId);
+      if (camp) {
+        setSubTab('marketplace');
+        handleOpenInvest(camp);
+      }
+      state.setTargetCampaignId(null);
+    }
+  }, [state.targetCampaignId, campaigns]);
+
   const handleInvestSubmit = (e) => {
     e.preventDefault();
     if (!selectedCampaign) return;

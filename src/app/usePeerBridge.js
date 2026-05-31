@@ -492,6 +492,9 @@ export function usePeerBridge() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [activeTab, setActiveTab] = useState('landing');
   const [activeModule, setActiveModule] = useState('portfolio');
+  const [globalSearchQuery, setGlobalSearchQuery] = useState('');
+  const [inspectedCustomer, setInspectedCustomer] = useState(null);
+  const [targetCampaignId, setTargetCampaignId] = useState(null);
   
   // Database Tables Grayscale State
   const [customer, setCustomer] = useState(INITIAL_CUSTOMERS);
@@ -1342,6 +1345,12 @@ export function usePeerBridge() {
     activeModule,
     setActiveTab,
     setActiveModule,
+    globalSearchQuery,
+    setGlobalSearchQuery,
+    inspectedCustomer,
+    setInspectedCustomer,
+    targetCampaignId,
+    setTargetCampaignId,
     
     // Derived & compatibility state
     user,

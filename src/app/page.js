@@ -20,6 +20,17 @@ export default function Home() {
   const [showViewersModal, setShowViewersModal] = useState(false);
   const [showImpressionsModal, setShowImpressionsModal] = useState(false);
 
+  // Discovery Search Hub states
+  const [searchTab, setSearchTab] = useState('people'); // 'people' | 'investments' | 'advisors'
+  const [searchLocation, setSearchLocation] = useState('');
+  const [searchIndustry, setSearchIndustry] = useState('All');
+  const [vettedCreds, setVettedCreds] = useState({
+    identity: false,
+    wealth: false,
+    academic: false,
+    job: false
+  });
+
   if (!state.isAuthenticated) {
     return <LandingView state={state} />;
   }
@@ -393,6 +404,567 @@ export default function Home() {
           </div>
         );
 
+      case 'search':
+        // Multi-criteria filtering logic
+        const renderCardRing = (m) => {
+          const basic = m.basicProfile || {};
+          const prof = m.professionalProfile || {};
+          const inv = m.investorProfile || {};
+
+          const hasId = m.status === 'verified' || (basic.address?.trim().length > 3 && m.ssn?.trim().length > 0);
+          const hasJobVal = prof.experience && prof.experience.length > 0;
+          const hasAcadVal = prof.education && prof.education.length > 0;
+          const hasWealthVal = inv.accreditation_status || false;
+
+          const colorId = hasId ? '#00f2fe' : 'rgba(255,255,255,0.08)';
+          const colorJob = hasJobVal ? '#8f00ff' : 'rgba(255,255,255,0.08)';
+          const colorAcad = hasAcadVal ? '#6366f1' : 'rgba(255,255,255,0.08)';
+          const colorWealth = hasWealthVal ? '#10b981' : 'rgba(255,255,255,0.08)';
+
+          return (
+            <div style={{ position: 'relative', width: '50px', height: '50px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <svg width="50" height="50" viewBox="0 0 100 100" style={{ transform: 'rotate(-90deg)', position: 'absolute', top: 0, left: 0 }}>
+                <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.02)" strokeWidth="3" />
+                <circle cx="50" cy="50" r="40" fill="none" stroke={colorId} strokeWidth="6" strokeDasharray="58 193.3" strokeDashoffset="0" strokeLinecap="round" />
+                <circle cx="50" cy="50" r="40" fill="none" stroke={colorWealth} strokeWidth="6" strokeDasharray="58 193.3" strokeDashoffset="-62.8" strokeLinecap="round" />
+                <circle cx="50" cy="50" r="40" fill="none" stroke={colorAcad} strokeWidth="6" strokeDasharray="58 193.3" strokeDashoffset="-125.6" strokeLinecap="round" />
+                <circle cx="50" cy="50" r="40" fill="none" stroke={colorJob} strokeWidth="6" strokeDasharray="58 193.3" strokeDashoffset="-188.4" strokeLinecap="round" />
+              </svg>
+              {basic.profile_picture_url ? (
+                <img 
+                  src={basic.profile_picture_url} 
+                  alt={m.first_name} 
+                  style={{ width: '34px', height: '34px', borderRadius: '50%', objectFit: 'cover', zIndex: 1 }} 
+                />
+              ) : (
+                <div style={{ width: '34px', height: '34px', borderRadius: '50%', background: '#00f2fe', color: '#000000', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem', fontWeight: '800', zIndex: 1 }}>
+                  {m.first_name.charAt(0)}
+                </div>
+              )}
+            </div>
+          );
+        };
+
+        const getFilteredResults = () => {
+          if (searchTab === 'people') {
+            return state.directory.filter(member => {
+              const nameStr = `${member.first_name} ${member.last_name}`.toLowerCase();
+              const bioStr = (member.basicProfile?.bio || '').toLowerCase();
+              const headlineStr = (member.professionalProfile?.headline || '').toLowerCase();
+              const skillsStr = (member.professionalProfile?.skills || []).join(' ').toLowerCase();
+              const q = state.globalSearchQuery.toLowerCase();
+              const matchesSearch = !q || nameStr.includes(q) || bioStr.includes(q) || headlineStr.includes(q) || skillsStr.includes(q);
+
+              const loc = searchLocation.toLowerCase();
+              const addrStr = (member.basicProfile?.address || '').toLowerCase();
+              const natStr = (member.basicProfile?.nationality || '').toLowerCase();
+              const matchesLoc = !loc || addrStr.includes(loc) || natStr.includes(loc);
+
+              const ind = searchIndustry;
+              const indPref = member.investorProfile?.preferred_industries || [];
+              const indEnt = member.entrepreneurProfile?.industry || '';
+              const indAff = member.affiliateProfile?.specialty || '';
+              const matchesInd = ind === 'All' || 
+                indEnt.toLowerCase().includes(ind.toLowerCase()) || 
+                indAff.toLowerCase().includes(ind.toLowerCase()) || 
+                indPref.some(p => p.toLowerCase().includes(ind.toLowerCase()));
+
+              const basic = member.basicProfile || {};
+              const prof = member.professionalProfile || {};
+              const inv = member.investorProfile || {};
+              const hasId = member.status === 'verified' || (basic.address?.trim().length > 3 && member.ssn?.trim().length > 0);
+              const hasWealth = inv.accreditation_status || false;
+              const hasAcad = prof.education && prof.education.length > 0;
+              const hasJob = prof.experience && prof.experience.length > 0;
+
+              if (vettedCreds.identity && !hasId) return false;
+              if (vettedCreds.wealth && !hasWealth) return false;
+              if (vettedCreds.academic && !hasAcad) return false;
+              if (vettedCreds.job && !hasJob) return false;
+
+              return matchesSearch && matchesLoc && matchesInd;
+            });
+          } else if (searchTab === 'investments') {
+            return state.campaigns.filter(camp => {
+              const companyNameLower = camp.companyName.toLowerCase();
+              const taglineLower = camp.tagline.toLowerCase();
+              const descLower = camp.description.toLowerCase();
+              const q = state.globalSearchQuery.toLowerCase();
+              const matchesSearch = !q || companyNameLower.includes(q) || taglineLower.includes(q) || descLower.includes(q);
+
+              const founderObj = state.directory.find(m => `${m.first_name} ${m.last_name}` === camp.founder);
+              const loc = searchLocation.toLowerCase();
+              const addrStr = founderObj ? (founderObj.basicProfile?.address || '').toLowerCase() : '';
+              const matchesLoc = !loc || addrStr.includes(loc);
+
+              const ind = searchIndustry;
+              const matchesInd = ind === 'All' || camp.category.toLowerCase().includes(ind.toLowerCase());
+
+              if (founderObj) {
+                const basic = founderObj.basicProfile || {};
+                const prof = founderObj.professionalProfile || {};
+                const inv = founderObj.investorProfile || {};
+                const hasId = founderObj.status === 'verified' || (basic.address?.trim().length > 3 && founderObj.ssn?.trim().length > 0);
+                const hasWealth = inv.accreditation_status || false;
+                const hasAcad = prof.education && prof.education.length > 0;
+                const hasJob = prof.experience && prof.experience.length > 0;
+
+                if (vettedCreds.identity && !hasId) return false;
+                if (vettedCreds.wealth && !hasWealth) return false;
+                if (vettedCreds.academic && !hasAcad) return false;
+                if (vettedCreds.job && !hasJob) return false;
+              } else {
+                if (vettedCreds.identity || vettedCreds.wealth || vettedCreds.academic || vettedCreds.job) return false;
+              }
+
+              return matchesSearch && matchesLoc && matchesInd;
+            });
+          } else {
+            return state.directory.filter(member => {
+              const isAffiliate = member.role_flags.includes('Affiliate') || member.affiliateProfile;
+              if (!isAffiliate) return false;
+
+              const nameStr = `${member.first_name} ${member.last_name}`.toLowerCase();
+              const bioStr = (member.affiliateProfile?.bio || member.basicProfile?.bio || '').toLowerCase();
+              const specialtyStr = (member.affiliateProfile?.specialty || '').toLowerCase();
+              const q = state.globalSearchQuery.toLowerCase();
+              const matchesSearch = !q || nameStr.includes(q) || bioStr.includes(q) || specialtyStr.includes(q);
+
+              const loc = searchLocation.toLowerCase();
+              const addrStr = (member.basicProfile?.address || '').toLowerCase();
+              const matchesLoc = !loc || addrStr.includes(loc);
+
+              const ind = searchIndustry;
+              const specialtyLower = (member.affiliateProfile?.specialty || '').toLowerCase();
+              const matchesInd = ind === 'All' || specialtyLower.includes(ind.toLowerCase());
+
+              const basic = member.basicProfile || {};
+              const prof = member.professionalProfile || {};
+              const inv = member.investorProfile || {};
+              const hasId = member.status === 'verified' || (basic.address?.trim().length > 3 && member.ssn?.trim().length > 0);
+              const hasWealth = inv.accreditation_status || false;
+              const hasAcad = prof.education && prof.education.length > 0;
+              const hasJob = prof.experience && prof.experience.length > 0;
+
+              if (vettedCreds.identity && !hasId) return false;
+              if (vettedCreds.wealth && !hasWealth) return false;
+              if (vettedCreds.academic && !hasAcad) return false;
+              if (vettedCreds.job && !hasJob) return false;
+
+              return matchesSearch && matchesLoc && matchesInd;
+            });
+          }
+        };
+
+        const results = getFilteredResults();
+
+        return (
+          <div className="glass-panel animate-fade-in-up" style={{ padding: '1.5rem', borderRadius: '16px', minHeight: '80vh' }}>
+            <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.85rem', marginBottom: '1.25rem' }}>
+              <h2 style={{ fontSize: '1.4rem', fontWeight: '850', color: '#ffffff', margin: 0 }}>Ecosystem Discovery Hub</h2>
+              <p style={{ fontSize: '0.8rem', color: '#a3a3a3', marginTop: '0.2rem' }}>
+                Globally query verified node credentials, compliant placements, and corporate legal affiliates in real-time.
+              </p>
+            </div>
+
+            {/* Type Tabs */}
+            <div style={{ display: 'flex', gap: '0.5rem', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.75rem', marginBottom: '1.25rem' }}>
+              <button 
+                onClick={() => setSearchTab('people')} 
+                style={{
+                  background: searchTab === 'people' ? 'rgba(255,255,255,0.06)' : 'transparent',
+                  border: searchTab === 'people' ? '1px solid rgba(255,255,255,0.1)' : '1px solid transparent',
+                  color: searchTab === 'people' ? '#ffffff' : '#a3a3a3',
+                  padding: '0.5rem 1rem',
+                  borderRadius: '6px',
+                  fontSize: '0.8rem',
+                  fontWeight: searchTab === 'people' ? '700' : '500',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  transition: 'all 0.2s'
+                }}
+              >
+                <span>👥</span> People (Directory)
+              </button>
+              <button 
+                onClick={() => setSearchTab('investments')} 
+                style={{
+                  background: searchTab === 'investments' ? 'rgba(255,255,255,0.06)' : 'transparent',
+                  border: searchTab === 'investments' ? '1px solid rgba(255,255,255,0.1)' : '1px solid transparent',
+                  color: searchTab === 'investments' ? '#ffffff' : '#a3a3a3',
+                  padding: '0.5rem 1rem',
+                  borderRadius: '6px',
+                  fontSize: '0.8rem',
+                  fontWeight: searchTab === 'investments' ? '700' : '500',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  transition: 'all 0.2s'
+                }}
+              >
+                <span>🚀</span> Investments (Offerings)
+              </button>
+              <button 
+                onClick={() => setSearchTab('advisors')} 
+                style={{
+                  background: searchTab === 'advisors' ? 'rgba(255,255,255,0.06)' : 'transparent',
+                  border: searchTab === 'advisors' ? '1px solid rgba(255,255,255,0.1)' : '1px solid transparent',
+                  color: searchTab === 'advisors' ? '#ffffff' : '#a3a3a3',
+                  padding: '0.5rem 1rem',
+                  borderRadius: '6px',
+                  fontSize: '0.8rem',
+                  fontWeight: searchTab === 'advisors' ? '700' : '500',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  transition: 'all 0.2s'
+                }}
+              >
+                <span>💼</span> Advisors (Affiliates)
+              </button>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '240px 1fr', gap: '1.5rem' }}>
+              {/* Left Column: Advanced Filters Sidebar */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '10px' }}>
+                <h3 style={{ fontSize: '0.82rem', fontWeight: '800', color: '#ffffff', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.5rem', margin: 0 }}>
+                  Advanced Filters
+                </h3>
+
+                {/* Location Search Input */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                  <label style={{ fontSize: '0.68rem', color: '#8a8a8a', fontWeight: '700' }}>LOCATION</label>
+                  <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                    <span style={{ position: 'absolute', left: '0.5rem', fontSize: '0.75rem', color: '#525252' }}>📍</span>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. Charlotte, Boston..." 
+                      value={searchLocation} 
+                      onChange={(e) => setSearchLocation(e.target.value)} 
+                      style={{
+                        width: '100%',
+                        background: 'rgba(0,0,0,0.3)',
+                        border: '1px solid rgba(255,255,255,0.06)',
+                        borderRadius: '6px',
+                        padding: '0.4rem 0.5rem 0.4rem 1.6rem',
+                        color: '#ffffff',
+                        fontSize: '0.75rem',
+                        outline: 'none',
+                        transition: 'all 0.2s'
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Industry Filter Dropdown */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                  <label style={{ fontSize: '0.68rem', color: '#8a8a8a', fontWeight: '700' }}>INDUSTRY</label>
+                  <select 
+                    value={searchIndustry} 
+                    onChange={(e) => setSearchIndustry(e.target.value)} 
+                    style={{
+                      width: '100%',
+                      background: 'rgba(0,0,0,0.3)',
+                      border: '1px solid rgba(255,255,255,0.06)',
+                      borderRadius: '6px',
+                      padding: '0.4rem 0.5rem',
+                      color: '#ffffff',
+                      fontSize: '0.75rem',
+                      outline: 'none',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <option value="All">All Sectors</option>
+                    <option value="CleanTech">CleanTech</option>
+                    <option value="MedTech">MedTech</option>
+                    <option value="Fintech">Fintech</option>
+                    <option value="AI/ML">AI / Deep Learning</option>
+                    <option value="SaaS">SaaS</option>
+                  </select>
+                </div>
+
+                {/* Vetted Credentials Checkboxes */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  <label style={{ fontSize: '0.68rem', color: '#8a8a8a', fontWeight: '700' }}>VETTED CREDENTIALS</label>
+                  
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.72rem', color: '#a3a3a3', cursor: 'pointer' }}>
+                    <input 
+                      type="checkbox" 
+                      checked={vettedCreds.identity} 
+                      onChange={(e) => setVettedCreds({ ...vettedCreds, identity: e.target.checked })} 
+                      style={{ cursor: 'pointer', accentColor: '#00f2fe' }}
+                    />
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
+                      <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#00f2fe' }} />
+                      Identity Vetted
+                    </span>
+                  </label>
+
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.72rem', color: '#a3a3a3', cursor: 'pointer' }}>
+                    <input 
+                      type="checkbox" 
+                      checked={vettedCreds.wealth} 
+                      onChange={(e) => setVettedCreds({ ...vettedCreds, wealth: e.target.checked })} 
+                      style={{ cursor: 'pointer', accentColor: '#10b981' }}
+                    />
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
+                      <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981' }} />
+                      Accredited Wealth
+                    </span>
+                  </label>
+
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.72rem', color: '#a3a3a3', cursor: 'pointer' }}>
+                    <input 
+                      type="checkbox" 
+                      checked={vettedCreds.academic} 
+                      onChange={(e) => setVettedCreds({ ...vettedCreds, academic: e.target.checked })} 
+                      style={{ cursor: 'pointer', accentColor: '#6366f1' }}
+                    />
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
+                      <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#6366f1' }} />
+                      Academic Vetted
+                    </span>
+                  </label>
+
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.72rem', color: '#a3a3a3', cursor: 'pointer' }}>
+                    <input 
+                      type="checkbox" 
+                      checked={vettedCreds.job} 
+                      onChange={(e) => setVettedCreds({ ...vettedCreds, job: e.target.checked })} 
+                      style={{ cursor: 'pointer', accentColor: '#8f00ff' }}
+                    />
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
+                      <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#8f00ff' }} />
+                      Job Vetted
+                    </span>
+                  </label>
+                </div>
+
+                {/* Clear Filter Button */}
+                <button 
+                  onClick={() => {
+                    setSearchLocation('');
+                    setSearchIndustry('All');
+                    setVettedCreds({ identity: false, wealth: false, academic: false, job: false });
+                    state.setGlobalSearchQuery('');
+                  }}
+                  style={{
+                    background: 'transparent',
+                    border: '1px solid rgba(255,255,255,0.06)',
+                    color: '#a3a3a3',
+                    padding: '0.4rem',
+                    borderRadius: '6px',
+                    fontSize: '0.7rem',
+                    cursor: 'pointer',
+                    marginTop: '0.5rem',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  Reset All Filters
+                </button>
+              </div>
+
+              {/* Right Column: Search Results Feed */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', flex: 1 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.78rem', color: '#a3a3a3', borderBottom: '1px solid rgba(255,255,255,0.03)', paddingBottom: '0.5rem' }}>
+                  <span>Found <strong>{results.length}</strong> matching records</span>
+                  {state.globalSearchQuery && <span>Query: "{state.globalSearchQuery}"</span>}
+                </div>
+
+                {results.length === 0 ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '5rem 1rem', textAlign: 'center' }}>
+                    <span style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🔍</span>
+                    <h3 style={{ fontSize: '0.95rem', color: '#ffffff', fontWeight: '700' }}>No Match in Sync</h3>
+                    <p style={{ fontSize: '0.75rem', color: '#525252', maxWidth: '300px', margin: '0.25rem 0 1rem 0' }}>
+                      No nodes or placements satisfied the current multi-criteria security query. Try expanding filters.
+                    </p>
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    {results.map((item, idx) => {
+                      if (searchTab === 'people' || searchTab === 'advisors') {
+                        // People / Advisors Card
+                        const roles = item.role_flags || [];
+                        const headline = item.professionalProfile?.headline || '';
+                        const bio = item.basicProfile?.bio || item.affiliateProfile?.bio || '';
+                        const address = item.basicProfile?.address || '';
+                        const locationStr = address.split(',').slice(-2).join(',').trim() || item.basicProfile?.nationality || 'Global Node';
+                        const specialty = item.affiliateProfile?.specialty || '';
+
+                        return (
+                          <div 
+                            className="glass-panel glow-accent-border animate-fade-in-up" 
+                            key={item.customer_id || idx} 
+                            style={{ 
+                              padding: '1.25rem', 
+                              background: 'rgba(255,255,255,0.01)', 
+                              borderRadius: '12px', 
+                              display: 'flex', 
+                              gap: '1rem', 
+                              alignItems: 'flex-start',
+                              transition: 'transform 0.2s, box-shadow 0.2s'
+                            }}
+                          >
+                            {/* 4-Sector Verification Ring */}
+                            {renderCardRing(item)}
+
+                            <div style={{ flex: 1 }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem' }}>
+                                <div>
+                                  <h3 style={{ fontSize: '0.95rem', fontWeight: '850', color: '#ffffff', margin: 0, display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                                    {item.first_name} {item.last_name}
+                                    {item.status === 'verified' && <span style={{ color: '#00f2fe', fontSize: '0.8rem', cursor: 'help' }} title="KYC/SSN Background Checked">✓</span>}
+                                  </h3>
+                                  <p style={{ fontSize: '0.74rem', color: '#00f2fe', fontWeight: '600', margin: '0.15rem 0 0 0' }}>
+                                    {headline}
+                                  </p>
+                                </div>
+                                <div style={{ display: 'flex', gap: '0.3rem' }}>
+                                  {roles.map((r, i) => (
+                                    <span 
+                                      key={i} 
+                                      style={{
+                                        fontSize: '0.58rem',
+                                        fontWeight: '800',
+                                        padding: '0.1rem 0.35rem',
+                                        borderRadius: '4px',
+                                        background: r === 'Investor' ? 'rgba(16, 185, 129, 0.08)' : r === 'Entrepreneur' ? 'rgba(143, 0, 255, 0.08)' : 'rgba(99, 102, 241, 0.08)',
+                                        border: `1px solid ${r === 'Investor' ? 'rgba(16, 185, 129, 0.2)' : r === 'Entrepreneur' ? 'rgba(143, 0, 255, 0.2)' : 'rgba(99, 102, 241, 0.2)'}`,
+                                        color: r === 'Investor' ? '#10b981' : r === 'Entrepreneur' ? '#c084fc' : '#818cf8'
+                                      }}
+                                    >
+                                      {r}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+
+                              <p style={{ fontSize: '0.76rem', color: '#a3a3a3', lineHeight: '1.4', margin: '0.5rem 0' }}>
+                                {bio}
+                              </p>
+
+                              {specialty && (
+                                <div style={{ fontSize: '0.72rem', color: '#c084fc', marginBottom: '0.5rem' }}>
+                                  <strong>Specialty Focus:</strong> {specialty}
+                                </div>
+                              )}
+
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.03)', paddingTop: '0.75rem', marginTop: '0.5rem' }}>
+                                <span style={{ fontSize: '0.68rem', color: '#525252', display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
+                                  📍 {locationStr}
+                                </span>
+                                
+                                {searchTab === 'people' ? (
+                                  <button 
+                                    onClick={() => {
+                                      state.setProfileActiveSubTab('network-directory');
+                                      state.setInspectedCustomer(item);
+                                      state.setActiveModule('profile');
+                                    }}
+                                    className="btn-primary" 
+                                    style={{ padding: '0.35rem 0.85rem', fontSize: '0.7rem' }}
+                                  >
+                                    Inspect Profile
+                                  </button>
+                                ) : (
+                                  <button 
+                                    onClick={() => {
+                                      state.setActiveModule('affiliate');
+                                    }}
+                                    className="btn-primary" 
+                                    style={{ padding: '0.35rem 0.85rem', fontSize: '0.7rem' }}
+                                  >
+                                    Consult Advisor
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      } else {
+                        // Investments Campaign Card
+                        const progress = Math.min(100, Math.floor((item.raised / item.target) * 100));
+                        return (
+                          <div 
+                            className="glass-panel glow-accent-border animate-fade-in-up" 
+                            key={item.id} 
+                            style={{ 
+                              padding: '1.25rem', 
+                              background: 'rgba(255,255,255,0.01)', 
+                              borderRadius: '12px', 
+                              display: 'flex', 
+                              flexDirection: 'column', 
+                              justifyContent: 'space-between',
+                              gap: '1rem' 
+                            }}
+                          >
+                            <div>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.4rem' }}>
+                                <h3 style={{ fontSize: '1rem', fontWeight: '850', color: '#ffffff', margin: 0 }}>{item.companyName}</h3>
+                                <span style={{ fontSize: '0.62rem', fontWeight: '800', padding: '0.15rem 0.45rem', borderRadius: '4px', background: 'rgba(0,242,254,0.06)', border: '1px solid rgba(0,242,254,0.2)', color: '#00f2fe' }}>
+                                  {item.category}
+                                </span>
+                              </div>
+                              <p style={{ fontSize: '0.78rem', color: '#a3a3a3', lineHeight: '1.4', margin: '0.25rem 0 0.75rem 0' }}>
+                                {item.tagline}
+                              </p>
+
+                              <div style={{ marginBottom: '0.75rem' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: '#a3a3a3', marginBottom: '0.2rem' }}>
+                                  <span>Raised: <strong>${item.raised.toLocaleString()}</strong></span>
+                                  <span>{progress}% of ${item.target.toLocaleString()}</span>
+                                </div>
+                                <div style={{ height: '4px', background: 'rgba(255,255,255,0.05)', borderRadius: '2px', overflow: 'hidden' }}>
+                                  <div style={{ width: `${progress}%`, height: '100%', background: '#00f2fe' }}></div>
+                                </div>
+                              </div>
+
+                              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.5rem', background: 'rgba(0,0,0,0.2)', padding: '0.5rem', borderRadius: '6px' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                  <span style={{ fontSize: '0.58rem', color: '#525252', fontWeight: '700' }}>Valuation</span>
+                                  <span style={{ fontSize: '0.72rem', color: '#ffffff', fontWeight: '800' }}>${(item.valuation / 1000000).toFixed(1)}M</span>
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                  <span style={{ fontSize: '0.58rem', color: '#525252', fontWeight: '700' }}>Min Entry</span>
+                                  <span style={{ fontSize: '0.72rem', color: '#ffffff', fontWeight: '800' }}>${item.minInvestment.toLocaleString()}</span>
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                  <span style={{ fontSize: '0.58rem', color: '#525252', fontWeight: '700' }}>Share Price</span>
+                                  <span style={{ fontSize: '0.72rem', color: '#ffffff', fontWeight: '800' }}>${item.sharePrice.toFixed(2)}</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.03)', paddingTop: '0.75rem' }}>
+                              <span style={{ fontSize: '0.68rem', color: '#525252' }}>
+                                👤 Founder: <strong style={{ color: '#a3a3a3' }}>{item.founder}</strong>
+                              </span>
+                              <button 
+                                onClick={() => {
+                                  state.setTargetCampaignId(item.id);
+                                  state.setActiveModule('portfolio');
+                                }}
+                                className="btn-primary" 
+                                style={{ padding: '0.35rem 0.85rem', fontSize: '0.7rem' }}
+                              >
+                                Inspect Offering
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      }
+                    })}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+
       default:
         return <InvestorModule state={state} />;
     }
@@ -423,6 +995,28 @@ export default function Home() {
           >
             🏠 Home
           </button>
+
+          {/* Sleek Global Search Bar next to Logo/Home */}
+          <div style={styles.searchBarContainer}>
+            <span style={styles.searchIcon}>🔍</span>
+            <input
+              type="text"
+              placeholder="Search people, offerings, advisors..."
+              value={state.globalSearchQuery}
+              onChange={(e) => {
+                state.setGlobalSearchQuery(e.target.value);
+                if (state.activeModule !== 'search') {
+                  state.setActiveModule('search');
+                }
+              }}
+              onFocus={() => {
+                if (state.activeModule !== 'search') {
+                  state.setActiveModule('search');
+                }
+              }}
+              style={styles.searchInput}
+            />
+          </div>
         </div>
 
         {/* Column 2: Center Ecosystem Horizontal Navigation */}
@@ -750,6 +1344,90 @@ export default function Home() {
         <main style={styles.workspace}>
           {renderActiveModule()}
         </main>
+
+        {/* Right Sidebar (LinkedIn-Style Cockpit Panels) */}
+        <aside style={styles.rightSidebar}>
+          {/* Panel 1: News Bulletin */}
+          <div className="glass-panel animate-fade-in-up" style={styles.sidebarNewsCard}>
+            <h3 style={styles.sidebarNewsTitle}>📰 Peer Bridge News</h3>
+            <ul style={styles.newsList}>
+              <li style={styles.newsItem}>
+                <span style={styles.newsBullet}>•</span>
+                <div style={styles.newsContent}>
+                  <strong style={styles.newsHeading}>SEC Form C Adjustments</strong>
+                  <span style={styles.newsText}>Exempt crowdfund limits set to expand to $5M annually.</span>
+                </div>
+              </li>
+              <li style={styles.newsItem}>
+                <span style={styles.newsBullet}>•</span>
+                <div style={styles.newsContent}>
+                  <strong style={styles.newsHeading}>Carbon Bio-Algae Boom</strong>
+                  <span style={styles.newsText}>CleanTech placements surge +210% across alternative SPVs.</span>
+                </div>
+              </li>
+              <li style={styles.newsItem}>
+                <span style={styles.newsBullet}>•</span>
+                <div style={styles.newsContent}>
+                  <strong style={styles.newsHeading}>P2P Cap Table Auditing</strong>
+                  <span style={styles.newsText}>Exempt ledger audit costs reduced 70% via smart automation.</span>
+                </div>
+              </li>
+              <li style={styles.newsItem}>
+                <span style={styles.newsBullet}>•</span>
+                <div style={styles.newsContent}>
+                  <strong style={styles.newsHeading}>IRS Reg D Tax Updates</strong>
+                  <span style={styles.newsText}>Exempt dividend tax deferrals approved for primary syndicates.</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          {/* Panel 2: Interactive Ad Banner */}
+          <div className="glass-panel animate-fade-in-up" style={styles.sidebarAdCard}>
+            <div style={styles.adHeader}>
+              <span style={styles.adLabel}>SPONSORED SPOTLIGHT</span>
+              <span style={styles.adOptOut}>🎯</span>
+            </div>
+            <h4 style={styles.adTitle}>EcoSphere Technologies Series A</h4>
+            <p style={styles.adText}>
+              Pre-vetted closed-loop algae bioreactors targeting 400x carbon sequestration. SEC Form C compliant.
+            </p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.75rem' }}>
+              <span style={styles.adMinEntry}>Min: $500</span>
+              <button 
+                onClick={() => {
+                  state.setTargetCampaignId('camp-1');
+                  state.setActiveModule('portfolio');
+                }}
+                className="btn-primary" 
+                style={styles.adButton}
+              >
+                Review Allocation →
+              </button>
+            </div>
+          </div>
+
+          {/* Panel 3: Node Announcements */}
+          <div className="glass-panel animate-fade-in-up" style={styles.sidebarAnnounceCard}>
+            <h3 style={styles.sidebarAnnounceTitle}>📣 Node Announcements</h3>
+            <div style={styles.announceList}>
+              <div style={styles.announceItem}>
+                <span style={styles.announceDot} />
+                <div>
+                  <strong style={styles.announceHeader}>Reg D Sync Node Completed</strong>
+                  <span style={styles.announceText}>SEC Form D secure filings ledger nodes successfully propagated.</span>
+                </div>
+              </div>
+              <div style={styles.announceItem}>
+                <span style={styles.announceDot} />
+                <div>
+                  <strong style={styles.announceHeader}>Biometrics Vetting Sweep</strong>
+                  <span style={styles.announceText}>Identity verification AML modules updated for international compliance.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </aside>
       </div>
 
       {/* Render Modals on overlay */}
@@ -946,8 +1624,8 @@ const styles = {
   mainLayout: {
     flex: 1,
     display: 'grid',
-    gridTemplateColumns: '260px 1fr',
-    maxWidth: '1500px',
+    gridTemplateColumns: '260px 1fr 300px',
+    maxWidth: '1600px',
     width: '100%',
     margin: '0 auto',
     padding: '1.5rem 2rem',
@@ -1125,5 +1803,180 @@ const styles = {
   analyticSub: {
     fontSize: '0.58rem',
     color: '#10b981',
+  },
+  // New Layout & Search styles
+  searchBarContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    background: 'rgba(0, 0, 0, 0.4)',
+    border: '1px solid rgba(255, 255, 255, 0.08)',
+    borderRadius: '100px',
+    padding: '0.35rem 0.75rem',
+    gap: '0.4rem',
+    width: '280px',
+    transition: 'all 0.2s ease',
+  },
+  searchIcon: {
+    fontSize: '0.8rem',
+    color: '#a3a3a3',
+  },
+  searchInput: {
+    background: 'transparent',
+    border: 'none',
+    color: '#ffffff',
+    fontSize: '0.74rem',
+    outline: 'none',
+    width: '100%',
+  },
+  rightSidebar: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1rem',
+    position: 'sticky',
+    top: '100px',
+    alignSelf: 'start',
+    width: '300px',
+  },
+  sidebarNewsCard: {
+    padding: '1rem',
+    borderRadius: '12px',
+    background: 'rgba(10, 10, 10, 0.4)',
+    border: '1px solid rgba(255, 255, 255, 0.05)',
+  },
+  sidebarNewsTitle: {
+    fontSize: '0.82rem',
+    fontWeight: '800',
+    color: '#ffffff',
+    margin: '0 0 0.75rem 0',
+    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+    paddingBottom: '0.4rem',
+  },
+  newsList: {
+    listStyle: 'none',
+    padding: 0,
+    margin: 0,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.75rem',
+  },
+  newsItem: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: '0.4rem',
+  },
+  newsBullet: {
+    color: '#00f2fe',
+    fontSize: '0.8rem',
+    lineHeight: '1.2',
+  },
+  newsContent: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.1rem',
+  },
+  newsHeading: {
+    fontSize: '0.74rem',
+    fontWeight: '800',
+    color: '#ffffff',
+  },
+  newsText: {
+    fontSize: '0.64rem',
+    color: '#8a8a8a',
+    lineHeight: '1.3',
+  },
+  sidebarAdCard: {
+    padding: '1rem',
+    borderRadius: '12px',
+    background: 'linear-gradient(135deg, rgba(0, 242, 254, 0.04) 0%, rgba(143, 0, 255, 0.04) 100%)',
+    border: '1px solid rgba(0, 242, 254, 0.15)',
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  adHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '0.5rem',
+  },
+  adLabel: {
+    fontSize: '0.58rem',
+    fontWeight: '900',
+    color: '#00f2fe',
+    letterSpacing: '0.08em',
+  },
+  adOptOut: {
+    fontSize: '0.65rem',
+    color: 'rgba(255,255,255,0.2)',
+  },
+  adTitle: {
+    fontSize: '0.84rem',
+    fontWeight: '850',
+    color: '#ffffff',
+    margin: '0 0 0.25rem 0',
+  },
+  adText: {
+    fontSize: '0.68rem',
+    color: '#a3a3a3',
+    lineHeight: '1.4',
+    margin: 0,
+  },
+  adMinEntry: {
+    fontSize: '0.62rem',
+    color: '#525252',
+    fontWeight: '700',
+  },
+  adButton: {
+    padding: '0.35rem 0.75rem',
+    fontSize: '0.68rem',
+    borderRadius: '6px',
+    cursor: 'pointer',
+    background: 'rgba(255, 255, 255, 0.02)',
+    border: '1px solid rgba(255, 255, 255, 0.05)',
+    color: '#ffffff',
+  },
+  sidebarAnnounceCard: {
+    padding: '1rem',
+    borderRadius: '12px',
+    background: 'rgba(10, 10, 10, 0.4)',
+    border: '1px solid rgba(255, 255, 255, 0.05)',
+  },
+  sidebarAnnounceTitle: {
+    fontSize: '0.82rem',
+    fontWeight: '800',
+    color: '#ffffff',
+    margin: '0 0 0.75rem 0',
+    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+    paddingBottom: '0.4rem',
+  },
+  announceList: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.75rem',
+  },
+  announceItem: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: '0.5rem',
+  },
+  announceDot: {
+    width: '6px',
+    height: '6px',
+    borderRadius: '50%',
+    background: '#10b981',
+    marginTop: '0.3rem',
+    flexShrink: 0,
+  },
+  announceHeader: {
+    fontSize: '0.74rem',
+    fontWeight: '800',
+    color: '#ffffff',
+    display: 'block',
+  },
+  announceText: {
+    fontSize: '0.64rem',
+    color: '#8a8a8a',
+    lineHeight: '1.3',
+    display: 'block',
+    marginTop: '0.1rem',
   }
 };

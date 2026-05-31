@@ -30,6 +30,13 @@ export default function ProfileModule({ state }) {
   const [inspectedMember, setInspectedMember] = useState(null);
   const [inspectorTab, setInspectorTab] = useState('professional'); // professional, entrepreneur, investor, affiliate
 
+  useEffect(() => {
+    if (state.inspectedCustomer) {
+      setInspectedMember(state.inspectedCustomer);
+      state.setInspectedCustomer(null);
+    }
+  }, [state.inspectedCustomer]);
+
   // Local profile states
   const [firstName, setFirstName] = useState(customer.first_name);
   const [lastName, setLastName] = useState(customer.last_name);
