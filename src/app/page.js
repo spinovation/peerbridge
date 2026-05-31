@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { usePeerBridge } from './usePeerBridge';
 import LandingView from './components/LandingView';
 import ProfileModule from './components/ProfileModule';
@@ -30,6 +30,15 @@ export default function Home() {
     academic: false,
     job: false
   });
+
+  // Profile inspector states
+  const [inspectorTab, setInspectorTab] = useState('professional');
+  
+  useEffect(() => {
+    if (state.inspectedCustomer) {
+      setInspectorTab('professional');
+    }
+  }, [state.inspectedCustomer]);
 
   if (!state.isAuthenticated) {
     return <LandingView state={state} />;
@@ -79,6 +88,256 @@ export default function Home() {
           </div>
         )}
       </>
+    );
+  };
+
+  // Dynamic Multi-Role Profile Inspector Modal (Root Level to prevent container overlap CSS bugs)
+  const renderInspectedCustomerModal = () => {
+    const inspectedMember = state.inspectedCustomer;
+    if (!inspectedMember) return null;
+
+    const renderMemberRing = (memberCustomer, memberBasic, memberProf, memberInv, size = 120, ringWidth = 5) => {
+      const hasId = true;
+      const hasJobVal = memberProf?.experience && memberProf.experience.length > 0;
+      const hasAcadVal = memberProf?.education && memberProf.education.length > 0;
+      const hasWealthVal = memberInv?.accreditation_status || false;
+      const hasAddressAndSsn = memberBasic?.address?.trim().length > 3 && memberCustomer?.ssn?.trim().length > 0;
+
+      const colorId = hasId ? (hasAddressAndSsn ? '#d4af37' : '#00f2fe') : 'rgba(255,255,255,0.08)'; // Gold or Cyan
+      const colorJob = hasJobVal ? '#8f00ff' : 'rgba(255,255,255,0.08)'; // Purple
+      const colorAcad = hasAcadVal ? '#6366f1' : 'rgba(255,255,255,0.08)'; // Indigo
+      const colorWealth = hasWealthVal ? '#10b981' : 'rgba(255,255,255,0.08)'; // Emerald
+
+      const radius = 54;
+      const perimeter = 2 * Math.PI * radius; // 339.29
+
+      return (
+        <svg width={size} height={size} viewBox="0 0 120 120" style={{ transform: 'rotate(-90deg)', position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
+          <circle cx="60" cy="60" r={radius} fill="none" stroke="rgba(255,255,255,0.02)" strokeWidth={ringWidth - 1} />
+          {/* Tier 1: Identity */}
+          <circle cx="60" cy="60" r={radius} fill="none" stroke={colorId} strokeWidth={ringWidth} strokeDasharray="78 261" strokeDashoffset="0" strokeLinecap="round" />
+          {/* Tier 4: Wealth */}
+          <circle cx="60" cy="60" r={radius} fill="none" stroke={colorWealth} strokeWidth={ringWidth} strokeDasharray="78 261" strokeDashoffset="-85" strokeLinecap="round" />
+          {/* Tier 3: Academic */}
+          <circle cx="60" cy="60" r={radius} fill="none" stroke={colorAcad} strokeWidth={ringWidth} strokeDasharray="78 261" strokeDashoffset="-170" strokeLinecap="round" />
+          {/* Tier 2: Job */}
+          <circle cx="60" cy="60" r={radius} fill="none" stroke={colorJob} strokeWidth={ringWidth} strokeDasharray="78 261" strokeDashoffset="-255" strokeLinecap="round" />
+        </svg>
+      );
+    };
+
+    return (
+      <div style={styles.modalOverlay}>
+        <div className="glass-panel glow-accent-border animate-fade-in-up" style={styles.modalCard}>
+          
+          {/* Modal Header */}
+          <div style={styles.modalHeader}>
+            <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+              <div style={{ position: 'relative', width: '90px', height: '90px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                {renderMemberRing(inspectedMember, inspectedMember.basicProfile, inspectedMember.professionalProfile, inspectedMember.investorProfile, 90, 4.5)}
+                {inspectedMember.basicProfile?.profile_picture_url ? (
+                  <img src={inspectedMember.basicProfile.profile_picture_url} alt={inspectedMember.first_name} style={{ width: '70px', height: '70px', borderRadius: '50%', objectFit: 'cover', zIndex: 1 }} />
+                ) : (
+                  <div style={{ width: '70px', height: '70px', borderRadius: '50%', background: 'linear-gradient(135deg, #00f2fe 0%, #8f00ff 100%)', color: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem', fontWeight: '800', zIndex: 1 }}>
+                    {inspectedMember.first_name.charAt(0)}{inspectedMember.last_name.charAt(0)}
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <h3 style={styles.modalMemberName}>{inspectedMember.first_name} {inspectedMember.last_name}</h3>
+                <p style={styles.modalMemberHeadline}>{inspectedMember.professionalProfile?.headline}</p>
+                <div style={{ display: 'flex', gap: '0.35rem', marginTop: '0.4rem', flexWrap: 'wrap' }}>
+                  {inspectedMember.role_flags?.map((role) => (
+                    <span key={role} className="badge badge-verified" style={{ fontSize: '0.62rem' }}>{role}</span>
+                  ))}
+                  {inspectedMember.ssn && <span className="badge badge-admin" style={{ fontSize: '0.62rem' }}>✓ ID Verified Node</span>}
+                </div>
+              </div>
+            </div>
+
+            <button onClick={() => state.setInspectedCustomer(null)} style={styles.closeModalBtn}>✕</button>
+          </div>
+
+          {/* Modal Tab Buttons */}
+          <div style={styles.modalTabRow}>
+            <button
+              onClick={() => setInspectorTab('professional')}
+              style={inspectorTab === 'professional' ? styles.modalTabActive : styles.modalTabInactive}
+            >
+              💼 Professional Credentials
+            </button>
+
+            {inspectedMember.role_flags?.includes('Entrepreneur') && inspectedMember.entrepreneurProfile && (
+              <button
+                onClick={() => setInspectorTab('entrepreneur')}
+                style={inspectorTab === 'entrepreneur' ? styles.modalTabActive : styles.modalTabInactive}
+              >
+                🏢 Entrepreneur Portfolio
+              </button>
+            )}
+
+            {inspectedMember.role_flags?.includes('Investor') && inspectedMember.investorProfile && (
+              <button
+                onClick={() => setInspectorTab('investor')}
+                style={inspectorTab === 'investor' ? styles.modalTabActive : styles.modalTabInactive}
+              >
+                👤 Investor Profile
+              </button>
+            )}
+
+            {inspectedMember.role_flags?.includes('Affiliate') && inspectedMember.affiliateProfile && (
+              <button
+                onClick={() => setInspectorTab('affiliate')}
+                style={inspectorTab === 'affiliate' ? styles.modalTabActive : styles.modalTabInactive}
+              >
+                👥 Professional Advisory
+              </button>
+            )}
+          </div>
+
+          {/* Modal Tab Body */}
+          <div style={styles.modalBody}>
+            {inspectorTab === 'professional' && (
+              <div style={styles.modalTabBody}>
+                <div style={styles.modalSection}>
+                  <h4 style={styles.modalSecHeader}>Summary Pedigree</h4>
+                  <p style={styles.modalText}>{inspectedMember.professionalProfile?.summary || 'No summary recorded.'}</p>
+                  <p style={{ ...styles.modalText, fontStyle: 'italic', color: '#737373', marginTop: '0.5rem' }}>
+                    "{inspectedMember.basicProfile?.bio || 'No bio quote.'}"
+                  </p>
+                </div>
+
+                <div style={styles.modalSection}>
+                  <h4 style={styles.modalSecHeader}>demographics</h4>
+                  <div style={styles.demographicsGrid}>
+                    <p><strong>Nationality:</strong> {inspectedMember.basicProfile?.nationality || 'Not listed'}</p>
+                    <p><strong>SSN Credentials:</strong> {inspectedMember.ssn ? '🔒 Background checked & verified' : '⚠ Optional verification missing'}</p>
+                  </div>
+                </div>
+
+                <div style={styles.modalSection}>
+                  <h4 style={styles.modalSecHeader}>Work Ledger History</h4>
+                  {(!inspectedMember.professionalProfile?.experience || inspectedMember.professionalProfile.experience.length === 0) ? (
+                    <p style={styles.modalEmptyText}>No previous jobs logged.</p>
+                  ) : (
+                    <div style={styles.modalJobList}>
+                      {inspectedMember.professionalProfile.experience.map((job, idx) => (
+                        <div key={idx} style={styles.modalJobItem}>
+                          <div style={styles.modalJobHeader}>
+                            <strong>{job.title}</strong>
+                            <span>{job.start_date} • {job.current ? 'Present' : job.end_date}</span>
+                          </div>
+                          <span style={styles.modalJobCompany}>{job.company}</span>
+                          <p style={styles.modalJobDesc}>{job.description}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div style={styles.modalSection}>
+                  <h4 style={styles.modalSecHeader}>Education & Academics</h4>
+                  {(!inspectedMember.professionalProfile?.education || inspectedMember.professionalProfile.education.length === 0) ? (
+                    <p style={styles.modalEmptyText}>No educational credentials recorded.</p>
+                  ) : (
+                    <div style={styles.modalJobList}>
+                      {inspectedMember.professionalProfile.education.map((edu, idx) => (
+                        <div key={idx} style={styles.modalEduItem}>
+                          <strong>{edu.degree}</strong> from <span>{edu.institution}</span> ({edu.year})
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {inspectorTab === 'entrepreneur' && inspectedMember.entrepreneurProfile && (
+              <div style={styles.modalTabBody}>
+                <div style={styles.modalSection}>
+                  <h4 style={styles.modalSecHeader}>Company raising sheet</h4>
+                  <div style={styles.demographicsGrid}>
+                    <p><strong>Company Name:</strong> {inspectedMember.entrepreneurProfile.company_name}</p>
+                    <p><strong>Industry Stage:</strong> <span style={{ textTransform: 'capitalize' }}>{inspectedMember.entrepreneurProfile.business_stage}</span></p>
+                    <p><strong>Funding Goal:</strong> ${inspectedMember.entrepreneurProfile.funding_goal?.toLocaleString()}</p>
+                    <p><strong>Valuation Target:</strong> ${inspectedMember.entrepreneurProfile.valuation?.toLocaleString()}</p>
+                    <p><strong>Sector:</strong> {inspectedMember.entrepreneurProfile.industry}</p>
+                    {inspectedMember.entrepreneurProfile.pitch_deck_url && (
+                      <p>
+                        <strong>Pitch Deck:</strong>{' '}
+                        <a href={inspectedMember.entrepreneurProfile.pitch_deck_url} target="_blank" rel="noreferrer" style={{ color: '#00f2fe' }}>
+                          View S3 Document 🔗
+                        </a>
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <div style={styles.modalSection}>
+                  <h4 style={styles.modalSecHeader}>Company Overview</h4>
+                  <p style={styles.modalText}>{inspectedMember.entrepreneurProfile.company_summary || 'No overview recorded.'}</p>
+                </div>
+              </div>
+            )}
+
+            {inspectorTab === 'investor' && inspectedMember.investorProfile && (
+              <div style={styles.modalTabBody}>
+                <div style={styles.modalSection}>
+                  <h4 style={styles.modalSecHeader}>Investor profile settings</h4>
+                  <div style={styles.demographicsGrid}>
+                    <p><strong>Investor Type:</strong> <span style={{ textTransform: 'capitalize' }}>{inspectedMember.investorProfile.investor_type} Investor</span></p>
+                    <p><strong>Risk Appetite:</strong> <span style={{ textTransform: 'capitalize' }}>{inspectedMember.investorProfile.risk_appetite}</span></p>
+                    <p>
+                      <strong>Investment Limits:</strong>{' '}
+                      ${inspectedMember.investorProfile.investment_range?.min?.toLocaleString()} Min – ${inspectedMember.investorProfile.investment_range?.max?.toLocaleString()} Max
+                    </p>
+                    <p>
+                      <strong>Accreditation Status:</strong>{' '}
+                      <span style={{ color: inspectedMember.investorProfile.accreditation_status ? '#10b981' : '#f43f5e' }}>
+                        {inspectedMember.investorProfile.accreditation_status ? '✓ KYC Accredited & Vetted' : '⚠ Non-Accredited'}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+
+                {inspectedMember.investorProfile.preferred_industries && inspectedMember.investorProfile.preferred_industries.length > 0 && (
+                  <div style={styles.modalSection}>
+                    <h4 style={styles.modalSecHeader}>Preferred Industries</h4>
+                    <div style={styles.skillsTagRow}>
+                      {inspectedMember.investorProfile.preferred_industries.map((ind) => (
+                        <span key={ind} style={styles.skillTag}>{ind}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {inspectorTab === 'affiliate' && inspectedMember.affiliateProfile && (
+              <div style={styles.modalTabBody}>
+                <div style={styles.modalSection}>
+                  <h4 style={styles.modalSecHeader}>Advisory & certified services</h4>
+                  <div style={styles.demographicsGrid}>
+                    <p><strong>Advisor Classification:</strong> <span style={{ textTransform: 'capitalize' }}>{inspectedMember.affiliateProfile.entity_type} Entity</span></p>
+                    <p><strong>Firm name:</strong> {inspectedMember.affiliateProfile.firm || 'Individual Practice'}</p>
+                    <p><strong>Specialty Focus:</strong> {inspectedMember.affiliateProfile.specialty}</p>
+                    <p>
+                      <strong>Vouch Ratings:</strong>{' '}
+                      ★ <strong>{inspectedMember.affiliateProfile.rating || '5.0'}</strong> ({inspectedMember.affiliateProfile.reviews || '0'} Vouched reviews)
+                    </p>
+                  </div>
+                </div>
+
+                <div style={styles.modalSection}>
+                  <h4 style={styles.modalSecHeader}>Services bio overview</h4>
+                  <p style={styles.modalText}>{inspectedMember.affiliateProfile.bio || 'No services overview logged.'}</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     );
   };
 
@@ -1433,6 +1692,7 @@ export default function Home() {
       {/* Render Modals on overlay */}
       {showViewersModal && renderViewersModal()}
       {showImpressionsModal && renderImpressionsModal()}
+      {state.inspectedCustomer && renderInspectedCustomerModal()}
     </div>
   );
 }
@@ -1978,5 +2238,159 @@ const styles = {
     lineHeight: '1.3',
     display: 'block',
     marginTop: '0.1rem',
+  },
+  // Modal layout styles
+  modalCard: {
+    width: '720px',
+    maxWidth: '90%',
+    maxHeight: '85vh',
+    padding: '2.5rem',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1.5rem',
+    overflowY: 'auto',
+    background: 'rgba(10, 10, 10, 0.95)',
+    border: '1px solid rgba(255, 255, 255, 0.08)',
+    borderRadius: '16px',
+    boxShadow: '0 20px 50px rgba(0,0,0,0.8)',
+    position: 'relative',
+  },
+  modalHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  modalMemberName: {
+    fontSize: '1.4rem',
+    fontWeight: '800',
+    color: '#ffffff',
+  },
+  modalMemberHeadline: {
+    fontSize: '0.85rem',
+    color: '#a3a3a3',
+    marginTop: '0.15rem',
+  },
+  closeModalBtn: {
+    background: 'transparent',
+    border: 'none',
+    color: '#a3a3a3',
+    fontSize: '1rem',
+    cursor: 'pointer',
+    padding: '0.2rem',
+    transition: 'color 0.2s',
+  },
+  modalTabRow: {
+    display: 'flex',
+    gap: '0.5rem',
+    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+    paddingBottom: '0.5rem',
+  },
+  modalTabActive: {
+    background: 'rgba(255,255,255,0.03)',
+    color: '#00f2fe',
+    border: 'none',
+    padding: '0.5rem 1rem',
+    borderRadius: '4px',
+    fontSize: '0.78rem',
+    fontWeight: '700',
+    cursor: 'pointer',
+  },
+  modalTabInactive: {
+    background: 'transparent',
+    color: '#737373',
+    border: 'none',
+    padding: '0.5rem 1rem',
+    borderRadius: '4px',
+    fontSize: '0.78rem',
+    fontWeight: '550',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+  },
+  modalBody: {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1.25rem',
+  },
+  modalTabBody: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1.5rem',
+  },
+  modalSection: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.5rem',
+  },
+  modalSecHeader: {
+    fontSize: '0.7rem',
+    fontWeight: '700',
+    color: '#737373',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em',
+  },
+  modalText: {
+    fontSize: '0.82rem',
+    color: '#a3a3a3',
+    lineHeight: '1.4',
+  },
+  demographicsGrid: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr',
+    gap: '0.75rem',
+    fontSize: '0.8rem',
+    color: '#a3a3a3',
+  },
+  modalJobList: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1rem',
+  },
+  modalJobItem: {
+    background: 'rgba(255,255,255,0.01)',
+    border: '1px solid rgba(255,255,255,0.03)',
+    borderRadius: '8px',
+    padding: '0.75rem',
+  },
+  modalJobHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    fontSize: '0.8rem',
+    color: '#ffffff',
+  },
+  modalJobCompany: {
+    fontSize: '0.72rem',
+    color: '#00f2fe',
+    display: 'block',
+    marginTop: '0.15rem',
+  },
+  modalJobDesc: {
+    fontSize: '0.74rem',
+    color: '#a3a3a3',
+    lineHeight: '1.35',
+    marginTop: '0.4rem',
+  },
+  modalEduItem: {
+    fontSize: '0.8rem',
+    color: '#a3a3a3',
+  },
+  modalEmptyText: {
+    fontSize: '0.78rem',
+    color: '#737373',
+    fontStyle: 'italic',
+  },
+  skillsTagRow: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '0.4rem',
+    marginTop: '0.2rem',
+  },
+  skillTag: {
+    fontSize: '0.68rem',
+    padding: '0.2rem 0.5rem',
+    borderRadius: '4px',
+    background: 'rgba(255, 255, 255, 0.03)',
+    border: '1px solid rgba(255, 255, 255, 0.06)',
+    color: '#a3a3a3',
   }
 };
