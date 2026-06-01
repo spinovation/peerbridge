@@ -1544,7 +1544,7 @@ export default function Home() {
               </button>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '240px 1fr', gap: '1.5rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '240px minmax(0, 1fr)', gap: '1.5rem' }}>
               {/* Left Column: Advanced Filters Sidebar */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '10px' }}>
                 <h3 style={{ fontSize: '0.82rem', fontWeight: '800', color: '#ffffff', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.5rem', margin: 0 }}>
@@ -3334,7 +3334,7 @@ const styles = {
   mainLayout: {
     flex: 1,
     display: 'grid',
-    gridTemplateColumns: '260px 1fr 300px',
+    gridTemplateColumns: '260px minmax(0, 1fr) 300px',
     maxWidth: '1600px',
     width: '100%',
     margin: '0 auto',

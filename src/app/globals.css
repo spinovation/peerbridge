@@ -270,7 +270,7 @@ a:hover {
 /* 1. Large Laptops / Desktops (up to 1400px) */
 @media (max-width: 1400px) {
   .main-layout-responsive {
-    grid-template-columns: 240px 1fr 280px !important;
+    grid-template-columns: 240px minmax(0, 1fr) 280px !important;
     gap: 1.5rem !important;
     padding: 1.5rem 1rem !important;
   }
@@ -285,7 +285,7 @@ a:hover {
 /* 2. Small Laptops / Tablets Landscape (up to 1200px) */
 @media (max-width: 1200px) {
   .main-layout-responsive {
-    grid-template-columns: 240px 1fr !important; /* Hide right sidebar to prevent overlapping content */
+    grid-template-columns: 240px minmax(0, 1fr) !important; /* Hide right sidebar to prevent overlapping content */
     gap: 1.5rem !important;
   }
   .right-sidebar-responsive {
@@ -313,7 +313,7 @@ a:hover {
 /* 3. Tablets Portrait (up to 992px) */
 @media (max-width: 992px) {
   .main-layout-responsive {
-    grid-template-columns: 1fr !important; /* Single column stack */
+    grid-template-columns: minmax(0, 1fr) !important; /* Single column stack */
     gap: 2rem !important;
   }
   .left-sidebar-responsive {
