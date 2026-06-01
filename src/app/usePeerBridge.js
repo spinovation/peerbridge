@@ -1207,7 +1207,17 @@ export function usePeerBridge() {
       const entVal = safeParse('pb_ent', INITIAL_ENTREPRENEUR_PROFILE);
       const invVal = safeParse('pb_inv_prof', INITIAL_INVESTOR_PROFILE);
       const affVal = safeParse('pb_aff_prof', INITIAL_AFFILIATE_PROFILE);
-      const dirVal = safeParse('pb_directory', INITIAL_DIRECTORY);
+      
+      // Self-healing directory merge to guarantee all initial members exist (prevents stale local storage issues)
+      const rawDirVal = safeParse('pb_directory', INITIAL_DIRECTORY);
+      const dirVal = [...rawDirVal];
+      INITIAL_DIRECTORY.forEach(initMember => {
+        const exists = dirVal.some(m => m.email.toLowerCase() === initMember.email.toLowerCase());
+        if (!exists) {
+          dirVal.push(initMember);
+        }
+      });
+
       const settingsVal = safeParse('pb_settings', INITIAL_SETTINGS);
       const campaignsVal = safeParse('pb_campaigns', DEFAULT_CAMPAIGNS);
       const invitesVal = safeParse('pb_invites', DEFAULT_INVITES);
@@ -1284,8 +1294,28 @@ export function usePeerBridge() {
             if (dirSnap.exists()) {
               const dirData = dirSnap.data();
               if (dirData && Array.isArray(dirData.members)) {
-                setDirectory(dirData.members);
-                localStorage.setItem('pb_directory', JSON.stringify(dirData.members));
+                // Self-healing merge with INITIAL_DIRECTORY (prevents stale Firestore overrides)
+                const mergedMembers = [...dirData.members];
+                let healed = false;
+                INITIAL_DIRECTORY.forEach(initMember => {
+                  const exists = mergedMembers.some(m => m.email.toLowerCase() === initMember.email.toLowerCase());
+                  if (!exists) {
+                    mergedMembers.push(initMember);
+                    healed = true;
+                  }
+                });
+                setDirectory(mergedMembers);
+                localStorage.setItem('pb_directory', JSON.stringify(mergedMembers));
+                
+                // If healed, proactively write back to Firestore to update the database
+                if (healed) {
+                  try {
+                    await setDoc(dirRef, { members: mergedMembers }, { merge: true });
+                    console.log("Successfully healed global directory in Firestore with missing members!");
+                  } catch (e) {
+                    console.warn("Failed to write healed directory to Firestore:", e);
+                  }
+                }
               }
             }
           } catch (err) {
