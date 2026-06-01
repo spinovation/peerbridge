@@ -26,6 +26,7 @@ export default function Home() {
   const [activeChatRecipient, setActiveChatRecipient] = useState(null);
   const [chatInputText, setChatInputText] = useState('');
   const [chatThreads, setChatThreads] = useState({});
+  const [chatSearchQuery, setChatSearchQuery] = useState('');
 
   // Sync chats with localStorage
   useEffect(() => {
@@ -1363,6 +1364,14 @@ export default function Home() {
       state.connections.includes(member.customer_id)
     );
 
+    const filteredConnections = connectionMembers.filter(member => {
+      if (!chatSearchQuery.trim()) return false;
+      const fullName = `${member.first_name} ${member.last_name}`.toLowerCase();
+      const headline = (member.professionalProfile?.headline || '').toLowerCase();
+      const queryWords = chatSearchQuery.toLowerCase().split(/\s+/).filter(Boolean);
+      return queryWords.every(word => fullName.includes(word) || headline.includes(word));
+    });
+
     return (
       <div 
         className="glass-panel" 
@@ -1421,54 +1430,90 @@ export default function Home() {
         {chatExpanded && (
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: 'rgba(0,0,0,0.2)' }}>
             {!activeChatRecipient ? (
-              <div style={{ flex: 1, overflowY: 'auto', padding: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-                <div style={{ fontSize: '0.64rem', color: '#525252', fontWeight: '800', textTransform: 'uppercase', padding: '0.25rem' }}>
-                  Select Connection to Chat
-                </div>
-                {connectionMembers.length === 0 ? (
-                  <div style={{ padding: '2rem 1rem', textShadow: 'none', textAlign: 'center', fontSize: '0.72rem', color: '#525252' }}>
-                    No connections synced. Go to the Network Directory or Ecosystem Search to connect with nodes.
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: '0.5rem', gap: '0.35rem' }}>
+                <div style={{ padding: '0.25rem 0.25rem 0.5rem 0.25rem', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                  <div style={{ fontSize: '0.64rem', color: '#8a8a8a', fontWeight: '800', textTransform: 'uppercase' }}>
+                    Select Connection to Chat
                   </div>
-                ) : (
-                  connectionMembers.map(member => {
-                    const latestMsg = chatThreads[member.customer_id]?.slice(-1)[0];
-                    return (
-                      <div
-                        key={member.customer_id}
-                        onClick={() => setActiveChatRecipient(member)}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '0.65rem',
-                          padding: '0.5rem',
-                          borderRadius: '8px',
-                          background: 'rgba(255,255,255,0.01)',
-                          border: '1px solid rgba(255,255,255,0.03)',
-                          cursor: 'pointer',
-                          transition: 'background 0.2s'
-                        }}
-                        onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}
-                        onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.01)'}
-                      >
-                        <div style={{ width: '32px', height: '32px', borderRadius: '50%', overflow: 'hidden', background: '#111', flexShrink: 0, position: 'relative' }}>
-                          <img 
-                            src={member.basicProfile?.profile_picture_url || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop&q=80'} 
-                            alt={member.first_name}
-                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                          />
+                  <input
+                    type="text"
+                    placeholder="🔍 Search connection name..."
+                    value={chatSearchQuery}
+                    onChange={(e) => setChatSearchQuery(e.target.value)}
+                    style={{
+                      width: '100%',
+                      background: 'rgba(255,255,255,0.03)',
+                      border: '1px solid rgba(255,255,255,0.08)',
+                      borderRadius: '6px',
+                      padding: '0.35rem 0.65rem',
+                      color: '#ffffff',
+                      fontSize: '0.75rem',
+                      outline: 'none',
+                      transition: 'border 0.2s'
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = 'rgba(0, 242, 254, 0.4)'}
+                    onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.08)'}
+                  />
+                </div>
+                
+                <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.35rem', marginTop: '0.25rem' }}>
+                  {connectionMembers.length === 0 ? (
+                    <div style={{ padding: '2rem 1rem', textShadow: 'none', textAlign: 'center', fontSize: '0.72rem', color: '#525252' }}>
+                      No connections synced. Go to the Network Directory or Ecosystem Search to connect with nodes.
+                    </div>
+                  ) : !chatSearchQuery.trim() ? (
+                    <div style={{ padding: '3rem 1rem', textShadow: 'none', textAlign: 'center', fontSize: '0.72rem', color: '#737373', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
+                      <span style={{ fontSize: '1.25rem' }}>🔍</span>
+                      <span>Type a connection's name to start a chat...</span>
+                    </div>
+                  ) : filteredConnections.length === 0 ? (
+                    <div style={{ padding: '2rem 1rem', textShadow: 'none', textAlign: 'center', fontSize: '0.72rem', color: '#737373' }}>
+                      No matching connections found.
+                    </div>
+                  ) : (
+                    filteredConnections.map(member => {
+                      const latestMsg = chatThreads[member.customer_id]?.slice(-1)[0];
+                      return (
+                        <div
+                          key={member.customer_id}
+                          onClick={() => {
+                            setActiveChatRecipient(member);
+                            setChatSearchQuery('');
+                          }}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.65rem',
+                            padding: '0.5rem',
+                            borderRadius: '8px',
+                            background: 'rgba(255,255,255,0.01)',
+                            border: '1px solid rgba(255,255,255,0.03)',
+                            cursor: 'pointer',
+                            transition: 'background 0.2s'
+                          }}
+                          onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}
+                          onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.01)'}
+                        >
+                          <div style={{ width: '32px', height: '32px', borderRadius: '50%', overflow: 'hidden', background: '#111', flexShrink: 0, position: 'relative' }}>
+                            <img 
+                              src={member.basicProfile?.profile_picture_url || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop&q=80'} 
+                              alt={member.first_name}
+                              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                            />
+                          </div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <h4 style={{ fontSize: '0.76rem', color: '#ffffff', fontWeight: '800', margin: 0 }}>
+                              {member.first_name} {member.last_name}
+                            </h4>
+                            <p style={{ fontSize: '0.64rem', color: '#8a8a8a', margin: 0, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                              {latestMsg ? latestMsg.text : member.professionalProfile?.headline || 'Peer Bridge Node'}
+                            </p>
+                          </div>
                         </div>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <h4 style={{ fontSize: '0.76rem', color: '#ffffff', fontWeight: '800', margin: 0 }}>
-                            {member.first_name} {member.last_name}
-                          </h4>
-                          <p style={{ fontSize: '0.64rem', color: '#8a8a8a', margin: 0, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
-                            {latestMsg ? latestMsg.text : member.professionalProfile?.headline || 'Peer Bridge Node'}
-                          </p>
-                        </div>
-                      </div>
-                    );
-                  })
-                )}
+                      );
+                    })
+                  )}
+                </div>
               </div>
             ) : (
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
