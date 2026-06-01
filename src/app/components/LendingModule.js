@@ -23,8 +23,16 @@ export default function LendingModule({ state }) {
   const [successMsg, setSuccessMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
 
-  const isLender = customer.role_flags?.includes('Investor') || customer.customer_id === 'dir-cust-mohit';
-  const isBorrower = customer.role_flags?.includes('Entrepreneur') || customer.customer_id === 'dir-cust-kristi';
+  const isLender = customer.email !== 'salesadmin@peerbridge.ai';
+  const isBorrower = customer.email !== 'salesadmin@peerbridge.ai';
+
+  const availableBorrowers = directory.filter(m => m.role_flags?.includes('Entrepreneur') && m.customer_id !== customer.customer_id);
+
+  useEffect(() => {
+    if (availableBorrowers.length > 0 && (!targetBorrowerId || !availableBorrowers.some(b => b.customer_id === targetBorrowerId))) {
+      setTargetBorrowerId(availableBorrowers[0].customer_id);
+    }
+  }, [directory, customer]);
 
   // Find loans relevant to this user
   const userLoans = loans.filter(l => 
@@ -158,7 +166,14 @@ export default function LendingModule({ state }) {
                     onChange={(e) => setTargetBorrowerId(e.target.value)}
                     style={styles.select}
                   >
-                    <option value="dir-cust-kristi">Kristi Tonin (Tonin Logistics) - Tier 1 Credit Score</option>
+                    {availableBorrowers.map(m => (
+                      <option key={m.customer_id} value={m.customer_id}>
+                        {m.first_name} {m.last_name} ({m.entrepreneurProfile?.company_name || 'Ecosystem Founder'}) - Tier 1 Credit Score
+                      </option>
+                    ))}
+                    {availableBorrowers.length === 0 && (
+                      <option value="dir-cust-kristi">Kristi Tonin (Tonin Logistics) - Tier 1 Credit Score</option>
+                    )}
                   </select>
                 </div>
 

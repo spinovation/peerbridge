@@ -341,7 +341,7 @@ const INITIAL_DIRECTORY = [
   },
   {
     customer_id: 'dir-cust-mohit',
-    email: 'mohit@peerbridge.ai',
+    email: 'mohit@mehraventures.com',
     first_name: 'Mohit',
     last_name: 'Mehra',
     phone: '+1 (555) 304-4712',
@@ -378,7 +378,7 @@ const INITIAL_DIRECTORY = [
   },
   {
     customer_id: 'dir-cust-kristi',
-    email: 'kristi@peerbridge.ai',
+    email: 'kristi@toninlogistics.com',
     first_name: 'Kristi',
     last_name: 'Tonin',
     phone: '+1 (555) 772-9901',
@@ -2288,12 +2288,17 @@ export function usePeerBridge() {
     if (isNaN(p) || p <= 0) return { success: false, error: 'Invalid principal amount.' };
     if (isNaN(r) || r <= 0) return { success: false, error: 'Invalid interest rate.' };
 
+    const lenderMember = directory.find(m => m.customer_id === lenderId) || (customer?.customer_id === lenderId ? customer : null);
+    const borrowerMember = directory.find(m => m.customer_id === borrowerId) || (customer?.customer_id === borrowerId ? customer : null);
+    const lenderName = lenderMember ? `${lenderMember.first_name} ${lenderMember.last_name}`.trim() : "Mohit Mehra";
+    const borrowerName = borrowerMember ? `${borrowerMember.first_name} ${borrowerMember.last_name}`.trim() : "Kristi Tonin";
+
     const newLoan = {
       loan_id: generateRandomId('loan'),
       lender_id: lenderId,
       borrower_id: borrowerId,
-      lender_name: "Mohit Mehra",
-      borrower_name: "Kristi Tonin",
+      lender_name: lenderName,
+      borrower_name: borrowerName,
       principal: p,
       rate: r,
       lender_yield_rate: 6.0,
@@ -2302,12 +2307,12 @@ export function usePeerBridge() {
       created_at: new Date().toISOString(),
       countered_rate: null,
       upfront_fee: p * 0.015,
-      total_payback: 537.50
+      total_payback: p * (1 + r / 100)
     };
 
     const updatedLoans = [...loans, newLoan];
     sync('pb_loans', updatedLoans, setLoans);
-    addNotification('Lending', `Successfully submitted P2P debt funding offer of $${p.toLocaleString()} to Kristi Tonin.`);
+    addNotification('Lending', `Successfully submitted P2P debt funding offer of $${p.toLocaleString()} to ${borrowerName}.`);
     return { success: true, loan: newLoan };
   };
 

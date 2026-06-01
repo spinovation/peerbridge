@@ -191,13 +191,15 @@ export default function EntrepreneurModule({ state }) {
           <h2 style={styles.title}>Ecosystem Business Portal</h2>
           <p style={styles.sub}>Draft business analytical plans, launch private investment offerings, and track equity distributions.</p>
         </div>
-        <button
-          onClick={() => setShowLauncher(!showLauncher)}
-          className="btn-primary"
-          style={styles.launchBtn}
-        >
-          {showLauncher ? 'View Company Portals' : '🚀 Launch Capital Round'}
-        </button>
+        {(myCampaigns.length > 0 || showLauncher) && (
+          <button
+            onClick={() => setShowLauncher(!showLauncher)}
+            className="btn-primary"
+            style={styles.launchBtn}
+          >
+            {showLauncher ? 'View Company Portals' : '🚀 Launch Capital Round'}
+          </button>
+        )}
       </div>
 
       {success && (
@@ -433,14 +435,39 @@ export default function EntrepreneurModule({ state }) {
             {myCampaigns.length === 0 ? (
               <div className="glass-panel" style={styles.emptyCard}>
                 <h3>No Registered Campaigns</h3>
-                <p>{"You have not launched any Reg CF capital rounds yet. Click 'Launch Capital Round' to begin raising."}</p>
-                <button
-                  onClick={() => setShowLauncher(true)}
-                  className="btn-primary"
-                  style={{ marginTop: '1rem' }}
-                >
-                  Get Started
-                </button>
+                <p>You have not launched any Reg CF capital rounds or P2P commercial note lending requests yet.</p>
+                <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '1.25rem', flexWrap: 'wrap' }}>
+                  <button
+                    onClick={() => {
+                      setOfferingType('equity');
+                      setShowLauncher(true);
+                    }}
+                    className="btn-primary"
+                  >
+                    🚀 Launch Capital Round
+                  </button>
+                  <button
+                    onClick={() => {
+                      setOfferingType('debt');
+                      setShowLauncher(true);
+                    }}
+                    className="btn-secondary"
+                    style={{ 
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      color: '#ffffff',
+                      padding: '0.65rem 1.25rem',
+                      borderRadius: '6px',
+                      fontSize: '0.9rem',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                    className="btn-hover-effect"
+                  >
+                    🏛️ Launch Lending Request
+                  </button>
+                </div>
               </div>
             ) : (
               myCampaigns.map((camp) => {
