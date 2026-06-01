@@ -365,4 +365,41 @@ a:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
+/* Peer Bridge Landing Page Interactive Micro-Animations */
+.feature-pill-interactive {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.feature-pill-interactive:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(0, 242, 254, 0.3) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 242, 254, 0.08);
+}
 
+.offering-card-interactive {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.offering-card-interactive:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+}
+.offering-card-interactive:hover .lock-overlay-interactive {
+  opacity: 1 !important;
+}
+
+.lock-overlay-interactive {
+  position: absolute;
+  inset: 0;
+  background: rgba(7, 9, 14, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  z-index: 10;
+}

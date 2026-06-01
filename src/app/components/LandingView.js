@@ -83,11 +83,11 @@ export default function LandingView({ state }) {
       <main style={styles.main}>
         <section style={styles.heroSection}>
           <h1 style={styles.heroTitle}>
-            The Secure Bridge to <br/>
-            <span style={styles.gradientText}>Private Equity Funding</span>
+            The Private Debt, Equity & <br/>
+            <span style={styles.gradientText}>AI Brokerage Ecosystem</span>
           </h1>
           <p style={styles.heroSub}>
-            Connecting visionaries, accredited investors, and regulatory affiliates in an exclusive, vetted P2P ecosystem that unites advanced professional networking, detailed business analytics, and a private capital marketplace.
+            A comprehensive capital market combining SEC-compliant Reg CF/D Equity campaigns, P2P Commercial Debt syndicates with ADP & Plaid underwriting bypass, and autonomous AI-agent brokerages securing real-time contract negotiations.
           </p>
 
           {/* Quick Metrics */}
@@ -103,6 +103,26 @@ export default function LandingView({ state }) {
             <div style={styles.metricCard}>
               <span style={styles.metricVal}>99.4%</span>
               <span style={styles.metricLabel}>KYC Verification Rate</span>
+            </div>
+          </div>
+
+          {/* Feature Grid */}
+          <div style={styles.featureGrid}>
+            <div className="feature-pill-interactive" style={styles.featurePill}>
+              <span style={styles.featureIcon}>🏛️</span>
+              <span>P2P Commercial Debt Notes</span>
+            </div>
+            <div className="feature-pill-interactive" style={styles.featurePill}>
+              <span style={styles.featureIcon}>🚀</span>
+              <span>SAFE & Equity Campaigns</span>
+            </div>
+            <div className="feature-pill-interactive" style={styles.featurePill}>
+              <span style={styles.featureIcon}>⚡</span>
+              <span>ADP/Paychex Underwrite Bypass</span>
+            </div>
+            <div className="feature-pill-interactive" style={styles.featurePill}>
+              <span style={styles.featureIcon}>🤖</span>
+              <span>Autonomous AI Brokerage</span>
             </div>
           </div>
         </section>
@@ -330,10 +350,10 @@ export default function LandingView({ state }) {
           {state.campaigns.map((camp) => {
             const pct = Math.min(100, Math.round((camp.raised / camp.target) * 100));
             return (
-              <div key={camp.id} className="glass-panel" style={styles.offeringCard}>
+              <div key={camp.id} className="glass-panel offering-card-interactive" style={styles.offeringCard}>
                 <div style={styles.offeringHeader}>
                   <span style={styles.offeringCategory}>{camp.category}</span>
-                  <span style={styles.offeringStatus}>Active Offer</span>
+                  <span style={styles.offeringStatus}>{camp.offering_type === 'debt' ? '⚡ Active Note' : '🚀 Active Offer'}</span>
                 </div>
                 <h3 style={styles.companyName}>{camp.companyName}</h3>
                 <p style={styles.tagline}>{camp.tagline}</p>
@@ -349,21 +369,40 @@ export default function LandingView({ state }) {
                 </div>
 
                 <div style={styles.offeringFooter}>
-                  <div>
-                    <span style={styles.labelMuted}>Share Price</span>
-                    <p style={styles.footerVal}>${camp.sharePrice.toFixed(2)}</p>
-                  </div>
-                  <div>
-                    <span style={styles.labelMuted}>Min Invest</span>
-                    <p style={styles.footerVal}>${camp.minInvestment.toLocaleString()}</p>
-                  </div>
-                  <div>
-                    <span style={styles.labelMuted}>Valuation</span>
-                    <p style={styles.footerVal}>${(camp.valuation / 1000000).toFixed(2)}M</p>
-                  </div>
+                  {camp.offering_type === 'debt' ? (
+                    <>
+                      <div>
+                        <span style={styles.labelMuted}>Target Yield</span>
+                        <p style={styles.footerVal}>{camp.interest_rate.toFixed(1)}% APY</p>
+                      </div>
+                      <div>
+                        <span style={styles.labelMuted}>Term</span>
+                        <p style={styles.footerVal}>{camp.term_months} Months</p>
+                      </div>
+                      <div>
+                        <span style={styles.labelMuted}>Min Invest</span>
+                        <p style={styles.footerVal}>${camp.minInvestment.toLocaleString()}</p>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div>
+                        <span style={styles.labelMuted}>Share Price</span>
+                        <p style={styles.footerVal}>${camp.sharePrice.toFixed(2)}</p>
+                      </div>
+                      <div>
+                        <span style={styles.labelMuted}>Min Invest</span>
+                        <p style={styles.footerVal}>${camp.minInvestment.toLocaleString()}</p>
+                      </div>
+                      <div>
+                        <span style={styles.labelMuted}>Valuation</span>
+                        <p style={styles.footerVal}>${(camp.valuation / 1000000).toFixed(2)}M</p>
+                      </div>
+                    </>
+                  )}
                 </div>
 
-                <div style={styles.lockOverlay}>
+                <div className="lock-overlay-interactive" style={styles.lockOverlay}>
                   <span style={styles.lockText}>🔒 Invite Verification Required to Invest</span>
                 </div>
               </div>
@@ -450,12 +489,45 @@ const styles = {
     fontWeight: '800',
   },
   gradientText: {
-    color: '#ffffff',
+    background: 'linear-gradient(135deg, #00f2fe 0%, #4facfe 100%)',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    display: 'inline-block',
   },
   heroSub: {
     fontSize: '1.15rem',
     color: '#94a3b8',
     maxWidth: '540px',
+  },
+  featureGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(2, 1fr)',
+    gap: '0.75rem',
+    marginTop: '2.5rem',
+    maxWidth: '540px',
+  },
+  featurePill: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.65rem',
+    background: 'rgba(255, 255, 255, 0.02)',
+    border: '1px solid rgba(255, 255, 255, 0.06)',
+    borderRadius: '12px',
+    padding: '0.75rem 1rem',
+    fontSize: '0.85rem',
+    fontWeight: '600',
+    color: '#ffffff',
+    backdropFilter: 'blur(8px)',
+  },
+  featureIcon: {
+    fontSize: '1.1rem',
+    background: 'linear-gradient(135deg, rgba(0, 242, 254, 0.1) 0%, rgba(79, 172, 254, 0.1) 100%)',
+    padding: '0.25rem',
+    borderRadius: '6px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    border: '1px solid rgba(0, 242, 254, 0.15)',
   },
   metricsContainer: {
     display: 'grid',
