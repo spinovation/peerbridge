@@ -2339,9 +2339,16 @@ export default function Home() {
         {/* Column 1: Logo & Adjacent Home Anchor */}
         <div style={styles.headerLeftGroup}>
           <div 
-            style={{ ...styles.logoRow, cursor: 'pointer' }} 
-            onClick={() => state.setActiveModule('portfolio')} 
-            title="Return to Ecosystem Home"
+            style={{ 
+              ...styles.logoRow, 
+              cursor: state.customer?.email === 'salesadmin@peerbridge.ai' ? 'default' : 'pointer' 
+            }} 
+            onClick={() => {
+              if (state.customer?.email !== 'salesadmin@peerbridge.ai') {
+                state.setActiveModule('portfolio');
+              }
+            }} 
+            title={state.customer?.email === 'salesadmin@peerbridge.ai' ? undefined : "Return to Ecosystem Home"}
           >
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               <h1 className="logo-text-responsive" style={styles.logoText}>PEER BRIDGE</h1>
@@ -2350,93 +2357,99 @@ export default function Home() {
           </div>
 
           {/* Quick Home Access adjacent to Logo */}
-          <button 
-            onClick={() => state.setActiveModule('portfolio')} 
-            style={state.activeModule === 'portfolio' ? styles.homeBtnActive : styles.homeBtn}
-            title="Go to Ecosystem Home Feed"
-          >
-            🏠 Home
-          </button>
+          {state.customer?.email !== 'salesadmin@peerbridge.ai' && (
+            <button 
+              onClick={() => state.setActiveModule('portfolio')} 
+              style={state.activeModule === 'portfolio' ? styles.homeBtnActive : styles.homeBtn}
+              title="Go to Ecosystem Home Feed"
+            >
+              🏠 Home
+            </button>
+          )}
 
           {/* Sleek Global Search Bar next to Logo/Home */}
-          <div className="search-bar-container-responsive" style={styles.searchBarContainer}>
-            <span style={styles.searchIcon}>🔍</span>
-            <input
-              type="text"
-              placeholder="Search people, offerings, advisors..."
-              value={state.globalSearchQuery}
-              onChange={(e) => {
-                state.setGlobalSearchQuery(e.target.value);
-                if (state.activeModule !== 'search') {
-                  state.setActiveModule('search');
-                }
-              }}
-              onFocus={() => {
-                if (state.activeModule !== 'search') {
-                  state.setActiveModule('search');
-                }
-              }}
-              style={styles.searchInput}
-            />
-          </div>
+          {state.customer?.email !== 'salesadmin@peerbridge.ai' && (
+            <div className="search-bar-container-responsive" style={styles.searchBarContainer}>
+              <span style={styles.searchIcon}>🔍</span>
+              <input
+                type="text"
+                placeholder="Search people, offerings, advisors..."
+                value={state.globalSearchQuery}
+                onChange={(e) => {
+                  state.setGlobalSearchQuery(e.target.value);
+                  if (state.activeModule !== 'search') {
+                    state.setActiveModule('search');
+                  }
+                }}
+                onFocus={() => {
+                  if (state.activeModule !== 'search') {
+                    state.setActiveModule('search');
+                  }
+                }}
+                style={styles.searchInput}
+              />
+            </div>
+          )}
         </div>
 
         {/* Column 2: Center Ecosystem Horizontal Navigation */}
-        <nav className="header-nav-responsive" style={styles.headerNav}>
-          <button
-            onClick={() => state.setActiveModule('entrepreneur')}
-            className="header-nav-btn-responsive"
-            style={state.activeModule === 'entrepreneur' ? styles.headerNavBtnActive : styles.headerNavBtn}
-          >
-            <span>🚀</span>
-            <span>Founder Hub</span>
-            {state.activeModule === 'entrepreneur' && <div style={styles.activeIndicator} />}
-          </button>
+        {state.customer?.email !== 'salesadmin@peerbridge.ai' && (
+          <nav className="header-nav-responsive" style={styles.headerNav}>
+            <button
+              onClick={() => state.setActiveModule('entrepreneur')}
+              className="header-nav-btn-responsive"
+              style={state.activeModule === 'entrepreneur' ? styles.headerNavBtnActive : styles.headerNavBtn}
+            >
+              <span>🚀</span>
+              <span>Founder Hub</span>
+              {state.activeModule === 'entrepreneur' && <div style={styles.activeIndicator} />}
+            </button>
 
-          <button
-            onClick={() => state.setActiveModule('affiliate')}
-            className="header-nav-btn-responsive"
-            style={state.activeModule === 'affiliate' ? styles.headerNavBtnActive : styles.headerNavBtn}
-          >
-            <span>👥</span>
-            <span>Advisory</span>
-            {state.activeModule === 'affiliate' && <div style={styles.activeIndicator} />}
-          </button>
+            <button
+              onClick={() => state.setActiveModule('affiliate')}
+              className="header-nav-btn-responsive"
+              style={state.activeModule === 'affiliate' ? styles.headerNavBtnActive : styles.headerNavBtn}
+            >
+              <span>👥</span>
+              <span>Advisory</span>
+              {state.activeModule === 'affiliate' && <div style={styles.activeIndicator} />}
+            </button>
 
-          <button
-            onClick={() => state.setActiveModule('banking')}
-            className="header-nav-btn-responsive"
-            style={state.activeModule === 'banking' ? styles.headerNavBtnActive : styles.headerNavBtn}
-          >
-            <span>🏛</span>
-            <span>Wallet</span>
-            {state.activeModule === 'banking' && <div style={styles.activeIndicator} />}
-          </button>
+            <button
+              onClick={() => state.setActiveModule('banking')}
+              className="header-nav-btn-responsive"
+              style={state.activeModule === 'banking' ? styles.headerNavBtnActive : styles.headerNavBtn}
+            >
+              <span>🏛</span>
+              <span>Wallet</span>
+              {state.activeModule === 'banking' && <div style={styles.activeIndicator} />}
+            </button>
 
-          <button
-            onClick={() => state.setActiveModule('documents')}
-            className="header-nav-btn-responsive"
-            style={state.activeModule === 'documents' ? styles.headerNavBtnActive : styles.headerNavBtn}
-          >
-            <span>🛡</span>
-            <span>Vault</span>
-            {state.activeModule === 'documents' && <div style={styles.activeIndicator} />}
-          </button>
+            <button
+              onClick={() => state.setActiveModule('documents')}
+              className="header-nav-btn-responsive"
+              style={state.activeModule === 'documents' ? styles.headerNavBtnActive : styles.headerNavBtn}
+            >
+              <span>🛡</span>
+              <span>Vault</span>
+              {state.activeModule === 'documents' && <div style={styles.activeIndicator} />}
+            </button>
 
-          <button
-            onClick={() => state.setActiveModule('tax')}
-            className="header-nav-btn-responsive"
-            style={state.activeModule === 'tax' ? styles.headerNavBtnActive : styles.headerNavBtn}
-          >
-            <span>📄</span>
-            <span>Taxes</span>
-            {state.activeModule === 'tax' && <div style={styles.activeIndicator} />}
-          </button>
-        </nav>
+            <button
+              onClick={() => state.setActiveModule('tax')}
+              className="header-nav-btn-responsive"
+              style={state.activeModule === 'tax' ? styles.headerNavBtnActive : styles.headerNavBtn}
+            >
+              <span>📄</span>
+              <span>Taxes</span>
+              {state.activeModule === 'tax' && <div style={styles.activeIndicator} />}
+            </button>
+          </nav>
+        )}
 
         {/* Column 3: Header Controls (Right side) */}
         <div style={styles.headerRightActions}>
-          {(state.user.role === 'Sales Admin' || state.customer?.email === 'sarah@skynet-rebel.io') && (
+          {state.customer?.email === 'salesadmin@peerbridge.ai' && (
             <button 
               onClick={() => state.setActiveModule('admin')} 
               style={state.activeModule === 'admin' ? styles.adminBtnActive : styles.adminBtn}
@@ -2447,371 +2460,377 @@ export default function Home() {
           )}
 
           {/* Connection Simulator Panel */}
-          <div style={{ position: 'relative', display: 'inline-block' }}>
-            <button
-              onClick={() => {
-                setShowSimulatorDropdown(!showSimulatorDropdown);
-                setShowNotificationsDropdown(false);
-              }}
-              style={{
-                background: isFirebaseConfigured ? 'rgba(16, 185, 129, 0.05)' : 'rgba(212, 175, 55, 0.05)',
-                border: isFirebaseConfigured ? '1px solid rgba(16, 185, 129, 0.2)' : '1px solid rgba(212, 175, 55, 0.2)',
-                color: isFirebaseConfigured ? '#10b981' : '#d4af37',
-                padding: '0.45rem 0.85rem',
-                borderRadius: '6px',
-                fontSize: '0.7rem',
-                fontWeight: '700',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.35rem',
-                transition: 'all 0.2s',
-                height: '32px'
-              }}
-              title="Ecosystem Sync & Simulator Panel"
-            >
-              <span className="pulse-indicator" style={{
-                width: '6px',
-                height: '6px',
-                borderRadius: '50%',
-                background: isFirebaseConfigured ? '#10b981' : '#d4af37',
-                display: 'inline-block',
-                boxShadow: isFirebaseConfigured ? '0 0 8px #10b981' : '0 0 8px #d4af37'
-              }} />
-              <span>{isFirebaseConfigured ? 'Live Cloud Sync' : 'Sandbox Simulator'}</span>
-            </button>
-            
-            {showSimulatorDropdown && (
-              <div
-                className="glass-panel"
-                style={{
-                  position: 'absolute',
-                  top: '40px',
-                  right: '0',
-                  width: '280px',
-                  background: 'rgba(10, 10, 10, 0.98)',
-                  backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  borderRadius: '12px',
-                  boxShadow: '0 20px 25px -5px rgba(0,0,0,0.5), 0 10px 10px -5px rgba(0,0,0,0.4)',
-                  padding: '1rem',
-                  zIndex: 10001,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '0.75rem'
+          {state.customer?.email !== 'salesadmin@peerbridge.ai' && (
+            <div style={{ position: 'relative', display: 'inline-block' }}>
+              <button
+                onClick={() => {
+                  setShowSimulatorDropdown(!showSimulatorDropdown);
+                  setShowNotificationsDropdown(false);
                 }}
+                style={{
+                  background: isFirebaseConfigured ? 'rgba(16, 185, 129, 0.05)' : 'rgba(212, 175, 55, 0.05)',
+                  border: isFirebaseConfigured ? '1px solid rgba(16, 185, 129, 0.2)' : '1px solid rgba(212, 175, 55, 0.2)',
+                  color: isFirebaseConfigured ? '#10b981' : '#d4af37',
+                  padding: '0.45rem 0.85rem',
+                  borderRadius: '6px',
+                  fontSize: '0.7rem',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                  transition: 'all 0.2s',
+                  height: '32px'
+                }}
+                title="Ecosystem Sync & Simulator Panel"
               >
-                <div style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '0.5rem' }}>
-                  <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#ffffff', display: 'block' }}>
-                    🛠 Sandbox Sync Console
-                  </span>
-                  <span style={{ fontSize: '0.62rem', color: '#a3a3a3', marginTop: '0.1rem', display: 'block', lineHeight: '1.2' }}>
-                    {isFirebaseConfigured 
-                      ? 'Live Cloud Firestore sync active. Multi-tab refresh is supported.' 
-                      : 'Offline Mode: Browsers block cross-tab storage. Use simulation triggers to verify flows.'
-                    }
-                  </span>
-                </div>
-                
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                  <span style={{ fontSize: '0.62rem', fontWeight: '700', color: '#8b5cf6', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
-                    Test Connection Handshakes
-                  </span>
-                  
-                  <button
-                    onClick={() => {
-                      state.simulateIncomingRequest('dir-cust-marcus');
-                      setShowSimulatorDropdown(false);
-                      setShowNotificationsDropdown(true);
-                    }}
-                    className="btn-secondary"
-                    style={{
-                      justifyContent: 'flex-start',
-                      padding: '0.45rem',
-                      fontSize: '0.68rem',
-                      background: 'rgba(255,255,255,0.02)',
-                      border: '1px solid rgba(255,255,255,0.06)',
-                      textAlign: 'left'
-                    }}
-                  >
-                    👋 Request from Marcus Vance
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      state.simulateIncomingRequest('dir-cust-devon');
-                      setShowSimulatorDropdown(false);
-                      setShowNotificationsDropdown(true);
-                    }}
-                    className="btn-secondary"
-                    style={{
-                      justifyContent: 'flex-start',
-                      padding: '0.45rem',
-                      fontSize: '0.68rem',
-                      background: 'rgba(255,255,255,0.02)',
-                      border: '1px solid rgba(255,255,255,0.06)',
-                      textAlign: 'left'
-                    }}
-                  >
-                    👋 Request from Devon Lane
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      state.simulateIncomingRequest('dir-cust-kofi');
-                      setShowSimulatorDropdown(false);
-                      setShowNotificationsDropdown(true);
-                    }}
-                    className="btn-secondary"
-                    style={{
-                      justifyContent: 'flex-start',
-                      padding: '0.45rem',
-                      fontSize: '0.68rem',
-                      background: 'rgba(255,255,255,0.02)',
-                      border: '1px solid rgba(255,255,255,0.06)',
-                      textAlign: 'left'
-                    }}
-                  >
-                    👋 Request from Kofi Anan
-                  </button>
-                </div>
-                
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '0.5rem' }}>
-                  <span style={{ fontSize: '0.62rem', color: '#737373' }}>
-                    Status: <strong>{isFirebaseConfigured ? '🟢 Live Firestore' : '🟡 Simulated Sandbox'}</strong>
-                  </span>
-                  {!isFirebaseConfigured && (
-                    <div style={{ background: 'rgba(212,175,55,0.03)', border: '1px solid rgba(212,175,55,0.1)', padding: '0.4rem', borderRadius: '4px', fontSize: '0.58rem', color: '#d4af37', lineHeight: '1.2' }}>
-                      To connect real database syncing, provision Firebase variables in your hosting dashboard.
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div style={{ position: 'relative', display: 'inline-block' }}>
-            <button
-              onClick={() => {
-                setShowNotificationsDropdown(!showNotificationsDropdown);
-                setShowSimulatorDropdown(false);
-              }}
-              style={{
-                background: showNotificationsDropdown ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.02)',
-                border: '1px solid rgba(255,255,255,0.05)',
-                color: '#ffffff',
-                padding: '0.45rem 0.85rem',
-                borderRadius: '6px',
-                fontSize: '0.74rem',
-                fontWeight: '700',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.35rem',
-                transition: 'all 0.2s',
-                height: '32px'
-              }}
-              title="Ecosystem Notifications center"
-            >
-              🔔
-              {(state.notifications || []).filter(n => !n.read_status).length > 0 && (
-                <span style={{
-                  background: '#f43f5e',
-                  color: '#ffffff',
-                  fontSize: '0.58rem',
-                  fontWeight: '800',
-                  borderRadius: '10px',
-                  padding: '0.05rem 0.3rem',
-                  marginLeft: '0.15rem'
-                }}>
-                  {(state.notifications || []).filter(n => !n.read_status).length}
-                </span>
-              )}
-            </button>
-            {showNotificationsDropdown && (() => {
-              const incomingRequests = (state.connectionRequests || []).filter(
-                r => r.to_id === state.customer.customer_id && r.status === 'pending'
-              );
-
-              return (
-                <div 
-                  className="glass-panel" 
+                <span className="pulse-indicator" style={{
+                  width: '6px',
+                  height: '6px',
+                  borderRadius: '50%',
+                  background: isFirebaseConfigured ? '#10b981' : '#d4af37',
+                  display: 'inline-block',
+                  boxShadow: isFirebaseConfigured ? '0 0 8px #10b981' : '0 0 8px #d4af37'
+                }} />
+                <span>{isFirebaseConfigured ? 'Live Cloud Sync' : 'Sandbox Simulator'}</span>
+              </button>
+              
+              {showSimulatorDropdown && (
+                <div
+                  className="glass-panel"
                   style={{
                     position: 'absolute',
                     top: '40px',
                     right: '0',
-                    width: '320px',
-                    maxHeight: '400px',
-                    overflowY: 'auto',
-                    background: 'rgba(10, 10, 10, 0.95)',
+                    width: '280px',
+                    background: 'rgba(10, 10, 10, 0.98)',
                     backdropFilter: 'blur(20px)',
                     border: '1px solid rgba(255, 255, 255, 0.08)',
                     borderRadius: '12px',
                     boxShadow: '0 20px 25px -5px rgba(0,0,0,0.5), 0 10px 10px -5px rgba(0,0,0,0.4)',
-                    padding: '0.75rem',
-                    zIndex: 10000,
+                    padding: '1rem',
+                    zIndex: 10001,
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: '0.5rem'
+                    gap: '0.75rem'
                   }}
                 >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.5rem', marginBottom: '0.25rem' }}>
-                    <span style={{ fontSize: '0.76rem', fontWeight: '800', color: '#ffffff' }}>Ecosystem Alerts</span>
-                    {(state.notifications || []).length > 0 && (
-                      <button
-                        onClick={() => state.clearAllNotifications()}
-                        style={{
-                          background: 'transparent',
-                          border: 'none',
-                          color: '#00f2fe',
-                          fontSize: '0.66rem',
-                          cursor: 'pointer',
-                          fontWeight: '700'
-                        }}
-                      >
-                        Clear All
-                      </button>
+                  <div style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '0.5rem' }}>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#ffffff', display: 'block' }}>
+                      🛠 Sandbox Sync Console
+                    </span>
+                    <span style={{ fontSize: '0.62rem', color: '#a3a3a3', marginTop: '0.1rem', display: 'block', lineHeight: '1.2' }}>
+                      {isFirebaseConfigured 
+                        ? 'Live Cloud Firestore sync active. Multi-tab refresh is supported.' 
+                        : 'Offline Mode: Browsers block cross-tab storage. Use simulation triggers to verify flows.'
+                      }
+                    </span>
+                  </div>
+                  
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                    <span style={{ fontSize: '0.62rem', fontWeight: '700', color: '#8b5cf6', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                      Test Connection Handshakes
+                    </span>
+                    
+                    <button
+                      onClick={() => {
+                        state.simulateIncomingRequest('dir-cust-marcus');
+                        setShowSimulatorDropdown(false);
+                        setShowNotificationsDropdown(true);
+                      }}
+                      className="btn-secondary"
+                      style={{
+                        justifyContent: 'flex-start',
+                        padding: '0.45rem',
+                        fontSize: '0.68rem',
+                        background: 'rgba(255,255,255,0.02)',
+                        border: '1px solid rgba(255,255,255,0.06)',
+                        textAlign: 'left'
+                      }}
+                    >
+                      👋 Request from Marcus Vance
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        state.simulateIncomingRequest('dir-cust-devon');
+                        setShowSimulatorDropdown(false);
+                        setShowNotificationsDropdown(true);
+                      }}
+                      className="btn-secondary"
+                      style={{
+                        justifyContent: 'flex-start',
+                        padding: '0.45rem',
+                        fontSize: '0.68rem',
+                        background: 'rgba(255,255,255,0.02)',
+                        border: '1px solid rgba(255,255,255,0.06)',
+                        textAlign: 'left'
+                      }}
+                    >
+                      👋 Request from Devon Lane
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        state.simulateIncomingRequest('dir-cust-kofi');
+                        setShowSimulatorDropdown(false);
+                        setShowNotificationsDropdown(true);
+                      }}
+                      className="btn-secondary"
+                      style={{
+                        justifyContent: 'flex-start',
+                        padding: '0.45rem',
+                        fontSize: '0.68rem',
+                        background: 'rgba(255,255,255,0.02)',
+                        border: '1px solid rgba(255,255,255,0.06)',
+                        textAlign: 'left'
+                      }}
+                    >
+                      👋 Request from Kofi Anan
+                    </button>
+                  </div>
+                  
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '0.5rem' }}>
+                    <span style={{ fontSize: '0.62rem', color: '#737373' }}>
+                      Status: <strong>{isFirebaseConfigured ? '🟢 Live Firestore' : '🟡 Simulated Sandbox'}</strong>
+                    </span>
+                    {!isFirebaseConfigured && (
+                      <div style={{ background: 'rgba(212,175,55,0.03)', border: '1px solid rgba(212,175,55,0.1)', padding: '0.4rem', borderRadius: '4px', fontSize: '0.58rem', color: '#d4af37', lineHeight: '1.2' }}>
+                        To connect real database syncing, provision Firebase variables in your hosting dashboard.
+                      </div>
                     )}
                   </div>
+                </div>
+              )}
+            </div>
+          )}
 
-                  {incomingRequests.length > 0 && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.5rem', marginBottom: '0.25rem' }}>
-                      <span style={{ fontSize: '0.68rem', fontWeight: '850', color: '#d4af37', letterSpacing: '0.05em' }}>
-                        🔑 PENDING INVITATIONS ({incomingRequests.length})
-                      </span>
-                      {incomingRequests.map((req) => (
-                        <div 
-                          key={req.id} 
+          {state.customer?.email !== 'salesadmin@peerbridge.ai' && (
+            <div style={{ position: 'relative', display: 'inline-block' }}>
+              <button
+                onClick={() => {
+                  setShowNotificationsDropdown(!showNotificationsDropdown);
+                  setShowSimulatorDropdown(false);
+                }}
+                style={{
+                  background: showNotificationsDropdown ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.02)',
+                  border: '1px solid rgba(255,255,255,0.05)',
+                  color: '#ffffff',
+                  padding: '0.45rem 0.85rem',
+                  borderRadius: '6px',
+                  fontSize: '0.74rem',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                  transition: 'all 0.2s',
+                  height: '32px'
+                }}
+                title="Ecosystem Notifications center"
+              >
+                🔔
+                {(state.notifications || []).filter(n => !n.read_status).length > 0 && (
+                  <span style={{
+                    background: '#f43f5e',
+                    color: '#ffffff',
+                    fontSize: '0.58rem',
+                    fontWeight: '800',
+                    borderRadius: '10px',
+                    padding: '0.05rem 0.3rem',
+                    marginLeft: '0.15rem'
+                  }}>
+                    {(state.notifications || []).filter(n => !n.read_status).length}
+                  </span>
+                )}
+              </button>
+              {showNotificationsDropdown && (() => {
+                const incomingRequests = (state.connectionRequests || []).filter(
+                  r => r.to_id === state.customer.customer_id && r.status === 'pending'
+                );
+
+                return (
+                  <div 
+                    className="glass-panel" 
+                    style={{
+                      position: 'absolute',
+                      top: '40px',
+                      right: '0',
+                      width: '320px',
+                      maxHeight: '400px',
+                      overflowY: 'auto',
+                      background: 'rgba(10, 10, 10, 0.95)',
+                      backdropFilter: 'blur(20px)',
+                      border: '1px solid rgba(255, 255, 255, 0.08)',
+                      borderRadius: '12px',
+                      boxShadow: '0 20px 25px -5px rgba(0,0,0,0.5), 0 10px 10px -5px rgba(0,0,0,0.4)',
+                      padding: '0.75rem',
+                      zIndex: 10000,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '0.5rem'
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.5rem', marginBottom: '0.25rem' }}>
+                      <span style={{ fontSize: '0.76rem', fontWeight: '800', color: '#ffffff' }}>Ecosystem Alerts</span>
+                      {(state.notifications || []).length > 0 && (
+                        <button
+                          onClick={() => state.clearAllNotifications()}
                           style={{
-                            background: 'rgba(212, 175, 55, 0.03)',
-                            border: '1px solid rgba(212, 175, 55, 0.12)',
-                            borderRadius: '8px',
-                            padding: '0.5rem',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: '0.4rem',
+                            background: 'transparent',
+                            border: 'none',
+                            color: '#00f2fe',
+                            fontSize: '0.66rem',
+                            cursor: 'pointer',
+                            fontWeight: '700'
                           }}
                         >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <span style={{ fontSize: '1.1rem' }}>👋</span>
-                            <div style={{ flex: 1 }}>
-                              <div style={{ fontSize: '0.74rem', fontWeight: '700', color: '#ffffff' }}>
-                                {req.from_name}
-                              </div>
-                              <div style={{ fontSize: '0.62rem', color: '#a3a3a3' }}>
-                                Wants to link secure P2P connection node.
-                              </div>
-                            </div>
-                          </div>
-                          <div style={{ display: 'flex', gap: '0.35rem' }}>
-                            <button 
-                              onClick={() => state.acceptConnectionRequest(req.id)}
-                              className="btn-primary"
-                              style={{ 
-                                flex: 1, 
-                                padding: '0.25rem', 
-                                fontSize: '0.66rem',
-                                background: '#10b981',
-                                borderColor: '#10b981',
-                                color: '#000000',
-                                fontWeight: '700',
-                                height: '24px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center'
-                              }}
-                            >
-                              Accept
-                            </button>
-                            <button 
-                              onClick={() => state.declineConnectionRequest(req.id)}
-                              className="btn-secondary"
-                              style={{ 
-                                flex: 1, 
-                                padding: '0.25rem', 
-                                fontSize: '0.66rem',
-                                borderColor: 'rgba(239, 68, 68, 0.3)',
-                                color: '#ef4444',
-                                height: '24px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center'
-                              }}
-                            >
-                              Decline
-                            </button>
-                          </div>
-                        </div>
-                      ))}
+                          Clear All
+                        </button>
+                      )}
                     </div>
-                  )}
 
-                  {(state.notifications || []).length === 0 ? (
-                    <div style={{ padding: '2rem 1rem', textAlign: 'center', fontSize: '0.72rem', color: '#525252' }}>
-                      No unread compliance or node alert logs in ledger.
-                    </div>
-                  ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                      {(state.notifications || []).map((notif) => (
-                        <div 
-                          key={notif.notification_id} 
-                          style={{
-                            background: 'rgba(255,255,255,0.01)',
-                            border: '1px solid rgba(255,255,255,0.03)',
-                            borderRadius: '8px',
-                            padding: '0.5rem',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: '0.2rem',
-                            position: 'relative'
-                          }}
-                        >
-                          <button
-                            onClick={() => state.removeNotification(notif.notification_id)}
+                    {incomingRequests.length > 0 && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.5rem', marginBottom: '0.25rem' }}>
+                        <span style={{ fontSize: '0.68rem', fontWeight: '850', color: '#d4af37', letterSpacing: '0.05em' }}>
+                          🔑 PENDING INVITATIONS ({incomingRequests.length})
+                        </span>
+                        {incomingRequests.map((req) => (
+                          <div 
+                            key={req.id} 
                             style={{
-                              position: 'absolute',
-                              top: '0.35rem',
-                              right: '0.35rem',
-                              background: 'transparent',
-                              border: 'none',
-                              color: '#525252',
-                              fontSize: '0.66rem',
-                              cursor: 'pointer',
-                              padding: '0 0.2rem'
+                              background: 'rgba(212, 175, 55, 0.03)',
+                              border: '1px solid rgba(212, 175, 55, 0.12)',
+                              borderRadius: '8px',
+                              padding: '0.5rem',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              gap: '0.4rem',
                             }}
                           >
-                            ✕
-                          </button>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                            <span style={{
-                              width: '5px',
-                              height: '5px',
-                              borderRadius: '50%',
-                              background: notif.type === 'investment' ? '#10b981' : notif.type === 'system' ? '#00f2fe' : '#8f00ff'
-                            }} />
-                            <span style={{ fontSize: '0.58rem', fontWeight: '800', textTransform: 'uppercase', color: '#8a8a8a' }}>
-                              {notif.type}
-                            </span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                              <span style={{ fontSize: '1.1rem' }}>👋</span>
+                              <div style={{ flex: 1 }}>
+                                <div style={{ fontSize: '0.74rem', fontWeight: '700', color: '#ffffff' }}>
+                                  {req.from_name}
+                                </div>
+                                <div style={{ fontSize: '0.62rem', color: '#a3a3a3' }}>
+                                  Wants to link secure P2P connection node.
+                                </div>
+                              </div>
+                            </div>
+                            <div style={{ display: 'flex', gap: '0.35rem' }}>
+                              <button 
+                                onClick={() => state.acceptConnectionRequest(req.id)}
+                                className="btn-primary"
+                                style={{ 
+                                  flex: 1, 
+                                  padding: '0.25rem', 
+                                  fontSize: '0.66rem',
+                                  background: '#10b981',
+                                  borderColor: '#10b981',
+                                  color: '#000000',
+                                  fontWeight: '700',
+                                  height: '24px',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center'
+                                }}
+                              >
+                                Accept
+                              </button>
+                              <button 
+                                onClick={() => state.declineConnectionRequest(req.id)}
+                                className="btn-secondary"
+                                style={{ 
+                                  flex: 1, 
+                                  padding: '0.25rem', 
+                                  fontSize: '0.66rem',
+                                  borderColor: 'rgba(239, 68, 68, 0.3)',
+                                  color: '#ef4444',
+                                  height: '24px',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center'
+                                }}
+                              >
+                                Decline
+                              </button>
+                            </div>
                           </div>
-                          <p style={{ fontSize: '0.7rem', color: '#ffffff', margin: 0, paddingRight: '1rem', lineHeight: '1.3' }}>
-                            {notif.message}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              );
-            })()}
-          </div>
+                        ))}
+                      </div>
+                    )}
 
-          <button 
-            onClick={() => state.setActiveModule('support')} 
-            style={state.activeModule === 'support' ? styles.supportBtnActive : styles.supportBtn}
-            title="Support Help Desk"
-          >
-            💬 Support
-          </button>
+                    {(state.notifications || []).length === 0 ? (
+                      <div style={{ padding: '2rem 1rem', textAlign: 'center', fontSize: '0.72rem', color: '#525252' }}>
+                        No unread compliance or node alert logs in ledger.
+                      </div>
+                    ) : (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                        {(state.notifications || []).map((notif) => (
+                          <div 
+                            key={notif.notification_id} 
+                            style={{
+                              background: 'rgba(255,255,255,0.01)',
+                              border: '1px solid rgba(255,255,255,0.03)',
+                              borderRadius: '8px',
+                              padding: '0.5rem',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              gap: '0.2rem',
+                              position: 'relative'
+                            }}
+                          >
+                            <button
+                              onClick={() => state.removeNotification(notif.notification_id)}
+                              style={{
+                                position: 'absolute',
+                                top: '0.35rem',
+                                right: '0.35rem',
+                                background: 'transparent',
+                                border: 'none',
+                                color: '#525252',
+                                fontSize: '0.66rem',
+                                cursor: 'pointer',
+                                padding: '0 0.2rem'
+                              }}
+                            >
+                              ✕
+                            </button>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                              <span style={{
+                                width: '5px',
+                                height: '5px',
+                                borderRadius: '50%',
+                                background: notif.type === 'investment' ? '#10b981' : notif.type === 'system' ? '#00f2fe' : '#8f00ff'
+                              }} />
+                              <span style={{ fontSize: '0.58rem', fontWeight: '800', textTransform: 'uppercase', color: '#8a8a8a' }}>
+                                {notif.type}
+                              </span>
+                            </div>
+                            <p style={{ fontSize: '0.7rem', color: '#ffffff', margin: 0, paddingRight: '1rem', lineHeight: '1.3' }}>
+                              {notif.message}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
+            </div>
+          )}
+
+          {state.customer?.email !== 'salesadmin@peerbridge.ai' && (
+            <button 
+              onClick={() => state.setActiveModule('support')} 
+              style={state.activeModule === 'support' ? styles.supportBtnActive : styles.supportBtn}
+              title="Support Help Desk"
+            >
+              💬 Support
+            </button>
+          )}
 
           <button onClick={state.logout} className="btn-secondary" style={styles.logoutBtn}>
             Sign Out
@@ -2820,7 +2839,14 @@ export default function Home() {
       </header>
 
       {/* Main Framework Layout */}
-      <div className="main-layout-responsive" style={styles.mainLayout}>
+      {state.customer?.email === 'salesadmin@peerbridge.ai' ? (
+        <div style={{ display: 'flex', flexDirection: 'column', width: '100%', maxWidth: '1400px', margin: '0 auto', padding: '1.5rem 2rem', flex: 1 }}>
+          <main style={{ width: '100%' }}>
+            {renderActiveModule()}
+          </main>
+        </div>
+      ) : (
+        <div className="main-layout-responsive" style={styles.mainLayout}>
         {/* Left Sidebar Menu (Sleek Modular Cards like LinkedIn) */}
         <aside className="left-sidebar-responsive" style={styles.sidebar}>
           
@@ -3447,6 +3473,7 @@ export default function Home() {
           </div>
         </aside>
       </div>
+      )}
 
       {/* Render Modals on overlay */}
       {showViewersModal && renderViewersModal()}
@@ -3458,7 +3485,7 @@ export default function Home() {
       {showNetWorthVettingModal && renderNetWorthVettingModal()}
 
       {/* Render Floating Chat Widget */}
-      {renderFloatingChatWidget()}
+      {state.customer?.email !== 'salesadmin@peerbridge.ai' && renderFloatingChatWidget()}
     </div>
   );
 }

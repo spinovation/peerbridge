@@ -227,12 +227,23 @@ export default function LandingView({ state }) {
                       const email = e.target.value;
                       setLoginEmail(email);
                       setLoginPassword('password123');
+                      
+                      // Auto-authenticate for instant access
+                      setTimeout(() => {
+                        const res = state.loginWithCredentials(email, 'password123');
+                        if (res.success) {
+                          setError('');
+                        } else {
+                          setError(res.error);
+                        }
+                      }, 50);
                     }}
                     style={styles.select}
                     defaultValue=""
                   >
                     <option value="" disabled>-- Choose a Member --</option>
                     <option value="sarah@skynet-rebel.io">Sarah Connor (Ex-Dir Investor - 1 Sector Vetted)</option>
+                    <option value="salesadmin@peerbridge.ai">Sales Operations (salesadmin@peerbridge.ai Admin Control)</option>
                     <option value="marcus@vancegroup.ai">Marcus Vance (Fintech CPA GP - All 4 Sectors Vetted)</option>
                     <option value="elena@rostova.ai">Elena Rostova (AI Founder Investor - 1 Sector Vetted)</option>
                     <option value="devon@auroratech.io">Devon Lane (Hacker Dropout - 3 Sectors Vetted)</option>

@@ -286,6 +286,30 @@ const INITIAL_RESOURCES = [
 
 const INITIAL_DIRECTORY = [
   {
+    customer_id: 'dir-cust-salesadmin',
+    email: 'salesadmin@peerbridge.ai',
+    first_name: 'Sales',
+    last_name: 'Operations',
+    phone: '+1 (555) 909-0909',
+    role_flags: ['Sales Admin'],
+    status: 'verified',
+    isOnboarded: true,
+    ssn: 'XXX-XX-9999',
+    basicProfile: {
+      dob: '1985-06-15',
+      nationality: 'United States',
+      address: '100 Security Blvd, Washington, DC 20001',
+      profile_picture_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&q=80',
+      bio: 'Internal Sales Operations Administrator for waitlist invitations and KYC sweeps.'
+    },
+    professionalProfile: {
+      headline: 'Sales Operations Administrator at Peer Bridge',
+      summary: 'Managing private waitlists, invite registries, and compliance ledger sweeps.',
+      experience: [],
+      education: []
+    }
+  },
+  {
     customer_id: 'dir-cust-marcus',
     email: 'marcus@vancegroup.ai',
     first_name: 'Marcus',
@@ -1452,6 +1476,12 @@ export function usePeerBridge() {
 
     const memberConns = member.connections || [];
     sync('pb_connections', memberConns, setConnections);
+
+    if (member.role_flags.includes('Sales Admin')) {
+      setActiveModule('admin');
+    } else {
+      setActiveModule('portfolio');
+    }
 
     sync('pb_auth', true, setIsAuthenticated);
     setActiveTab('dashboard');
