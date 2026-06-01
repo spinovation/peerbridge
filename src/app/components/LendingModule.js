@@ -22,6 +22,8 @@ export default function LendingModule({ state }) {
   const [activeSubTab, setActiveSubTab] = useState('marketplace'); // marketplace, active_loans, ledger
   const [successMsg, setSuccessMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
+  const [isCustomRate, setIsCustomRate] = useState(false);
+  const [customRate, setCustomRate] = useState(8.5);
 
   const isLender = customer.email !== 'salesadmin@peerbridge.ai';
   const isBorrower = customer.email !== 'salesadmin@peerbridge.ai';
@@ -49,7 +51,8 @@ export default function LendingModule({ state }) {
       return;
     }
 
-    const res = offerP2PLoan(customer.customer_id, targetBorrowerId, principal, rate);
+    const activeRate = isCustomRate ? customRate : rate;
+    const res = offerP2PLoan(customer.customer_id, targetBorrowerId, principal, activeRate);
     if (res.success) {
       setSuccessMsg(`P2P Debt Offer successfully submitted to borrower!`);
       setTimeout(() => setSuccessMsg(''), 4000);
@@ -200,15 +203,44 @@ export default function LendingModule({ state }) {
                 <div style={styles.inputGroup}>
                   <label style={styles.label}>Borrower Gross Interest Rate (Yield Profile)</label>
                   <select
-                    value={rate}
-                    onChange={(e) => setRate(parseFloat(e.target.value))}
+                    value={isCustomRate ? 'custom' : rate}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val === 'custom') {
+                        setIsCustomRate(true);
+                      } else {
+                        setIsCustomRate(false);
+                        setRate(parseFloat(val));
+                      }
+                    }}
                     style={styles.select}
                   >
                     <option value="6.0">6.0% Gross (4.5% Net Lender Yield)</option>
                     <option value="7.5">7.5% Gross (6.0% Net Lender Yield) - Recommended</option>
                     <option value="9.0">9.0% Gross (7.5% Net Lender Yield)</option>
+                    <option value="custom">Custom Gross Yield...</option>
                   </select>
                 </div>
+
+                {isCustomRate && (
+                  <div style={styles.inputGroup}>
+                    <label style={styles.label}>Enter Custom Gross Interest Rate (%)</label>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                      <input
+                        type="number"
+                        step="0.1"
+                        min="1"
+                        max="30"
+                        value={customRate}
+                        onChange={(e) => setCustomRate(parseFloat(e.target.value) || 0)}
+                        style={{ ...styles.select, width: '120px' }}
+                      />
+                      <span style={{ fontSize: '0.82rem', color: '#a3a3a3', fontWeight: '600' }}>
+                        % Gross Rate ({Math.max(0, (customRate - 1.5).toFixed(2))}% Net Lender Yield after spread)
+                      </span>
+                    </div>
+                  </div>
+                )}
 
                 {/* Yield calculator widgets */}
                 <div style={styles.calculatorCard}>
@@ -216,15 +248,15 @@ export default function LendingModule({ state }) {
                   <div style={styles.calcGrid}>
                     <div style={styles.calcRow}>
                       <span>Borrower Total Payment:</span>
-                      <strong>${(principal * (1 + rate / 100)).toFixed(2)}</strong>
+                      <strong>${(principal * (1 + (isCustomRate ? customRate : rate) / 100)).toFixed(2)}</strong>
                     </div>
                     <div style={styles.calcRow}>
                       <span>Peerbridge Servicing Spread (1.5%):</span>
                       <span style={{ color: '#f43f5e', fontWeight: '600' }}>-${(principal * 0.015).toFixed(2)}</span>
                     </div>
                     <div style={styles.calcRow}>
-                      <span>Lender Net Principal + Yield (6.0%):</span>
-                      <span style={{ color: '#10b981', fontWeight: '700' }}>${(principal + principal * (rate - 1.5) / 100).toFixed(2)}</span>
+                      <span>Lender Net Principal + Yield ({((isCustomRate ? customRate : rate) - 1.5).toFixed(1)}%):</span>
+                      <span style={{ color: '#10b981', fontWeight: '700' }}>${(principal + principal * ((isCustomRate ? customRate : rate) - 1.5) / 100).toFixed(2)}</span>
                     </div>
                     <div style={styles.calcRow}>
                       <span>Lender Upfront Entry Fee (1.5%):</span>
@@ -233,8 +265,12 @@ export default function LendingModule({ state }) {
                   </div>
                 </div>
 
-                <button type="submit" className="btn-primary" style={{ width: '100%' }}>
-                  Submit Debt Syndicate Offer
+                {/* Local Feedback Toast inside Card above submit button */}
+                {successMsg && <div style={{ ...styles.successToast, marginTop: '1rem', padding: '0.75rem 1rem' }}>✨ {successMsg}</div>}
+                {errorMsg && <div style={{ ...styles.errorToast, marginTop: '1rem', padding: '0.75rem 1rem' }}>⚠ {errorMsg}</div>}
+
+                <button type="submit" className="btn-primary" style={{ width: '100%', marginTop: '1rem' }}>
+                  {successMsg ? '✓ Offer Submitted successfully!' : 'Submit Debt Syndicate Offer'}
                 </button>
               </form>
             </div>
