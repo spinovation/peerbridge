@@ -636,8 +636,17 @@ export function usePeerBridge() {
   };
 
   const writeToFirestore = async (key, val) => {
-    if (!isFirebaseConfigured || !db || !customer || !customer.customer_id) return;
+    if (!isFirebaseConfigured || !db) return;
     try {
+      // Global shared directory sync
+      if (key === 'pb_directory') {
+        const docRef = doc(db, 'global_data', 'directory');
+        await setDoc(docRef, { members: val });
+        return;
+      }
+
+      if (!customer || !customer.customer_id) return;
+
       const collectionMap = {
         'pb_cust': 'customers',
         'pb_basic': 'basic_profiles',
@@ -781,6 +790,26 @@ export function usePeerBridge() {
           loadUserDataFromFirestore(parsed.customer_id);
         }
       }
+
+      // Fetch shared global directory from Firestore (if configured)
+      const fetchGlobalDirectory = async () => {
+        if (isFirebaseConfigured) {
+          try {
+            const dirRef = doc(db, 'global_data', 'directory');
+            const dirSnap = await getDoc(dirRef);
+            if (dirSnap.exists()) {
+              const dirData = dirSnap.data();
+              if (dirData && Array.isArray(dirData.members)) {
+                setDirectory(dirData.members);
+                localStorage.setItem('pb_directory', JSON.stringify(dirData.members));
+              }
+            }
+          } catch (err) {
+            console.error("Failed to fetch global directory from Firestore:", err);
+          }
+        }
+      };
+      fetchGlobalDirectory();
     }
   }, []);
 
@@ -911,6 +940,27 @@ export function usePeerBridge() {
     sync('pb_aff_prof', newAffiliateProfile, setAffiliateProfile);
     sync('pb_settings', newSettings, setSettings);
     
+    // Construct aligned directory member item for multi-user visibility
+    const newDirItem = {
+      customer_id: newCustomer.customer_id,
+      email: newCustomer.email,
+      first_name: newCustomer.first_name,
+      last_name: newCustomer.last_name,
+      phone: newCustomer.phone,
+      role_flags: newCustomer.role_flags,
+      status: newCustomer.status,
+      isOnboarded: newCustomer.isOnboarded,
+      ssn: newCustomer.ssn,
+      basicProfile: newBasicProfile,
+      professionalProfile: newProfessionalProfile,
+      entrepreneurProfile: selectedRole === 'Entrepreneur' ? newEntrepreneurProfile : null,
+      investorProfile: selectedRole === 'Investor' ? newInvestorProfile : null,
+      affiliateProfile: selectedRole === 'Affiliate' ? newAffiliateProfile : null
+    };
+    
+    const updatedDir = [...directory, newDirItem];
+    sync('pb_directory', updatedDir, setDirectory);
+    
     sync('pb_auth', true, setIsAuthenticated);
     
     // Clear dynamic sub-tables
@@ -937,7 +987,35 @@ export function usePeerBridge() {
     sync('pb_inv_prof', INITIAL_INVESTOR_PROFILE, setInvestorProfile);
     sync('pb_aff_prof', INITIAL_AFFILIATE_PROFILE, setAffiliateProfile);
     sync('pb_settings', INITIAL_SETTINGS, setSettings);
-    sync('pb_directory', INITIAL_DIRECTORY, setDirectory);
+    
+    // Sync directory
+    if (!isFirebaseConfigured) {
+      sync('pb_directory', INITIAL_DIRECTORY, setDirectory);
+    } else {
+      // If Firebase is configured, preserve the live directory fetched from Firestore.
+      // But make sure Sarah Connor herself is in the directory so other users can see her!
+      const exists = directory.find(m => m.customer_id === INITIAL_CUSTOMERS.customer_id);
+      if (!exists) {
+        const sarahDirItem = {
+          customer_id: INITIAL_CUSTOMERS.customer_id,
+          email: INITIAL_CUSTOMERS.email,
+          first_name: INITIAL_CUSTOMERS.first_name,
+          last_name: INITIAL_CUSTOMERS.last_name,
+          phone: INITIAL_CUSTOMERS.phone,
+          role_flags: INITIAL_CUSTOMERS.role_flags,
+          status: INITIAL_CUSTOMERS.status,
+          isOnboarded: INITIAL_CUSTOMERS.isOnboarded,
+          ssn: INITIAL_CUSTOMERS.ssn,
+          basicProfile: INITIAL_BASIC_PROFILE,
+          professionalProfile: INITIAL_PROFESSIONAL_PROFILE,
+          entrepreneurProfile: INITIAL_ENTREPRENEUR_PROFILE,
+          investorProfile: INITIAL_INVESTOR_PROFILE,
+          affiliateProfile: INITIAL_AFFILIATE_PROFILE
+        };
+        const updatedDir = [sarahDirItem, ...directory];
+        sync('pb_directory', updatedDir, setDirectory);
+      }
+    }
     
     // Reset auxiliary states
     sync('pb_balance', 150000, setWalletBalance); // default balance for demo
@@ -973,7 +1051,35 @@ export function usePeerBridge() {
       sync('pb_inv_prof', INITIAL_INVESTOR_PROFILE, setInvestorProfile);
       sync('pb_aff_prof', INITIAL_AFFILIATE_PROFILE, setAffiliateProfile);
       sync('pb_settings', INITIAL_SETTINGS, setSettings);
-      sync('pb_directory', directory, setDirectory);
+      
+      // Ensure Sarah Connor is in the directory
+      if (isFirebaseConfigured) {
+        const exists = directory.find(m => m.customer_id === INITIAL_CUSTOMERS.customer_id);
+        if (!exists) {
+          const sarahDirItem = {
+            customer_id: INITIAL_CUSTOMERS.customer_id,
+            email: INITIAL_CUSTOMERS.email,
+            first_name: INITIAL_CUSTOMERS.first_name,
+            last_name: INITIAL_CUSTOMERS.last_name,
+            phone: INITIAL_CUSTOMERS.phone,
+            role_flags: INITIAL_CUSTOMERS.role_flags,
+            status: INITIAL_CUSTOMERS.status,
+            isOnboarded: INITIAL_CUSTOMERS.isOnboarded,
+            ssn: INITIAL_CUSTOMERS.ssn,
+            basicProfile: INITIAL_BASIC_PROFILE,
+            professionalProfile: INITIAL_PROFESSIONAL_PROFILE,
+            entrepreneurProfile: INITIAL_ENTREPRENEUR_PROFILE,
+            investorProfile: INITIAL_INVESTOR_PROFILE,
+            affiliateProfile: INITIAL_AFFILIATE_PROFILE
+          };
+          const updatedDir = [sarahDirItem, ...directory];
+          sync('pb_directory', updatedDir, setDirectory);
+        } else {
+          sync('pb_directory', directory, setDirectory);
+        }
+      } else {
+        sync('pb_directory', directory, setDirectory);
+      }
       
       sync('pb_balance', 150000, setWalletBalance);
       sync('pb_bank', { institution_id: 'ins_1', name: 'Chase Bank', mask: '8821' }, setConnectedBank);
@@ -1033,23 +1139,52 @@ export function usePeerBridge() {
     }
   };
 
+  // Helper to update the active user's details inside the shared directory
+  const updateDirectoryItem = (updatedCust, updatedBasic, updatedProf, updatedEnt, updatedInv, updatedAff) => {
+    if (!customer) return;
+    const updatedDir = directory.map(member => {
+      if (member.customer_id === customer.customer_id) {
+        return {
+          ...member,
+          first_name: updatedCust?.first_name || member.first_name,
+          last_name: updatedCust?.last_name || member.last_name,
+          email: updatedCust?.email || member.email,
+          phone: updatedCust?.phone || member.phone,
+          status: updatedCust?.status || member.status,
+          ssn: updatedCust?.ssn || member.ssn,
+          basicProfile: { ...member.basicProfile, ...updatedBasic },
+          professionalProfile: { ...member.professionalProfile, ...updatedProf },
+          entrepreneurProfile: { ...member.entrepreneurProfile, ...updatedEnt },
+          investorProfile: { ...member.investorProfile, ...updatedInv },
+          affiliateProfile: { ...member.affiliateProfile, ...updatedAff }
+        };
+      }
+      return member;
+    });
+    sync('pb_directory', updatedDir, setDirectory);
+  };
+
   // Profile Mutation
   const updateProfiles = (updatedCust, updatedBasic, updatedProf) => {
     if (updatedCust) sync('pb_cust', { ...customer, ...updatedCust }, setCustomer);
     if (updatedBasic) sync('pb_basic', { ...basicProfile, ...updatedBasic }, setBasicProfile);
     if (updatedProf) sync('pb_prof', { ...professionalProfile, ...updatedProf }, setProfessionalProfile);
+    updateDirectoryItem(updatedCust, updatedBasic, updatedProf);
   };
 
   const updateEntrepreneurProfile = (updatedEnt) => {
     sync('pb_ent', { ...entrepreneurProfile, ...updatedEnt }, setEntrepreneurProfile);
+    updateDirectoryItem(null, null, null, updatedEnt);
   };
 
   const updateInvestorProfile = (updatedInv) => {
     sync('pb_inv_prof', { ...investorProfile, ...updatedInv }, setInvestorProfile);
+    updateDirectoryItem(null, null, null, null, updatedInv);
   };
 
   const updateAffiliateProfile = (updatedAff) => {
     sync('pb_aff_prof', { ...affiliateProfile, ...updatedAff }, setAffiliateProfile);
+    updateDirectoryItem(null, null, null, null, null, updatedAff);
   };
 
   const updateSettings = (updatedSets) => {
