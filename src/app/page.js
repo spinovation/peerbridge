@@ -63,6 +63,22 @@ export default function Home() {
   // Profile inspector states
   const [inspectorTab, setInspectorTab] = useState('professional');
   
+  const [idVettingLoading, setIdVettingLoading] = useState(false);
+  const [idBiometricAgreed, setIdBiometricAgreed] = useState(false);
+  const [idUploadDone, setIdUploadDone] = useState(false);
+  const [eduLoading, setEduLoading] = useState(false);
+  const [eduDone, setEduDone] = useState(false);
+  const [workEmail, setWorkEmail] = useState('');
+  const [workPin, setWorkPin] = useState('');
+  const [workStage, setWorkStage] = useState(1); // 1 = Input Email, 2 = Verify Code, 3 = Success
+  const [workLoading, setWorkLoading] = useState(false);
+  const [workError, setWorkError] = useState('');
+  const [cashAssets, setCashAssets] = useState(200000);
+  const [investAssets, setInvestAssets] = useState(950000);
+  const [debtLiabilities, setDebtLiabilities] = useState(150000);
+  const [netWorthLoading, setNetWorthLoading] = useState(false);
+  const [netWorthDone, setNetWorthDone] = useState(false);
+
   useEffect(() => {
     if (state.inspectedCustomer) {
       setInspectorTab('professional');
@@ -119,22 +135,6 @@ export default function Home() {
       </>
     );
   };
-
-  const [idVettingLoading, setIdVettingLoading] = useState(false);
-  const [idBiometricAgreed, setIdBiometricAgreed] = useState(false);
-  const [idUploadDone, setIdUploadDone] = useState(false);
-  const [eduLoading, setEduLoading] = useState(false);
-  const [eduDone, setEduDone] = useState(false);
-  const [workEmail, setWorkEmail] = useState('');
-  const [workPin, setWorkPin] = useState('');
-  const [workStage, setWorkStage] = useState(1); // 1 = Input Email, 2 = Verify Code, 3 = Success
-  const [workLoading, setWorkLoading] = useState(false);
-  const [workError, setWorkError] = useState('');
-  const [cashAssets, setCashAssets] = useState(200000);
-  const [investAssets, setInvestAssets] = useState(950000);
-  const [debtLiabilities, setDebtLiabilities] = useState(150000);
-  const [netWorthLoading, setNetWorthLoading] = useState(false);
-  const [netWorthDone, setNetWorthDone] = useState(false);
 
   const renderIdVettingModal = () => {
     return (

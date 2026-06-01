@@ -846,6 +846,7 @@ export function usePeerBridge() {
         }
       };
 
+      const storedCust = localStorage.getItem('pb_cust');
       const authVal = safeParse('pb_auth', false);
       const custVal = safeParse('pb_cust', INITIAL_CUSTOMERS);
       const basicVal = safeParse('pb_basic', INITIAL_BASIC_PROFILE);
@@ -1589,7 +1590,7 @@ export function usePeerBridge() {
       date: new Date().toISOString(),
       answers: []
     };
-    sync('pb_qa', [newQ, ...qaFeed], setCampaigns);
+    sync('pb_qa', [newQ, ...qaFeed], setQaFeed);
     return { success: true };
   };
 
