@@ -2365,7 +2365,7 @@ export default function Home() {
               title="Ecosystem Notifications center"
             >
               🔔
-              {state.notifications.filter(n => !n.read_status).length > 0 && (
+              {(state.notifications || []).filter(n => !n.read_status).length > 0 && (
                 <span style={{
                   background: '#f43f5e',
                   color: '#ffffff',
@@ -2375,7 +2375,7 @@ export default function Home() {
                   padding: '0.05rem 0.3rem',
                   marginLeft: '0.15rem'
                 }}>
-                  {state.notifications.filter(n => !n.read_status).length}
+                  {(state.notifications || []).filter(n => !n.read_status).length}
                 </span>
               )}
             </button>
@@ -2403,7 +2403,7 @@ export default function Home() {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.5rem', marginBottom: '0.25rem' }}>
                   <span style={{ fontSize: '0.76rem', fontWeight: '800', color: '#ffffff' }}>Ecosystem Alerts</span>
-                  {state.notifications.length > 0 && (
+                  {(state.notifications || []).length > 0 && (
                     <button
                       onClick={() => {
                         state.setNotifications([]);
@@ -2425,13 +2425,13 @@ export default function Home() {
                   )}
                 </div>
 
-                {state.notifications.length === 0 ? (
+                {(state.notifications || []).length === 0 ? (
                   <div style={{ padding: '2rem 1rem', textAlign: 'center', fontSize: '0.72rem', color: '#525252' }}>
                     No unread compliance or node alert logs in ledger.
                   </div>
                 ) : (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                    {state.notifications.map((notif) => (
+                    {(state.notifications || []).map((notif) => (
                       <div 
                         key={notif.notification_id} 
                         style={{
@@ -2447,7 +2447,7 @@ export default function Home() {
                       >
                         <button
                           onClick={() => {
-                            const updated = state.notifications.filter(n => n.notification_id !== notif.notification_id);
+                            const updated = (state.notifications || []).filter(n => n.notification_id !== notif.notification_id);
                             state.setNotifications(updated);
                             if (typeof window !== 'undefined') {
                               localStorage.setItem('pb_notifications', JSON.stringify(updated));
@@ -2666,7 +2666,7 @@ export default function Home() {
             >
               <span style={styles.sidebarRowLabel}>Connections:</span>
               <strong style={{ fontSize: '0.78rem', color: '#00f2fe', fontWeight: '750' }}>
-                {state.connections.length}
+                {(state.connections || []).length}
               </strong>
             </div>
 

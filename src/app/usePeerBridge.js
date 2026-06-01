@@ -775,20 +775,40 @@ export function usePeerBridge() {
       };
 
       const settersMap = {
-        'pb_cust': setCustomer,
-        'pb_basic': setBasicProfile,
-        'pb_prof': setProfessionalProfile,
-        'pb_ent': setEntrepreneurProfile,
-        'pb_inv_prof': setInvestorProfile,
-        'pb_aff_prof': setAffiliateProfile,
-        'pb_settings': setSettings,
-        'pb_balance': (data) => setWalletBalance(data.value !== undefined ? data.value : data),
-        'pb_bank': setConnectedBank,
-        'pb_connections': (data) => setConnections(Array.isArray(data) ? data : Object.values(data)),
-        'pb_notifications': (data) => setNotifications(Array.isArray(data) ? data : Object.values(data)),
-        'pb_transactions': (data) => setTransactions(Array.isArray(data) ? data : Object.values(data)),
-        'pb_portfolio': (data) => setPortfolio(Array.isArray(data) ? data : Object.values(data)),
-        'pb_docs': (data) => setDocumentation(Array.isArray(data) ? data : Object.values(data))
+        'pb_cust': (data) => data && setCustomer(data),
+        'pb_basic': (data) => data && setBasicProfile(data),
+        'pb_prof': (data) => data && setProfessionalProfile(data),
+        'pb_ent': (data) => data && setEntrepreneurProfile(data),
+        'pb_inv_prof': (data) => data && setInvestorProfile(data),
+        'pb_aff_prof': (data) => data && setAffiliateProfile(data),
+        'pb_settings': (data) => data && setSettings(data),
+        'pb_balance': (data) => data && setWalletBalance(data.value !== undefined ? data.value : data),
+        'pb_bank': (data) => data && setConnectedBank(data),
+        'pb_connections': (data) => {
+          if (!data) return;
+          const val = Array.isArray(data) ? data : (data.value && Array.isArray(data.value) ? data.value : Object.values(data));
+          setConnections(Array.isArray(val) ? val : []);
+        },
+        'pb_notifications': (data) => {
+          if (!data) return;
+          const val = Array.isArray(data) ? data : (data.value && Array.isArray(data.value) ? data.value : Object.values(data));
+          setNotifications(Array.isArray(val) ? val : []);
+        },
+        'pb_transactions': (data) => {
+          if (!data) return;
+          const val = Array.isArray(data) ? data : (data.value && Array.isArray(data.value) ? data.value : Object.values(data));
+          setTransactions(Array.isArray(val) ? val : []);
+        },
+        'pb_portfolio': (data) => {
+          if (!data) return;
+          const val = Array.isArray(data) ? data : (data.value && Array.isArray(data.value) ? data.value : Object.values(data));
+          setPortfolio(Array.isArray(val) ? val : []);
+        },
+        'pb_docs': (data) => {
+          if (!data) return;
+          const val = Array.isArray(data) ? data : (data.value && Array.isArray(data.value) ? data.value : Object.values(data));
+          setDocumentation(Array.isArray(val) ? val : []);
+        }
       };
 
       for (const [key, collectionName] of Object.entries(collectionMap)) {
@@ -815,51 +835,62 @@ export function usePeerBridge() {
   // Load from localStorage on mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const storedAuth = localStorage.getItem('pb_auth');
-      const storedCust = localStorage.getItem('pb_cust');
-      const storedBasic = localStorage.getItem('pb_basic');
-      const storedProf = localStorage.getItem('pb_prof');
-      const storedEnt = localStorage.getItem('pb_ent');
-      const storedInvProfile = localStorage.getItem('pb_inv_prof');
-      const storedAffProfile = localStorage.getItem('pb_aff_prof');
-      const storedDir = localStorage.getItem('pb_directory');
-      const storedSettings = localStorage.getItem('pb_settings');
-      const storedCampaigns = localStorage.getItem('pb_campaigns');
-      const storedInvites = localStorage.getItem('pb_invites');
-      const storedBalance = localStorage.getItem('pb_balance');
-      const storedBank = localStorage.getItem('pb_bank');
-      const storedTransactions = localStorage.getItem('pb_transactions');
-      const storedPortfolio = localStorage.getItem('pb_portfolio');
-      const storedDocs = localStorage.getItem('pb_docs');
-      const storedTickets = localStorage.getItem('pb_tickets');
-      const storedNotifications = localStorage.getItem('pb_notifications');
-      const storedQA = localStorage.getItem('pb_qa');
-      const storedResources = localStorage.getItem('pb_resources');
-      const storedConnections = localStorage.getItem('pb_connections');
-      const storedDirFilter = localStorage.getItem('pb_directory_filter');
+      const safeParse = (key, fallback) => {
+        try {
+          const str = localStorage.getItem(key);
+          if (!str) return fallback;
+          const parsed = JSON.parse(str);
+          return parsed !== null && parsed !== undefined ? parsed : fallback;
+        } catch {
+          return fallback;
+        }
+      };
 
-      if (storedAuth) setIsAuthenticated(JSON.parse(storedAuth));
-      if (storedCust) setCustomer(JSON.parse(storedCust));
-      if (storedBasic) setBasicProfile(JSON.parse(storedBasic));
-      if (storedProf) setProfessionalProfile(JSON.parse(storedProf));
-      if (storedEnt) setEntrepreneurProfile(JSON.parse(storedEnt));
-      if (storedInvProfile) setInvestorProfile(JSON.parse(storedInvProfile));
-      if (storedAffProfile) setAffiliateProfile(JSON.parse(storedAffProfile));
-      if (storedDir) setDirectory(JSON.parse(storedDir));
-      if (storedSettings) setSettings(JSON.parse(storedSettings));
-      if (storedCampaigns) setCampaigns(JSON.parse(storedCampaigns));
-      if (storedInvites) setInvites(JSON.parse(storedInvites));
-      if (storedBalance) setWalletBalance(JSON.parse(storedBalance));
-      if (storedBank) setConnectedBank(JSON.parse(storedBank));
-      if (storedTransactions) setTransactions(JSON.parse(storedTransactions));
-      if (storedPortfolio) setPortfolio(JSON.parse(storedPortfolio));
-      if (storedDocs) setDocumentation(JSON.parse(storedDocs));
-      if (storedTickets) setHelpTickets(JSON.parse(storedTickets));
-      if (storedNotifications) setNotifications(JSON.parse(storedNotifications));
-      if (storedQA) setQaFeed(JSON.parse(storedQA));
-      if (storedResources) setResources(JSON.parse(storedResources));
-      if (storedConnections) setConnections(JSON.parse(storedConnections));
-      if (storedDirFilter) setDirectoryRoleFilter(JSON.parse(storedDirFilter));
+      const authVal = safeParse('pb_auth', false);
+      const custVal = safeParse('pb_cust', INITIAL_CUSTOMERS);
+      const basicVal = safeParse('pb_basic', INITIAL_BASIC_PROFILE);
+      const profVal = safeParse('pb_prof', INITIAL_PROFESSIONAL_PROFILE);
+      const entVal = safeParse('pb_ent', INITIAL_ENTREPRENEUR_PROFILE);
+      const invVal = safeParse('pb_inv_prof', INITIAL_INVESTOR_PROFILE);
+      const affVal = safeParse('pb_aff_prof', INITIAL_AFFILIATE_PROFILE);
+      const dirVal = safeParse('pb_directory', INITIAL_DIRECTORY);
+      const settingsVal = safeParse('pb_settings', INITIAL_SETTINGS);
+      const campaignsVal = safeParse('pb_campaigns', INITIAL_CAMPAIGNS);
+      const invitesVal = safeParse('pb_invites', INITIAL_INVITES);
+      const balanceVal = safeParse('pb_balance', 150000);
+      const bankVal = safeParse('pb_bank', { institution_id: 'ins_1', name: 'Chase Bank', mask: '8821' });
+      const transactionsVal = safeParse('pb_transactions', INITIAL_TRANSACTIONS);
+      const portfolioVal = safeParse('pb_portfolio', INITIAL_PORTFOLIO);
+      const docsVal = safeParse('pb_docs', INITIAL_DOCUMENTS);
+      const ticketsVal = safeParse('pb_tickets', []);
+      const notificationsVal = safeParse('pb_notifications', INITIAL_NOTIFICATIONS);
+      const qaVal = safeParse('pb_qa', INITIAL_QA);
+      const resourcesVal = safeParse('pb_resources', INITIAL_RESOURCES);
+      const connectionsVal = safeParse('pb_connections', ['db-cust-evelyn', 'db-cust-jenkins']);
+      const dirFilterVal = safeParse('pb_directory_filter', 'All');
+
+      setIsAuthenticated(authVal);
+      setCustomer(custVal);
+      setBasicProfile(basicVal);
+      setProfessionalProfile(profVal);
+      setEntrepreneurProfile(entVal);
+      setInvestorProfile(invVal);
+      setAffiliateProfile(affVal);
+      setDirectory(dirVal);
+      setSettings(settingsVal);
+      setCampaigns(campaignsVal);
+      setInvites(invitesVal);
+      setWalletBalance(balanceVal);
+      setConnectedBank(bankVal);
+      setTransactions(transactionsVal);
+      setPortfolio(portfolioVal);
+      setDocumentation(docsVal);
+      setHelpTickets(ticketsVal);
+      setNotifications(notificationsVal);
+      setQaFeed(qaVal);
+      setResources(resourcesVal);
+      setConnections(connectionsVal);
+      setDirectoryRoleFilter(dirFilterVal);
 
       // Trigger asynchronous live Firestore data recovery to fetch most up-to-date cloud records!
       if (storedCust) {
