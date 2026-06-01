@@ -133,7 +133,7 @@ export default function SupportModule({ state }) {
                     </div>
                     {getStatusBadge(tkt.status)}
                   </div>
-                  <p style={styles.tktMsg}>"{tkt.message}"</p>
+                  <p style={styles.tktMsg}>&quot;{tkt.message}&quot;</p>
                   <div style={styles.tktFooter}>
                     <span>Submitted: {new Date(tkt.created_at).toLocaleString()}</span>
                   </div>

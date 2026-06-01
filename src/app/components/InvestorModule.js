@@ -41,11 +41,13 @@ export default function InvestorModule({ state }) {
   // Sync state if context changes
   useEffect(() => {
     if (investorProfile) {
-      setInvestorType(investorProfile.investor_type || 'angel');
-      setMinRange(investorProfile.investment_range?.min || 1000);
-      setMaxRange(investorProfile.investment_range?.max || 50000);
-      setRiskAppetite(investorProfile.risk_appetite || 'medium');
-      setPreferredIndustries(investorProfile.preferred_industries || []);
+      setTimeout(() => {
+        setInvestorType(investorProfile.investor_type || 'angel');
+        setMinRange(investorProfile.investment_range?.min || 1000);
+        setMaxRange(investorProfile.investment_range?.max || 50000);
+        setRiskAppetite(investorProfile.risk_appetite || 'medium');
+        setPreferredIndustries(investorProfile.preferred_industries || []);
+      }, 0);
     }
   }, [investorProfile]);
 
@@ -60,10 +62,14 @@ export default function InvestorModule({ state }) {
     if (state.targetCampaignId) {
       const camp = campaigns.find(c => c.id === state.targetCampaignId);
       if (camp) {
-        setSubTab('marketplace');
-        handleOpenInvest(camp);
+        setTimeout(() => {
+          setSubTab('marketplace');
+          handleOpenInvest(camp);
+        }, 0);
       }
-      state.setTargetCampaignId(null);
+      setTimeout(() => {
+        state.setTargetCampaignId(null);
+      }, 0);
     }
   }, [state.targetCampaignId, campaigns]);
 

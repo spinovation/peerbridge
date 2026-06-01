@@ -37,7 +37,9 @@ export default function Home() {
     if (typeof window !== 'undefined') {
       const storedChats = localStorage.getItem('pb_chats');
       if (storedChats) {
-        setChatThreads(JSON.parse(storedChats));
+        setTimeout(() => {
+          setChatThreads(JSON.parse(storedChats));
+        }, 0);
       }
     }
   }, []);
@@ -81,7 +83,9 @@ export default function Home() {
 
   useEffect(() => {
     if (state.inspectedCustomer) {
-      setInspectorTab('professional');
+      setTimeout(() => {
+        setInspectorTab('professional');
+      }, 0);
     }
   }, [state.inspectedCustomer]);
 
@@ -133,6 +137,112 @@ export default function Home() {
           </div>
         )}
       </>
+    );
+  };
+
+  const renderConnectionButton = (targetId) => {
+    if (targetId === state.customer.customer_id) return null;
+
+    const isConnected = state.connections.includes(targetId);
+    
+    // Find requests
+    const outgoingRequest = (state.connectionRequests || []).find(
+      r => r.from_id === state.customer.customer_id && r.to_id === targetId && r.status === 'pending'
+    );
+    const incomingRequest = (state.connectionRequests || []).find(
+      r => r.from_id === targetId && r.to_id === state.customer.customer_id && r.status === 'pending'
+    );
+
+    if (isConnected) {
+      return (
+        <button 
+          onClick={() => state.disconnectConnectionNode(targetId)}
+          className="btn-secondary"
+          style={{ 
+            padding: '0.35rem 0.65rem', 
+            fontSize: '0.7rem',
+            whiteSpace: 'nowrap',
+            background: 'rgba(16, 185, 129, 0.1)',
+            color: '#10b981',
+            border: '1px solid rgba(16, 185, 129, 0.3)',
+            cursor: 'pointer'
+          }}
+          title="Click to disconnect connection node"
+        >
+          🤝 Connected ✓
+        </button>
+      );
+    }
+
+    if (outgoingRequest) {
+      return (
+        <button 
+          disabled
+          className="btn-secondary"
+          style={{ 
+            padding: '0.35rem 0.65rem', 
+            fontSize: '0.7rem',
+            whiteSpace: 'nowrap',
+            background: 'rgba(212, 175, 55, 0.05)',
+            color: '#d4af37',
+            border: '1px solid rgba(212, 175, 55, 0.2)',
+            opacity: 0.8,
+            cursor: 'not-allowed'
+          }}
+        >
+          ⏱ Requested...
+        </button>
+      );
+    }
+
+    if (incomingRequest) {
+      return (
+        <div style={{ display: 'flex', gap: '0.25rem' }}>
+          <button 
+            onClick={() => state.acceptConnectionRequest(incomingRequest.id)}
+            className="btn-primary"
+            style={{ 
+              padding: '0.35rem 0.5rem', 
+              fontSize: '0.68rem',
+              whiteSpace: 'nowrap',
+              background: '#10b981',
+              borderColor: '#10b981',
+              color: '#000000',
+              fontWeight: '700'
+            }}
+          >
+            Accept
+          </button>
+          <button 
+            onClick={() => state.declineConnectionRequest(incomingRequest.id)}
+            className="btn-secondary"
+            style={{ 
+              padding: '0.35rem 0.5rem', 
+              fontSize: '0.68rem',
+              whiteSpace: 'nowrap',
+              borderColor: 'rgba(239, 68, 68, 0.3)',
+              color: '#ef4444'
+            }}
+          >
+            Decline
+          </button>
+        </div>
+      );
+    }
+
+    // Default: Not connected and no pending requests
+    return (
+      <button 
+        onClick={() => state.sendConnectionRequest(targetId)}
+        className="btn-primary"
+        style={{ 
+          padding: '0.35rem 0.65rem', 
+          fontSize: '0.7rem',
+          whiteSpace: 'nowrap'
+        }}
+      >
+        ➕ Connect
+      </button>
     );
   };
 
@@ -191,7 +301,7 @@ export default function Home() {
               <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.04)', padding: '1rem', borderRadius: '8px' }}>
                 <h4 style={{ fontSize: '0.8rem', color: '#ffffff', margin: '0 0 0.5rem 0' }}>Biometrics Attestation Agreement</h4>
                 <p style={{ fontSize: '0.74rem', color: '#737373', lineHeight: '1.3', margin: 0 }}>
-                  I agree to process my passport or government-issued driver's license followed by a 3D facial sweep to verify my unique physical identity signature.
+                  {"I agree to process my passport or government-issued driver's license followed by a 3D facial sweep to verify my unique physical identity signature."}
                 </p>
               </div>
               <button
@@ -861,7 +971,7 @@ export default function Home() {
                   <h4 style={styles.modalSecHeader}>Summary Pedigree</h4>
                   <p style={styles.modalText}>{inspectedMember.professionalProfile?.summary || 'No summary recorded.'}</p>
                   <p style={{ ...styles.modalText, fontStyle: 'italic', color: '#737373', marginTop: '0.5rem' }}>
-                    "{inspectedMember.basicProfile?.bio || 'No bio quote.'}"
+                    &quot;{inspectedMember.basicProfile?.bio || 'No bio quote.'}&quot;
                   </p>
                 </div>
 
@@ -1688,7 +1798,7 @@ export default function Home() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', flex: 1 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.78rem', color: '#a3a3a3', borderBottom: '1px solid rgba(255,255,255,0.03)', paddingBottom: '0.5rem' }}>
                   <span>Found <strong>{results.length}</strong> matching records</span>
-                  {state.globalSearchQuery && <span>Query: "{state.globalSearchQuery}"</span>}
+                  {state.globalSearchQuery && <span>Query: &quot;{state.globalSearchQuery}&quot;</span>}
                 </div>
 
                 {results.length === 0 ? (
@@ -1787,22 +1897,7 @@ export default function Home() {
                                     >
                                       🔍 Inspect
                                     </button>
-                                    {item.customer_id !== state.customer.customer_id && (
-                                      <button 
-                                        onClick={() => state.toggleConnectionNode(item.customer_id)}
-                                        className={state.connections.includes(item.customer_id) ? "btn-secondary" : "btn-primary"}
-                                        style={{ 
-                                          padding: '0.35rem 0.65rem', 
-                                          fontSize: '0.7rem',
-                                          whiteSpace: 'nowrap',
-                                          background: state.connections.includes(item.customer_id) ? 'rgba(16, 185, 129, 0.1)' : '',
-                                          color: state.connections.includes(item.customer_id) ? '#10b981' : '',
-                                          border: state.connections.includes(item.customer_id) ? '1px solid rgba(16, 185, 129, 0.3)' : ''
-                                        }}
-                                      >
-                                        {state.connections.includes(item.customer_id) ? '🤝 Connected' : '➕ Connect'}
-                                      </button>
-                                    )}
+                                    {renderConnectionButton(item.customer_id)}
                                   </div>
                                 ) : (
                                   <div style={{ display: 'flex', gap: '0.4rem' }}>
@@ -1815,22 +1910,7 @@ export default function Home() {
                                     >
                                       Consult Advisor
                                     </button>
-                                    {item.customer_id !== state.customer.customer_id && (
-                                      <button 
-                                        onClick={() => state.toggleConnectionNode(item.customer_id)}
-                                        className={state.connections.includes(item.customer_id) ? "btn-secondary" : "btn-primary"}
-                                        style={{ 
-                                          padding: '0.35rem 0.65rem', 
-                                          fontSize: '0.7rem',
-                                          whiteSpace: 'nowrap',
-                                          background: state.connections.includes(item.customer_id) ? 'rgba(16, 185, 129, 0.1)' : '',
-                                          color: state.connections.includes(item.customer_id) ? '#10b981' : '',
-                                          border: state.connections.includes(item.customer_id) ? '1px solid rgba(16, 185, 129, 0.3)' : ''
-                                        }}
-                                      >
-                                        {state.connections.includes(item.customer_id) ? '🤝 Connected' : '➕ Connect'}
-                                      </button>
-                                    )}
+                                    {renderConnectionButton(item.customer_id)}
                                   </div>
                                 )}
                               </div>
@@ -2096,7 +2176,7 @@ export default function Home() {
                   ) : !chatSearchQuery.trim() ? (
                     <div style={{ padding: '3rem 1rem', textShadow: 'none', textAlign: 'center', fontSize: '0.72rem', color: '#737373', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
                       <span style={{ fontSize: '1.25rem' }}>🔍</span>
-                      <span>Type a connection's name to start a chat...</span>
+                      <span>{"Type a connection's name to start a chat..."}</span>
                     </div>
                   ) : filteredConnections.length === 0 ? (
                     <div style={{ padding: '2rem 1rem', textShadow: 'none', textAlign: 'center', fontSize: '0.72rem', color: '#737373' }}>
@@ -2379,114 +2459,192 @@ export default function Home() {
                 </span>
               )}
             </button>
-            {showNotificationsDropdown && (
-              <div 
-                className="glass-panel" 
-                style={{
-                  position: 'absolute',
-                  top: '40px',
-                  right: '0',
-                  width: '320px',
-                  maxHeight: '400px',
-                  overflowY: 'auto',
-                  background: 'rgba(10, 10, 10, 0.95)',
-                  backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  borderRadius: '12px',
-                  boxShadow: '0 20px 25px -5px rgba(0,0,0,0.5), 0 10px 10px -5px rgba(0,0,0,0.4)',
-                  padding: '0.75rem',
-                  zIndex: 10000,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '0.5rem'
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.5rem', marginBottom: '0.25rem' }}>
-                  <span style={{ fontSize: '0.76rem', fontWeight: '800', color: '#ffffff' }}>Ecosystem Alerts</span>
-                  {(state.notifications || []).length > 0 && (
-                    <button
-                      onClick={() => {
-                        state.setNotifications([]);
-                        if (typeof window !== 'undefined') {
-                          localStorage.setItem('pb_notifications', JSON.stringify([]));
-                        }
-                      }}
-                      style={{
-                        background: 'transparent',
-                        border: 'none',
-                        color: '#00f2fe',
-                        fontSize: '0.66rem',
-                        cursor: 'pointer',
-                        fontWeight: '700'
-                      }}
-                    >
-                      Clear All
-                    </button>
-                  )}
-                </div>
+            {showNotificationsDropdown && (() => {
+              const incomingRequests = (state.connectionRequests || []).filter(
+                r => r.to_id === state.customer.customer_id && r.status === 'pending'
+              );
 
-                {(state.notifications || []).length === 0 ? (
-                  <div style={{ padding: '2rem 1rem', textAlign: 'center', fontSize: '0.72rem', color: '#525252' }}>
-                    No unread compliance or node alert logs in ledger.
-                  </div>
-                ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                    {(state.notifications || []).map((notif) => (
-                      <div 
-                        key={notif.notification_id} 
+              return (
+                <div 
+                  className="glass-panel" 
+                  style={{
+                    position: 'absolute',
+                    top: '40px',
+                    right: '0',
+                    width: '320px',
+                    maxHeight: '400px',
+                    overflowY: 'auto',
+                    background: 'rgba(10, 10, 10, 0.95)',
+                    backdropFilter: 'blur(20px)',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    borderRadius: '12px',
+                    boxShadow: '0 20px 25px -5px rgba(0,0,0,0.5), 0 10px 10px -5px rgba(0,0,0,0.4)',
+                    padding: '0.75rem',
+                    zIndex: 10000,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.5rem'
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.5rem', marginBottom: '0.25rem' }}>
+                    <span style={{ fontSize: '0.76rem', fontWeight: '800', color: '#ffffff' }}>Ecosystem Alerts</span>
+                    {(state.notifications || []).length > 0 && (
+                      <button
+                        onClick={() => {
+                          state.setNotifications([]);
+                          if (typeof window !== 'undefined') {
+                            localStorage.setItem('pb_notifications', JSON.stringify([]));
+                          }
+                        }}
                         style={{
-                          background: 'rgba(255,255,255,0.01)',
-                          border: '1px solid rgba(255,255,255,0.03)',
-                          borderRadius: '8px',
-                          padding: '0.5rem',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          gap: '0.2rem',
-                          position: 'relative'
+                          background: 'transparent',
+                          border: 'none',
+                          color: '#00f2fe',
+                          fontSize: '0.66rem',
+                          cursor: 'pointer',
+                          fontWeight: '700'
                         }}
                       >
-                        <button
-                          onClick={() => {
-                            const updated = (state.notifications || []).filter(n => n.notification_id !== notif.notification_id);
-                            state.setNotifications(updated);
-                            if (typeof window !== 'undefined') {
-                              localStorage.setItem('pb_notifications', JSON.stringify(updated));
-                            }
-                          }}
+                        Clear All
+                      </button>
+                    )}
+                  </div>
+
+                  {incomingRequests.length > 0 && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.5rem', marginBottom: '0.25rem' }}>
+                      <span style={{ fontSize: '0.68rem', fontWeight: '850', color: '#d4af37', letterSpacing: '0.05em' }}>
+                        🔑 PENDING INVITATIONS ({incomingRequests.length})
+                      </span>
+                      {incomingRequests.map((req) => (
+                        <div 
+                          key={req.id} 
                           style={{
-                            position: 'absolute',
-                            top: '0.35rem',
-                            right: '0.35rem',
-                            background: 'transparent',
-                            border: 'none',
-                            color: '#525252',
-                            fontSize: '0.66rem',
-                            cursor: 'pointer',
-                            padding: '0 0.2rem'
+                            background: 'rgba(212, 175, 55, 0.03)',
+                            border: '1px solid rgba(212, 175, 55, 0.12)',
+                            borderRadius: '8px',
+                            padding: '0.5rem',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '0.4rem',
                           }}
                         >
-                          ✕
-                        </button>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                          <span style={{
-                            width: '5px',
-                            height: '5px',
-                            borderRadius: '50%',
-                            background: notif.type === 'investment' ? '#10b981' : notif.type === 'system' ? '#00f2fe' : '#8f00ff'
-                          }} />
-                          <span style={{ fontSize: '0.58rem', fontWeight: '800', textTransform: 'uppercase', color: '#8a8a8a' }}>
-                            {notif.type}
-                          </span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <span style={{ fontSize: '1.1rem' }}>👋</span>
+                            <div style={{ flex: 1 }}>
+                              <div style={{ fontSize: '0.74rem', fontWeight: '700', color: '#ffffff' }}>
+                                {req.from_name}
+                              </div>
+                              <div style={{ fontSize: '0.62rem', color: '#a3a3a3' }}>
+                                Wants to link secure P2P connection node.
+                              </div>
+                            </div>
+                          </div>
+                          <div style={{ display: 'flex', gap: '0.35rem' }}>
+                            <button 
+                              onClick={() => state.acceptConnectionRequest(req.id)}
+                              className="btn-primary"
+                              style={{ 
+                                flex: 1, 
+                                padding: '0.25rem', 
+                                fontSize: '0.66rem',
+                                background: '#10b981',
+                                borderColor: '#10b981',
+                                color: '#000000',
+                                fontWeight: '700',
+                                height: '24px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                              }}
+                            >
+                              Accept
+                            </button>
+                            <button 
+                              onClick={() => state.declineConnectionRequest(req.id)}
+                              className="btn-secondary"
+                              style={{ 
+                                flex: 1, 
+                                padding: '0.25rem', 
+                                fontSize: '0.66rem',
+                                borderColor: 'rgba(239, 68, 68, 0.3)',
+                                color: '#ef4444',
+                                height: '24px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                              }}
+                            >
+                              Decline
+                            </button>
+                          </div>
                         </div>
-                        <p style={{ fontSize: '0.7rem', color: '#ffffff', margin: 0, paddingRight: '1rem', lineHeight: '1.3' }}>
-                          {notif.message}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
+                      ))}
+                    </div>
+                  )}
+
+                  {(state.notifications || []).length === 0 ? (
+                    <div style={{ padding: '2rem 1rem', textAlign: 'center', fontSize: '0.72rem', color: '#525252' }}>
+                      No unread compliance or node alert logs in ledger.
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                      {(state.notifications || []).map((notif) => (
+                        <div 
+                          key={notif.notification_id} 
+                          style={{
+                            background: 'rgba(255,255,255,0.01)',
+                            border: '1px solid rgba(255,255,255,0.03)',
+                            borderRadius: '8px',
+                            padding: '0.5rem',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '0.2rem',
+                            position: 'relative'
+                          }}
+                        >
+                          <button
+                            onClick={() => {
+                              const updated = (state.notifications || []).filter(n => n.notification_id !== notif.notification_id);
+                              state.setNotifications(updated);
+                              if (typeof window !== 'undefined') {
+                                localStorage.setItem('pb_notifications', JSON.stringify(updated));
+                              }
+                            }}
+                            style={{
+                              position: 'absolute',
+                              top: '0.35rem',
+                              right: '0.35rem',
+                              background: 'transparent',
+                              border: 'none',
+                              color: '#525252',
+                              fontSize: '0.66rem',
+                              cursor: 'pointer',
+                              padding: '0 0.2rem'
+                            }}
+                          >
+                            ✕
+                          </button>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                            <span style={{
+                              width: '5px',
+                              height: '5px',
+                              borderRadius: '50%',
+                              background: notif.type === 'investment' ? '#10b981' : notif.type === 'system' ? '#00f2fe' : '#8f00ff'
+                            }} />
+                            <span style={{ fontSize: '0.58rem', fontWeight: '800', textTransform: 'uppercase', color: '#8a8a8a' }}>
+                              {notif.type}
+                            </span>
+                          </div>
+                          <p style={{ fontSize: '0.7rem', color: '#ffffff', margin: 0, paddingRight: '1rem', lineHeight: '1.3' }}>
+                            {notif.message}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
           </div>
 
           <button 
@@ -2867,7 +3025,7 @@ export default function Home() {
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column' }}>
                         <span style={{ fontSize: '0.76rem', fontWeight: '700', color: '#ffffff' }}>1. Identity & SSN</span>
-                        <span style={{ fontSize: '0.62rem', color: '#737373' }}>Passport / Driver's License</span>
+                        <span style={{ fontSize: '0.62rem', color: '#737373' }}>{"Passport / Driver's License"}</span>
                       </div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>

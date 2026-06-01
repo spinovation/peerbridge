@@ -595,6 +595,14 @@ const INITIAL_DIRECTORY = [
   }
 ];
 
+const generateRandomId = (prefix) => {
+  return `${prefix}-${Math.floor(1000 + Math.random() * 9000)}`;
+};
+
+const generateRandomLargeId = (prefix) => {
+  return `${prefix}-${Math.floor(100000 + Math.random() * 900000)}`;
+};
+
 export function usePeerBridge() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [activeTab, setActiveTab] = useState('landing');
@@ -643,6 +651,7 @@ export function usePeerBridge() {
   const [directoryRoleFilter, setDirectoryRoleFilter] = useState('All');
   const [savedCampaignIds, setSavedCampaignIds] = useState(['camp-1']); // EcoSphere bookmarked by default
   const [connections, setConnections] = useState(['db-cust-evelyn', 'db-cust-jenkins']); // initially 2 connections
+  const [connectionRequests, setConnectionRequests] = useState([]);
   const [profileViewers, setProfileViewers] = useState(61);
   const [postImpressions, setPostImpressions] = useState(320);
   const [events, setEvents] = useState([
@@ -713,6 +722,112 @@ export function usePeerBridge() {
     }
   };
 
+  const sendConnectionRequest = (targetMemberId) => {
+    const target = directory.find(m => m.customer_id === targetMemberId) || {};
+    const targetName = target.first_name ? `${target.first_name} ${target.last_name}` : 'Ecosystem Member';
+
+    // Prevent duplicate requests
+    const exists = connectionRequests.find(
+      r => (r.from_id === customer.customer_id && r.to_id === targetMemberId && r.status === 'pending')
+    );
+    if (exists) return { success: false, error: 'Request is already pending.' };
+
+    const newRequest = {
+      id: generateRandomId('req'),
+      from_id: customer.customer_id,
+      from_name: `${customer.first_name} ${customer.last_name}`,
+      from_avatar: basicProfile.profile_picture_url || '',
+      to_id: targetMemberId,
+      to_name: targetName,
+      status: 'pending',
+      created_at: new Date().toISOString()
+    };
+
+    const updatedRequests = [...connectionRequests, newRequest];
+    sync('pb_connection_requests', updatedRequests, setConnectionRequests);
+
+    addNotification('Connection', `Sent secure connection node request to ${targetName}.`);
+    return { success: true };
+  };
+
+  const acceptConnectionRequest = (requestId) => {
+    const req = connectionRequests.find(r => r.id === requestId);
+    if (!req) return { success: false, error: 'Request not found.' };
+
+    // Mark as accepted
+    const updatedRequests = connectionRequests.map(r => {
+      if (r.id === requestId) return { ...r, status: 'accepted' };
+      return r;
+    });
+    sync('pb_connection_requests', updatedRequests, setConnectionRequests);
+
+    // Add to current user's connections
+    if (!connections.includes(req.from_id)) {
+      const nextConnections = [...connections, req.from_id];
+      sync('pb_connections', nextConnections, setConnections);
+    }
+
+    // Add current user to sender's connections in the shared directory
+    const updatedDir = directory.map(member => {
+      if (member.customer_id === req.from_id) {
+        const senderConnections = member.connections || [];
+        if (!senderConnections.includes(customer.customer_id)) {
+          return {
+            ...member,
+            connections: [...senderConnections, customer.customer_id]
+          };
+        }
+      }
+      return member;
+    });
+    sync('pb_directory', updatedDir, setDirectory);
+
+    addNotification('Connection', `Accepted connection node link from ${req.from_name}!`);
+    return { success: true };
+  };
+
+  const declineConnectionRequest = (requestId) => {
+    const req = connectionRequests.find(r => r.id === requestId);
+    if (!req) return { success: false, error: 'Request not found.' };
+
+    // We can either set to 'declined' or remove it completely to allow re-requesting.
+    // Removing completely is cleaner for simulation.
+    const updatedRequests = connectionRequests.filter(r => r.id !== requestId);
+    sync('pb_connection_requests', updatedRequests, setConnectionRequests);
+
+    addNotification('Connection', `Declined connection request from ${req.from_name}.`);
+    return { success: true };
+  };
+
+  const disconnectConnectionNode = (memberId) => {
+    // Remove from current user's connections
+    const nextConnections = connections.filter(id => id !== memberId);
+    sync('pb_connections', nextConnections, setConnections);
+
+    // Remove current user from target's connections in directory
+    const updatedDir = directory.map(member => {
+      if (member.customer_id === memberId) {
+        const senderConnections = member.connections || [];
+        return {
+          ...member,
+          connections: senderConnections.filter(id => id !== customer.customer_id)
+        };
+      }
+      return member;
+    });
+    sync('pb_directory', updatedDir, setDirectory);
+
+    // Remove any accepted connection requests between these two users
+    const updatedRequests = connectionRequests.filter(
+      r => !((r.from_id === customer.customer_id && r.to_id === memberId) || 
+             (r.from_id === memberId && r.to_id === customer.customer_id))
+    );
+    sync('pb_connection_requests', updatedRequests, setConnectionRequests);
+
+    addNotification('Connection', `Unlinked connection node.`);
+    return { success: true };
+  };
+
   const writeToFirestore = async (key, val) => {
     if (!isFirebaseConfigured || !db) return;
     try {
@@ -720,6 +835,12 @@ export function usePeerBridge() {
       if (key === 'pb_directory') {
         const docRef = doc(db, 'global_data', 'directory');
         await setDoc(docRef, { members: val });
+        return;
+      }
+
+      if (key === 'pb_connection_requests') {
+        const docRef = doc(db, 'global_data', 'connection_requests');
+        await setDoc(docRef, { requests: val });
         return;
       }
 
@@ -869,29 +990,46 @@ export function usePeerBridge() {
       const resourcesVal = safeParse('pb_resources', INITIAL_RESOURCES);
       const connectionsVal = safeParse('pb_connections', ['db-cust-evelyn', 'db-cust-jenkins']);
       const dirFilterVal = safeParse('pb_directory_filter', 'All');
+      const requestsVal = safeParse('pb_connection_requests', []);
 
-      setIsAuthenticated(authVal);
-      setCustomer(custVal);
-      setBasicProfile(basicVal);
-      setProfessionalProfile(profVal);
-      setEntrepreneurProfile(entVal);
-      setInvestorProfile(invVal);
-      setAffiliateProfile(affVal);
-      setDirectory(dirVal);
-      setSettings(settingsVal);
-      setCampaigns(campaignsVal);
-      setInvites(invitesVal);
-      setWalletBalance(balanceVal);
-      setConnectedBank(bankVal);
-      setTransactions(transactionsVal);
-      setPortfolio(portfolioVal);
-      setDocumentation(docsVal);
-      setHelpTickets(ticketsVal);
-      setNotifications(notificationsVal);
-      setQaFeed(qaVal);
-      setResources(resourcesVal);
-      setConnections(connectionsVal);
-      setDirectoryRoleFilter(dirFilterVal);
+      setTimeout(() => {
+        setIsAuthenticated(authVal);
+        setCustomer(custVal);
+        setBasicProfile(basicVal);
+        setProfessionalProfile(profVal);
+        setEntrepreneurProfile(entVal);
+        setInvestorProfile(invVal);
+        setAffiliateProfile(affVal);
+        setDirectory(dirVal);
+        setSettings(settingsVal);
+        setCampaigns(campaignsVal);
+        setInvites(invitesVal);
+        setWalletBalance(balanceVal);
+        setConnectedBank(bankVal);
+        setTransactions(transactionsVal);
+        setPortfolio(portfolioVal);
+        setDocumentation(docsVal);
+        setHelpTickets(ticketsVal);
+        setNotifications(notificationsVal);
+        setQaFeed(qaVal);
+        setResources(resourcesVal);
+        // Resolve mutual connections from localStorage requests on mount
+        let resolvedConns = [...connectionsVal];
+        requestsVal.forEach(r => {
+          if (r.status === 'accepted') {
+            if (r.from_id === custVal.customer_id && !resolvedConns.includes(r.to_id)) {
+              resolvedConns.push(r.to_id);
+            }
+            if (r.to_id === custVal.customer_id && !resolvedConns.includes(r.from_id)) {
+              resolvedConns.push(r.from_id);
+            }
+          }
+        });
+
+        setConnections(resolvedConns);
+        setDirectoryRoleFilter(dirFilterVal);
+        setConnectionRequests(requestsVal);
+      }, 0);
 
       // Trigger asynchronous live Firestore data recovery to fetch most up-to-date cloud records!
       if (storedCust) {
@@ -920,6 +1058,47 @@ export function usePeerBridge() {
         }
       };
       fetchGlobalDirectory();
+
+      // Fetch shared global connection requests from Firestore (if configured)
+      const fetchGlobalRequests = async () => {
+        if (isFirebaseConfigured) {
+          try {
+            const reqRef = doc(db, 'global_data', 'connection_requests');
+            const reqSnap = await getDoc(reqRef);
+            if (reqSnap.exists()) {
+              const reqData = reqSnap.data();
+              if (reqData && Array.isArray(reqData.requests)) {
+                setConnectionRequests(reqData.requests);
+                localStorage.setItem('pb_connection_requests', JSON.stringify(reqData.requests));
+                
+                // Resolve mutual connections on mount from Firestore
+                if (storedCust) {
+                  const parsed = JSON.parse(storedCust);
+                  if (parsed && parsed.customer_id) {
+                    setConnections(prev => {
+                      let conns = [...prev];
+                      reqData.requests.forEach(r => {
+                        if (r.status === 'accepted') {
+                          if (r.from_id === parsed.customer_id && !conns.includes(r.to_id)) {
+                            conns.push(r.to_id);
+                          }
+                          if (r.to_id === parsed.customer_id && !conns.includes(r.from_id)) {
+                            conns.push(r.from_id);
+                          }
+                        }
+                      });
+                      return conns;
+                    });
+                  }
+                }
+              }
+            }
+          } catch (err) {
+            console.error("Failed to fetch connection requests from Firestore:", err);
+          }
+        }
+      };
+      fetchGlobalRequests();
     }
   }, []);
 
@@ -955,7 +1134,7 @@ export function usePeerBridge() {
 
     // Create aligned mock database profiles
     const newCustomer = {
-      customer_id: `cust-${Math.floor(1000 + Math.random() * 9000)}`,
+      customer_id: generateRandomId('cust'),
       email,
       first_name: firstName,
       last_name: lastName,
@@ -1311,7 +1490,7 @@ export function usePeerBridge() {
 
   const addTransaction = (type, amount, description) => {
     const newTx = {
-      id: `TX-${Math.floor(100000 + Math.random() * 900000)}`,
+      id: generateRandomLargeId('TX'),
       type,
       amount,
       description,
@@ -1323,7 +1502,7 @@ export function usePeerBridge() {
 
   const addNotification = (type, message) => {
     const newNot = {
-      notification_id: `notif-${Math.floor(1000 + Math.random() * 9000)}`,
+      notification_id: generateRandomId('notif'),
       customer_id: customer.customer_id,
       message,
       type: type.toLowerCase(), // system, investment, document, alert
@@ -1440,7 +1619,7 @@ export function usePeerBridge() {
       updatedPortfolio = [
         ...portfolio,
         {
-          portfolio_id: `port-${Math.floor(1000 + Math.random() * 9000)}`,
+          portfolio_id: generateRandomId('port'),
           customer_id: customer.customer_id,
           investment_id: campaignId,
           companyName: campaign.companyName, // Helper fields for fast GUI rendering
@@ -1475,7 +1654,7 @@ export function usePeerBridge() {
   const addMockTaxDocument = (companyName, investedAmt) => {
     const ordinaryDividends = investedAmt * 0.065;
     const newDoc = {
-      doc_id: `doc-tax-${Math.floor(1000 + Math.random() * 9000)}`,
+      doc_id: generateRandomId('doc-tax'),
       customer_id: customer.customer_id,
       doc_type: 'tax_document',
       file_url: `https://pb-vault.s3.amazonaws.com/1099-DIV_${companyName.replace(/\s+/g, '_')}_2026.pdf`,
@@ -1505,7 +1684,7 @@ export function usePeerBridge() {
     });
 
     const newCamp = {
-      id: `camp-${Math.floor(1000 + Math.random() * 9000)}`,
+      id: generateRandomId('camp'),
       companyName,
       tagline,
       description,
@@ -1533,7 +1712,7 @@ export function usePeerBridge() {
 
     // Write pitch deck to documentation table
     const newPitchDoc = {
-      doc_id: `doc-pitch-${Math.floor(1000 + Math.random() * 9000)}`,
+      doc_id: generateRandomId('doc-pitch'),
       customer_id: customer.customer_id,
       doc_type: 'pitch_deck',
       file_url: `https://pb-vault.s3.amazonaws.com/${companyName.replace(/\s+/g, '_')}_PitchDeck.pdf`,
@@ -1548,7 +1727,7 @@ export function usePeerBridge() {
   // KYC submission (adds records to documentation table)
   const submitKycDocuments = (fileName) => {
     const newKycDoc = {
-      doc_id: `doc-kyc-${Math.floor(1000 + Math.random() * 9000)}`,
+      doc_id: generateRandomId('doc-kyc'),
       customer_id: customer.customer_id,
       doc_type: 'kyc',
       file_url: `https://pb-vault.s3.amazonaws.com/KYC_${fileName.replace(/\s+/g, '_')}`,
@@ -1583,7 +1762,7 @@ export function usePeerBridge() {
   // Affiliate Questions
   const postQuestion = (questionText) => {
     const newQ = {
-      id: `qa-${Math.floor(1000 + Math.random() * 9000)}`,
+      id: generateRandomId('qa'),
       author: `${customer.first_name} ${customer.last_name}`,
       authorRole: customer.role_flags[0] || 'Member',
       question: questionText,
@@ -1607,7 +1786,7 @@ export function usePeerBridge() {
           answers: [
             ...q.answers,
             {
-              id: `ans-${Math.floor(1000 + Math.random() * 9000)}`,
+              id: generateRandomId('ans'),
               author: `${customer.first_name} ${customer.last_name}`,
               authorRole: 'Affiliate',
               avatar: affiliateDetail.avatar,
@@ -1668,7 +1847,7 @@ export function usePeerBridge() {
   // Help tickets database write (Table #11 in Schema)
   const submitHelpTicket = (category, message) => {
     const newTicket = {
-      ticket_id: `tkt-${Math.floor(100000 + Math.random() * 900000)}`,
+      ticket_id: generateRandomLargeId('tkt'),
       customer_id: customer.customer_id,
       category, // technical, billing, account, general
       message,
@@ -1685,7 +1864,7 @@ export function usePeerBridge() {
   // Submit resource to Content Library (Table #9 write)
   const submitResource = (title, category, url) => {
     const newRes = {
-      resource_id: `res-${Math.floor(1000 + Math.random() * 9000)}`,
+      resource_id: generateRandomId('res'),
       title,
       category, // education, guides, tools, support, legal
       url,
@@ -1779,6 +1958,11 @@ export function usePeerBridge() {
     toggleSaveCampaign,
     toggleEventAttendance,
     toggleConnectionNode,
+    connectionRequests,
+    sendConnectionRequest,
+    acceptConnectionRequest,
+    declineConnectionRequest,
+    disconnectConnectionNode,
     
     // Database writing actions
     loginWithInvite,

@@ -14,6 +14,11 @@ export default function ProfileModule({ state }) {
     directory,
     connections,
     toggleConnectionNode,
+    connectionRequests,
+    sendConnectionRequest,
+    acceptConnectionRequest,
+    declineConnectionRequest,
+    disconnectConnectionNode,
     directoryRoleFilter,
     setDirectoryRoleFilter
   } = state;
@@ -23,7 +28,9 @@ export default function ProfileModule({ state }) {
 
   useEffect(() => {
     if (state.profileActiveSubTab) {
-      setActiveSubTab(state.profileActiveSubTab);
+      setTimeout(() => {
+        setActiveSubTab(state.profileActiveSubTab);
+      }, 0);
     }
   }, [state.profileActiveSubTab]);
 
@@ -258,7 +265,7 @@ export default function ProfileModule({ state }) {
                   ))}
                 </div>
                 <p style={styles.titleSub}>{professionalProfile.headline || 'Ecosystem Node member'}</p>
-                <p style={styles.bioText}>"{basicProfile.bio || 'Enter bio details below.'}"</p>
+                <p style={styles.bioText}>&quot;{basicProfile.bio || 'Enter bio details below.'}&quot;</p>
               </div>
             </div>
           </div>
@@ -802,7 +809,7 @@ export default function ProfileModule({ state }) {
                     </div>
                   </div>
 
-                  <p style={styles.dirMemberBio}>"{member.basicProfile?.bio?.slice(0, 100)}..."</p>
+                  <p style={styles.dirMemberBio}>&quot;{member.basicProfile?.bio?.slice(0, 100)}...&quot;</p>
 
                   <div style={styles.dirRolesRow}>
                     {member.role_flags?.map((role) => (
@@ -822,24 +829,115 @@ export default function ProfileModule({ state }) {
                     >
                       🔍 Inspect
                     </button>
-                    {member.customer_id !== customer.customer_id && (
-                      <button 
-                        onClick={() => toggleConnectionNode(member.customer_id)}
-                        className={connections.includes(member.customer_id) ? "btn-secondary" : "btn-primary"}
-                        style={{ 
-                          flex: 1.2, 
-                          justifyContent: 'center', 
-                          padding: '0.45rem', 
-                          fontSize: '0.7rem',
-                          whiteSpace: 'nowrap',
-                          background: connections.includes(member.customer_id) ? 'rgba(16, 185, 129, 0.1)' : '',
-                          color: connections.includes(member.customer_id) ? '#10b981' : '',
-                          border: connections.includes(member.customer_id) ? '1px solid rgba(16, 185, 129, 0.3)' : ''
-                        }}
-                      >
-                        {connections.includes(member.customer_id) ? '🤝 Connected' : '➕ Connect'}
-                      </button>
-                    )}
+                    {member.customer_id !== customer.customer_id && (() => {
+                      const isConnected = connections.includes(member.customer_id);
+                      const outgoingRequest = (connectionRequests || []).find(
+                        r => r.from_id === customer.customer_id && r.to_id === member.customer_id && r.status === 'pending'
+                      );
+                      const incomingRequest = (connectionRequests || []).find(
+                        r => r.from_id === member.customer_id && r.to_id === customer.customer_id && r.status === 'pending'
+                      );
+
+                      if (isConnected) {
+                        return (
+                          <button 
+                            onClick={() => disconnectConnectionNode(member.customer_id)}
+                            className="btn-secondary"
+                            style={{ 
+                              flex: 1.2, 
+                              justifyContent: 'center', 
+                              padding: '0.45rem', 
+                              fontSize: '0.7rem',
+                              whiteSpace: 'nowrap',
+                              background: 'rgba(16, 185, 129, 0.1)',
+                              color: '#10b981',
+                              border: '1px solid rgba(16, 185, 129, 0.3)',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            🤝 Connected ✓
+                          </button>
+                        );
+                      }
+
+                      if (outgoingRequest) {
+                        return (
+                          <button 
+                            disabled
+                            className="btn-secondary"
+                            style={{ 
+                              flex: 1.2, 
+                              justifyContent: 'center', 
+                              padding: '0.45rem', 
+                              fontSize: '0.7rem',
+                              whiteSpace: 'nowrap',
+                              background: 'rgba(212, 175, 55, 0.05)',
+                              color: '#d4af37',
+                              border: '1px solid rgba(212, 175, 55, 0.2)',
+                              opacity: 0.8,
+                              cursor: 'not-allowed'
+                            }}
+                          >
+                            ⏱ Requested...
+                          </button>
+                        );
+                      }
+
+                      if (incomingRequest) {
+                        return (
+                          <div style={{ display: 'flex', gap: '0.25rem', flex: 1.2 }}>
+                            <button 
+                              onClick={() => acceptConnectionRequest(incomingRequest.id)}
+                              className="btn-primary"
+                              style={{ 
+                                flex: 1,
+                                justifyContent: 'center',
+                                padding: '0.45rem 0.25rem', 
+                                fontSize: '0.68rem',
+                                whiteSpace: 'nowrap',
+                                background: '#10b981',
+                                borderColor: '#10b981',
+                                color: '#000000',
+                                fontWeight: '700'
+                              }}
+                            >
+                              Accept
+                            </button>
+                            <button 
+                              onClick={() => declineConnectionRequest(incomingRequest.id)}
+                              className="btn-secondary"
+                              style={{ 
+                                flex: 1,
+                                justifyContent: 'center',
+                                padding: '0.45rem 0.25rem', 
+                                fontSize: '0.68rem',
+                                whiteSpace: 'nowrap',
+                                borderColor: 'rgba(239, 68, 68, 0.3)',
+                                color: '#ef4444'
+                              }}
+                            >
+                              Decline
+                            </button>
+                          </div>
+                        );
+                      }
+
+                      return (
+                        <button 
+                          onClick={() => sendConnectionRequest(member.customer_id)}
+                          className="btn-primary"
+                          style={{ 
+                            flex: 1.2, 
+                            justifyContent: 'center', 
+                            padding: '0.45rem', 
+                            fontSize: '0.7rem',
+                            whiteSpace: 'nowrap'
+                          }}
+                        >
+                          ➕ Connect
+                        </button>
+                      );
+                    })()}
                   </div>
                 </div>
               ))

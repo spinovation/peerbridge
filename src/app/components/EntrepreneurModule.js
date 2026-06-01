@@ -42,14 +42,16 @@ export default function EntrepreneurModule({ state }) {
   // Keep local states synced if context changes
   useEffect(() => {
     if (entrepreneurProfile) {
-      setCompanyNameProfile(entrepreneurProfile.company_name || '');
-      setBusinessStage(entrepreneurProfile.business_stage || 'revenue');
-      setIndustry(entrepreneurProfile.industry || 'CleanTech');
-      setFundingGoal(entrepreneurProfile.funding_goal || 0);
-      setValuationProfile(entrepreneurProfile.valuation || 0);
-      setCompanySummary(entrepreneurProfile.company_summary || '');
-      setPitchDeckUrl(entrepreneurProfile.pitch_deck_url || '');
-      setTeam(entrepreneurProfile.team || []);
+      setTimeout(() => {
+        setCompanyNameProfile(entrepreneurProfile.company_name || '');
+        setBusinessStage(entrepreneurProfile.business_stage || 'revenue');
+        setIndustry(entrepreneurProfile.industry || 'CleanTech');
+        setFundingGoal(entrepreneurProfile.funding_goal || 0);
+        setValuationProfile(entrepreneurProfile.valuation || 0);
+        setCompanySummary(entrepreneurProfile.company_summary || '');
+        setPitchDeckUrl(entrepreneurProfile.pitch_deck_url || '');
+        setTeam(entrepreneurProfile.team || []);
+      }, 0);
     }
   }, [entrepreneurProfile]);
 
@@ -356,7 +358,7 @@ export default function EntrepreneurModule({ state }) {
             {myCampaigns.length === 0 ? (
               <div className="glass-panel" style={styles.emptyCard}>
                 <h3>No Registered Campaigns</h3>
-                <p>You have not launched any Reg CF capital rounds yet. Click 'Launch Capital Round' to begin raising.</p>
+                <p>{"You have not launched any Reg CF capital rounds yet. Click 'Launch Capital Round' to begin raising."}</p>
                 <button
                   onClick={() => setShowLauncher(true)}
                   className="btn-primary"
