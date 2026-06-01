@@ -11,6 +11,10 @@ export default function SalesAdminModule({ state }) {
   const [dragActive, setDragActive] = useState(false);
   const [memberSearchQuery, setMemberSearchQuery] = useState('');
   
+  // Single waitlist invite states
+  const [singleEmail, setSingleEmail] = useState('');
+  const [generatedCode, setGeneratedCode] = useState('');
+  
   const fileInputRef = useRef(null);
 
   // Simulated last login times and invite codes for existing users to make ledger rich and realistic
@@ -70,6 +74,33 @@ export default function SalesAdminModule({ state }) {
       setError('');
       setSuccess(`Dispatched invitation emails with code '${selectedCode}' to ${res.count} recipient(s)!`);
       setTimeout(() => setSuccess(''), 4000);
+    } else {
+      setError(res.error);
+    }
+  };
+
+  const handleSingleInvite = (e) => {
+    e.preventDefault();
+    if (!singleEmail.trim()) {
+      setError('Please provide an email address.');
+      return;
+    }
+
+    const cleanEmail = singleEmail.trim().toLowerCase();
+    const emailPrefix = cleanEmail.split('@')[0].toUpperCase().replace(/[^A-Z0-9]/g, '');
+    const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+    const code = `PB-INV-${emailPrefix}-${randomSuffix}`;
+
+    const res = state.generateInviteCode(code);
+    if (res.success) {
+      setGeneratedCode(code);
+      setSuccess(`Waitlist invite registered successfully for ${cleanEmail}!`);
+      setTimeout(() => setSuccess(''), 4000);
+      setError('');
+      
+      // Link invite to email logs
+      state.sendBulkInvitations(cleanEmail, code);
+      setSingleEmail('');
     } else {
       setError(res.error);
     }
@@ -275,6 +306,70 @@ export default function SalesAdminModule({ state }) {
                 Generate Key Token
               </button>
             </form>
+          </div>
+
+          {/* Single Waitlist Email Invitation */}
+          <div className="glass-panel" style={styles.card}>
+            <h3 style={styles.cardTitle}>✉ Single waitlist email invitation</h3>
+            <p style={styles.cardDesc}>
+              Generate a unique waitlist bypass code for a prospective member. They can copy this code and register immediately.
+            </p>
+
+            <form onSubmit={handleSingleInvite} style={styles.form}>
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>Recipient Email Address</label>
+                <input
+                  type="email"
+                  placeholder="e.g. testuser@peerbridge.ai"
+                  value={singleEmail}
+                  onChange={(e) => setSingleEmail(e.target.value)}
+                  style={styles.input}
+                  required
+                />
+              </div>
+
+              {error && singleEmail && <span style={styles.errorText}>{error}</span>}
+
+              <button type="submit" className="btn-primary" style={{ alignSelf: 'flex-start', padding: '0.5rem 1rem', fontSize: '0.76rem' }}>
+                Generate & Register Invite Code
+              </button>
+            </form>
+
+            {generatedCode && (
+              <div style={{
+                marginTop: '0.75rem',
+                background: 'rgba(0, 242, 254, 0.05)',
+                border: '1px solid rgba(0, 242, 254, 0.25)',
+                borderRadius: '8px',
+                padding: '1rem',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.5rem'
+              }}>
+                <span style={{ fontSize: '0.7rem', color: '#00f2fe', fontWeight: '800', textTransform: 'uppercase' }}>
+                  🔑 Cryptographic Waitlist Bypass Code
+                </span>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(0,0,0,0.3)', padding: '0.5rem 0.75rem', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                  <code style={{ fontSize: '0.9rem', color: '#ffffff', fontWeight: '800', letterSpacing: '0.05em' }}>
+                    {generatedCode}
+                  </code>
+                  <button 
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(generatedCode);
+                      setSuccess('Copied to clipboard!');
+                      setTimeout(() => setSuccess(''), 2000);
+                    }}
+                    style={{ background: 'transparent', border: 'none', color: '#00f2fe', fontSize: '0.7rem', fontWeight: '750', cursor: 'pointer' }}
+                  >
+                    Copy
+                  </button>
+                </div>
+                <span style={{ fontSize: '0.64rem', color: '#a3a3a3', lineHeight: '1.25' }}>
+                  Provide this code to the user. They can click the <strong>Invite Gate</strong> tab on the landing page, enter this code, and register instantly!
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Bulk Email Invitations & Drag Drop Parser */}

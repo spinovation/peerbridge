@@ -35,6 +35,13 @@ export default function Home() {
   const [showNetWorthVettingModal, setShowNetWorthVettingModal] = useState(false);
   const [showVettingCenter, setShowVettingCenter] = useState(false);
 
+  // Auto-collapse right sidebar Vetting Center card when navigating away from Documents module
+  useEffect(() => {
+    if (state.activeModule !== 'documents') {
+      setShowVettingCenter(false);
+    }
+  }, [state.activeModule]);
+
   // Sync chats with localStorage
   useEffect(() => {
     if (typeof window !== 'undefined') {
