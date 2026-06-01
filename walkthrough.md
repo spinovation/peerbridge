@@ -37,7 +37,13 @@ Furthermore, we diagnosed and resolved the final blockages causing the **Next.js
 * **The Issue**: In the `postQuestion` handler, the state synchronizer mistakenly called `setCampaigns` instead of `setQaFeed`, which would override the user's startup marketplace offerings list with the Q&A thread structure, breaking the campaigns module.
 * **The Resolution**: Changed the state syncing method to reference the correct Q&A setter `setQaFeed`.
 
+### Responsive Layout & CSS Grid Track Scaling: [page.js](file:///Users/sridhargs/Documents/Antigravity/peer-bridge/src/app/page.js) & [globals.css](file:///Users/sridhargs/Documents/Antigravity/peer-bridge/src/app/globals.css)
+* **The Issue**: On laptop/desktop screen sizes (between 1200px and 1400px), the middle work content panel grid column was styled with a standard `1fr` track. Because CSS Grid default `1fr` translates to `minmax(auto, 1fr)`, its minimum width evaluates to the content size (the side-by-side compliance cards and gaps totaling 672px). The middle grid cell refused to shrink below 672px, causing the entire layout grid to exceed the viewport width and push the right sidebar off-screen and cut it off.
+* **The Resolution**: Changed all grid column layouts from `1fr` to `minmax(0, 1fr)` tracks inside `styles.mainLayout`, the advanced search filters grid, and all media query breakpoints in `src/app/globals.css`.
+* **Result**: The middle content panel now dynamically contracts under reduced screens, successfully triggering `flex-wrap` card wrapping inside modules, completely eliminating layout overflows!
+
 ---
+
 
 ## 2. Verification & Validation Results
 
