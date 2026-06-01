@@ -1335,6 +1335,10 @@ export function usePeerBridge() {
 
     // Check if it is Sarah Connor's default profile
     if (cleanEmail === INITIAL_CUSTOMERS.email.toLowerCase()) {
+      const sarahInDir = directory.find(m => m.customer_id === INITIAL_CUSTOMERS.customer_id);
+      if (sarahInDir && sarahInDir.status === 'blocked') {
+        return { success: false, error: 'Access Denied: This account has been blocked by Sales Operations.' };
+      }
       if (password !== 'password123') {
         return { success: false, error: 'Incorrect password for Sarah Connor. Hint: password123' };
       }
@@ -1386,6 +1390,10 @@ export function usePeerBridge() {
     const member = directory.find(m => m.email.toLowerCase() === cleanEmail);
     if (!member) {
       return { success: false, error: 'Member not found in invitation registry. Register first!' };
+    }
+
+    if (member.status === 'blocked') {
+      return { success: false, error: 'Access Denied: This account has been blocked by Sales Operations.' };
     }
 
     if (password !== 'password123') {
@@ -1849,6 +1857,109 @@ export function usePeerBridge() {
     return { success: true, count: emails.length };
   };
 
+  const resetUserPassword = (userId) => {
+    const member = directory.find(m => m.customer_id === userId);
+    if (!member) return { success: false, error: 'Member not found.' };
+
+    addNotification('System', `Admin Security: Password reset initiated for ${member.first_name} ${member.last_name}. Temporary password set to 'password123'.`);
+    return { success: true };
+  };
+
+  const toggleBlockUser = (userId) => {
+    const updatedDir = directory.map(m => {
+      if (m.customer_id === userId) {
+        const nextStatus = m.status === 'blocked' ? 'active' : 'blocked';
+        return { ...m, status: nextStatus };
+      }
+      return m;
+    });
+    sync('pb_directory', updatedDir, setDirectory);
+
+    const member = directory.find(m => m.customer_id === userId);
+    if (member) {
+      const isBlocking = member.status !== 'blocked';
+      addNotification('System', `Admin Security: User ${member.first_name} ${member.last_name} has been ${isBlocking ? 'blocked' : 'unblocked'} from the ecosystem.`);
+    }
+    return { success: true };
+  };
+
+  const deleteUserFromDirectory = (userId) => {
+    const member = directory.find(m => m.customer_id === userId);
+    if (!member) return { success: false, error: 'Member not found.' };
+
+    const updatedDir = directory.filter(m => m.customer_id !== userId);
+    sync('pb_directory', updatedDir, setDirectory);
+
+    // Also purge connection requests involving this user
+    const updatedRequests = connectionRequests.filter(r => r.from_id !== userId && r.to_id !== userId);
+    sync('pb_connection_requests', updatedRequests, setConnectionRequests);
+
+    // Also remove from current connections if connected
+    if (connections.includes(userId)) {
+      setConnections(connections.filter(id => id !== userId));
+    }
+
+    addNotification('System', `Admin Security: User profile ${member.first_name} ${member.last_name} deleted from global invitation registry.`);
+    return { success: true };
+  };
+
+  const vetUserCredentials = (userId) => {
+    const updatedDir = directory.map(m => {
+      if (m.customer_id === userId) {
+        const nextStatus = m.status === 'verified' ? 'active' : 'verified';
+        return { ...m, status: nextStatus };
+      }
+      return m;
+    });
+    sync('pb_directory', updatedDir, setDirectory);
+
+    const member = directory.find(m => m.customer_id === userId);
+    if (member) {
+      const isVetting = member.status !== 'verified';
+      addNotification('System', `Admin Security: ${member.first_name} ${member.last_name} credentials ${isVetting ? 'vetted and issued SEC security badge' : 'revoked to KYC Pending'}.`);
+    }
+    return { success: true };
+  };
+
+  const simulateIncomingRequest = (fromMemberId) => {
+    const fromMember = directory.find(m => m.customer_id === fromMemberId);
+    if (!fromMember) return { success: false, error: 'Simulation member not found.' };
+
+    // Prevent duplicate requests
+    const exists = connectionRequests.find(
+      r => (r.from_id === fromMemberId && r.to_id === customer.customer_id)
+    );
+    if (exists) {
+      // If request is already there, let's just make it pending again for simulation
+      const updated = connectionRequests.map(r => {
+        if (r.from_id === fromMemberId && r.to_id === customer.customer_id) {
+          return { ...r, status: 'pending' };
+        }
+        return r;
+      });
+      sync('pb_connection_requests', updated, setConnectionRequests);
+      addNotification('Connection', `Simulated active connection node invitation request from ${fromMember.first_name} ${fromMember.last_name}.`);
+      return { success: true };
+    }
+
+    const newRequest = {
+      id: `sim-${generateRandomId('req')}`,
+      from_id: fromMemberId,
+      from_name: `${fromMember.first_name} ${fromMember.last_name}`,
+      from_avatar: fromMember.basicProfile?.profile_picture_url || '',
+      to_id: customer.customer_id,
+      to_name: `${customer.first_name} ${customer.last_name}`,
+      status: 'pending',
+      created_at: new Date().toISOString()
+    };
+
+    const updatedRequests = [...connectionRequests, newRequest];
+    sync('pb_connection_requests', updatedRequests, setConnectionRequests);
+
+    addNotification('Connection', `Simulated active connection node invitation request from ${fromMember.first_name} ${fromMember.last_name}.`);
+    return { success: true };
+  };
+
   // Help tickets database write (Table #11 in Schema)
   const submitHelpTicket = (category, message) => {
     const newTicket = {
@@ -1993,6 +2104,11 @@ export function usePeerBridge() {
     submitHelpTicket,
     submitResource,
     setCustomer,
-    setDirectory
+    setDirectory,
+    resetUserPassword,
+    toggleBlockUser,
+    deleteUserFromDirectory,
+    vetUserCredentials,
+    simulateIncomingRequest
   };
 }

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { usePeerBridge } from './usePeerBridge';
+import { isFirebaseConfigured } from './firebase';
 import LandingView from './components/LandingView';
 import ProfileModule from './components/ProfileModule';
 import SalesAdminModule from './components/SalesAdminModule';
@@ -22,6 +23,7 @@ export default function Home() {
   
   // Dynamic header and chat cockpit states
   const [showNotificationsDropdown, setShowNotificationsDropdown] = useState(false);
+  const [showSimulatorDropdown, setShowSimulatorDropdown] = useState(false);
   const [chatExpanded, setChatExpanded] = useState(false);
   const [activeChatRecipient, setActiveChatRecipient] = useState(null);
   const [chatInputText, setChatInputText] = useState('');
@@ -43,6 +45,26 @@ export default function Home() {
       }
     }
   }, []);
+
+  // Automatically logout if the current user gets blocked or deleted in database/directory
+  useEffect(() => {
+    if (state.isAuthenticated && state.customer?.customer_id) {
+      // Find current user in directory to see if they were blocked/deleted
+      const currentInDir = state.directory.find(m => m.customer_id === state.customer.customer_id);
+      if (currentInDir) {
+        if (currentInDir.status === 'blocked') {
+          alert("🚨 Administrative Lock: Your profile has been blocked by Sales Operations. Logging out.");
+          state.logout();
+        }
+      } else {
+        // If not Sarah Connor (who might not be in directory initially, but she is registered on login), check if deleted
+        if (state.customer.customer_id !== 'db-cust-7718') {
+          alert("🚨 Administrative PURGE: Your profile was deleted from the ecosystem invitation registry. Logging out.");
+          state.logout();
+        }
+      }
+    }
+  }, [state.directory, state.customer, state.isAuthenticated]);
 
   const syncChats = (threads) => {
     setChatThreads(threads);
@@ -2414,7 +2436,7 @@ export default function Home() {
 
         {/* Column 3: Header Controls (Right side) */}
         <div style={styles.headerRightActions}>
-          {state.user.role === 'Sales Admin' && (
+          {(state.user.role === 'Sales Admin' || state.customer?.email === 'sarah@skynet-rebel.io') && (
             <button 
               onClick={() => state.setActiveModule('admin')} 
               style={state.activeModule === 'admin' ? styles.adminBtnActive : styles.adminBtn}
@@ -2423,6 +2445,147 @@ export default function Home() {
               🔑 Admissions
             </button>
           )}
+
+          {/* Connection Simulator Panel */}
+          <div style={{ position: 'relative', display: 'inline-block' }}>
+            <button
+              onClick={() => setShowSimulatorDropdown(!showSimulatorDropdown)}
+              style={{
+                background: isFirebaseConfigured ? 'rgba(16, 185, 129, 0.05)' : 'rgba(212, 175, 55, 0.05)',
+                border: isFirebaseConfigured ? '1px solid rgba(16, 185, 129, 0.2)' : '1px solid rgba(212, 175, 55, 0.2)',
+                color: isFirebaseConfigured ? '#10b981' : '#d4af37',
+                padding: '0.45rem 0.85rem',
+                borderRadius: '6px',
+                fontSize: '0.7rem',
+                fontWeight: '700',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+                transition: 'all 0.2s',
+                height: '32px'
+              }}
+              title="Ecosystem Sync & Simulator Panel"
+            >
+              <span className="pulse-indicator" style={{
+                width: '6px',
+                height: '6px',
+                borderRadius: '50%',
+                background: isFirebaseConfigured ? '#10b981' : '#d4af37',
+                display: 'inline-block',
+                boxShadow: isFirebaseConfigured ? '0 0 8px #10b981' : '0 0 8px #d4af37'
+              }} />
+              <span>{isFirebaseConfigured ? 'Live Cloud Sync' : 'Sandbox Simulator'}</span>
+            </button>
+            
+            {showSimulatorDropdown && (
+              <div
+                className="glass-panel"
+                style={{
+                  position: 'absolute',
+                  top: '40px',
+                  right: '0',
+                  width: '280px',
+                  background: 'rgba(10, 10, 10, 0.98)',
+                  backdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  borderRadius: '12px',
+                  boxShadow: '0 20px 25px -5px rgba(0,0,0,0.5), 0 10px 10px -5px rgba(0,0,0,0.4)',
+                  padding: '1rem',
+                  zIndex: 10001,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.75rem'
+                }}
+              >
+                <div style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '0.5rem' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#ffffff', display: 'block' }}>
+                    🛠 Sandbox Sync Console
+                  </span>
+                  <span style={{ fontSize: '0.62rem', color: '#a3a3a3', marginTop: '0.1rem', display: 'block', lineHeight: '1.2' }}>
+                    {isFirebaseConfigured 
+                      ? 'Live Cloud Firestore sync active. Multi-tab refresh is supported.' 
+                      : 'Offline Mode: Browsers block cross-tab storage. Use simulation triggers to verify flows.'
+                    }
+                  </span>
+                </div>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                  <span style={{ fontSize: '0.62rem', fontWeight: '700', color: '#8b5cf6', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                    Test Connection Handshakes
+                  </span>
+                  
+                  <button
+                    onClick={() => {
+                      state.simulateIncomingRequest('dir-cust-marcus');
+                      setShowSimulatorDropdown(false);
+                      setShowNotificationsDropdown(true);
+                    }}
+                    className="btn-secondary"
+                    style={{
+                      justifyContent: 'flex-start',
+                      padding: '0.45rem',
+                      fontSize: '0.68rem',
+                      background: 'rgba(255,255,255,0.02)',
+                      border: '1px solid rgba(255,255,255,0.06)',
+                      textAlign: 'left'
+                    }}
+                  >
+                    👋 Request from Marcus Vance
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      state.simulateIncomingRequest('dir-cust-devon');
+                      setShowSimulatorDropdown(false);
+                      setShowNotificationsDropdown(true);
+                    }}
+                    className="btn-secondary"
+                    style={{
+                      justifyContent: 'flex-start',
+                      padding: '0.45rem',
+                      fontSize: '0.68rem',
+                      background: 'rgba(255,255,255,0.02)',
+                      border: '1px solid rgba(255,255,255,0.06)',
+                      textAlign: 'left'
+                    }}
+                  >
+                    👋 Request from Devon Lane
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      state.simulateIncomingRequest('dir-cust-kofi');
+                      setShowSimulatorDropdown(false);
+                      setShowNotificationsDropdown(true);
+                    }}
+                    className="btn-secondary"
+                    style={{
+                      justifyContent: 'flex-start',
+                      padding: '0.45rem',
+                      fontSize: '0.68rem',
+                      background: 'rgba(255,255,255,0.02)',
+                      border: '1px solid rgba(255,255,255,0.06)',
+                      textAlign: 'left'
+                    }}
+                  >
+                    👋 Request from Kofi Anan
+                  </button>
+                </div>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '0.5rem' }}>
+                  <span style={{ fontSize: '0.62rem', color: '#737373' }}>
+                    Status: <strong>{isFirebaseConfigured ? '🟢 Live Firestore' : '🟡 Simulated Sandbox'}</strong>
+                  </span>
+                  {!isFirebaseConfigured && (
+                    <div style={{ background: 'rgba(212,175,55,0.03)', border: '1px solid rgba(212,175,55,0.1)', padding: '0.4rem', borderRadius: '4px', fontSize: '0.58rem', color: '#d4af37', lineHeight: '1.2' }}>
+                      To connect real database syncing, provision Firebase variables in your hosting dashboard.
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
 
           <div style={{ position: 'relative', display: 'inline-block' }}>
             <button
