@@ -354,3 +354,15 @@ a:hover {
   }
 }
 
+/* Premium Vetting Center Item Hover Interactions */
+.vetting-item-hover {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.vetting-item-hover:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+

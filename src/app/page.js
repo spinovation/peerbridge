@@ -27,6 +27,10 @@ export default function Home() {
   const [chatInputText, setChatInputText] = useState('');
   const [chatThreads, setChatThreads] = useState({});
   const [chatSearchQuery, setChatSearchQuery] = useState('');
+  const [showIdVettingModal, setShowIdVettingModal] = useState(false);
+  const [showEduVettingModal, setShowEduVettingModal] = useState(false);
+  const [showWorkVettingModal, setShowWorkVettingModal] = useState(false);
+  const [showNetWorthVettingModal, setShowNetWorthVettingModal] = useState(false);
 
   // Sync chats with localStorage
   useEffect(() => {
@@ -113,6 +117,634 @@ export default function Home() {
           </div>
         )}
       </>
+    );
+  };
+
+  const [idVettingLoading, setIdVettingLoading] = useState(false);
+  const [idBiometricAgreed, setIdBiometricAgreed] = useState(false);
+  const [idUploadDone, setIdUploadDone] = useState(false);
+  const [eduLoading, setEduLoading] = useState(false);
+  const [eduDone, setEduDone] = useState(false);
+  const [workEmail, setWorkEmail] = useState('');
+  const [workPin, setWorkPin] = useState('');
+  const [workStage, setWorkStage] = useState(1); // 1 = Input Email, 2 = Verify Code, 3 = Success
+  const [workLoading, setWorkLoading] = useState(false);
+  const [workError, setWorkError] = useState('');
+  const [cashAssets, setCashAssets] = useState(200000);
+  const [investAssets, setInvestAssets] = useState(950000);
+  const [debtLiabilities, setDebtLiabilities] = useState(150000);
+  const [netWorthLoading, setNetWorthLoading] = useState(false);
+  const [netWorthDone, setNetWorthDone] = useState(false);
+
+  const renderIdVettingModal = () => {
+    return (
+      <div style={{
+        position: 'fixed',
+        inset: 0,
+        background: 'rgba(0,0,0,0.85)',
+        backdropFilter: 'blur(10px)',
+        zIndex: 100000,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '1rem'
+      }}>
+        <div className="glass-panel animate-fade-in-up" style={{
+          maxWidth: '480px',
+          width: '100%',
+          padding: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1.5rem',
+          position: 'relative'
+        }}>
+          <button 
+            onClick={() => {
+              setShowIdVettingModal(false);
+              setIdBiometricAgreed(false);
+              setIdUploadDone(false);
+            }} 
+            style={{
+              position: 'absolute',
+              top: '1rem',
+              right: '1rem',
+              background: 'transparent',
+              border: 'none',
+              color: '#a3a3a3',
+              fontSize: '1.25rem',
+              cursor: 'pointer'
+            }}
+          >
+            ✕
+          </button>
+          
+          <h3 style={{ fontSize: '1.15rem', fontWeight: '800', margin: 0, color: '#ffffff', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span>👤</span> Stage 1: Identity & SSN Vetting
+          </h3>
+          
+          <p style={{ fontSize: '0.82rem', color: '#a3a3a3', lineHeight: '1.4', margin: 0 }}>
+            Under SEC Reg D alternative fundraising compliance sweeps, you must verify your identity using standard biometric scans.
+          </p>
+
+          {!idBiometricAgreed ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.04)', padding: '1rem', borderRadius: '8px' }}>
+                <h4 style={{ fontSize: '0.8rem', color: '#ffffff', margin: '0 0 0.5rem 0' }}>Biometrics Attestation Agreement</h4>
+                <p style={{ fontSize: '0.74rem', color: '#737373', lineHeight: '1.3', margin: 0 }}>
+                  I agree to process my passport or government-issued driver's license followed by a 3D facial sweep to verify my unique physical identity signature.
+                </p>
+              </div>
+              <button
+                onClick={() => setIdBiometricAgreed(true)}
+                className="btn-primary"
+                style={{ width: '100%', justifyContent: 'center' }}
+              >
+                Accept & Proceed
+              </button>
+            </div>
+          ) : idVettingLoading ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem 1rem', gap: '1rem' }}>
+              <div className="animate-spin" style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '50%',
+                border: '2px solid rgba(0, 242, 254, 0.1)',
+                borderTopColor: '#00f2fe',
+                animation: 'spin 1s linear infinite'
+              }}></div>
+              <style>{`
+                @keyframes spin {
+                  to { transform: rotate(360deg); }
+                }
+              `}</style>
+              <div style={{ fontSize: '0.8rem', color: '#00f2fe', fontWeight: '700', animation: 'pulse 1.5s infinite' }}>
+                Biometric Face Match in Progress...
+              </div>
+              <p style={{ fontSize: '0.7rem', color: '#737373', textAlign: 'center', margin: 0 }}>
+                Verifying license text against SEC compliance Sweeps and comparing portrait biometrics.
+              </p>
+            </div>
+          ) : idUploadDone ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.25rem', textAlign: 'center', padding: '1rem 0' }}>
+              <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', color: '#10b981' }}>
+                ✓
+              </div>
+              <div>
+                <h4 style={{ fontSize: '0.95rem', color: '#ffffff', margin: '0 0 0.25rem 0' }}>Biometrics Verification Complete!</h4>
+                <p style={{ fontSize: '0.78rem', color: '#a3a3a3', margin: 0 }}>
+                  We found a match! Passport signature and face sweep verified successfully.
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  state.updateProfiles(
+                    { status: 'verified', ssn: 'XXX-XX-7718' },
+                    { address: '100 Cyberdyne Way, Los Angeles, CA 90001', profile_picture_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&q=80' }
+                  );
+                  setShowIdVettingModal(false);
+                  setIdBiometricAgreed(false);
+                  setIdUploadDone(false);
+                }}
+                className="btn-primary"
+                style={{ width: '100%', justifyContent: 'center' }}
+              >
+                Finalize & Unlock Sector
+              </button>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', alignItems: 'center' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.03)', width: '100%' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#ffffff', padding: '0.5rem', borderRadius: '8px', width: '100px', height: '100px' }}>
+                  <svg width="80" height="80" viewBox="0 0 29 29" style={{ width: '100%', height: '100%' }}>
+                    <path fill="#000" d="M0 0h9v9H0zm1 1h7v7H1zm11 0h9v9h-9zm1 1h7v7h-7zM0 12h9v9H0zm1 1h7v7H1zm11 0h9v9h-9zm1 1h7v7h-7zM20 20h9v9h-9zm1 1h7v7h-7zM0 24h9v9H0zm1 1h7v7H1zm11 0h9v9h-9zm1 1h7v7h-7z" />
+                  </svg>
+                </div>
+                <span style={{ fontSize: '0.64rem', color: '#737373', textAlign: 'center' }}>
+                  Scan this QR code with your phone camera to securely upload your Passport/License and snap a selfie.
+                </span>
+              </div>
+              
+              <div style={{ height: '1px', background: 'rgba(255,255,255,0.05)', width: '100%' }}></div>
+              
+              <button
+                onClick={() => {
+                  setIdVettingLoading(true);
+                  setTimeout(() => {
+                    setIdVettingLoading(false);
+                    setIdUploadDone(true);
+                  }, 2000);
+                }}
+                className="btn-primary"
+                style={{ width: '100%', justifyContent: 'center', background: 'linear-gradient(135deg, #00f2fe 0%, #8f00ff 100%)', color: '#000000', border: 'none', fontWeight: '800' }}
+              >
+                📱 Simulate Phone Scan & Upload
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const renderEduVettingModal = () => {
+    return (
+      <div style={{
+        position: 'fixed',
+        inset: 0,
+        background: 'rgba(0,0,0,0.85)',
+        backdropFilter: 'blur(10px)',
+        zIndex: 100000,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '1rem'
+      }}>
+        <div className="glass-panel animate-fade-in-up" style={{
+          maxWidth: '450px',
+          width: '100%',
+          padding: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1.5rem',
+          position: 'relative'
+        }}>
+          <button 
+            onClick={() => {
+              setShowEduVettingModal(false);
+              setEduDone(false);
+            }} 
+            style={{
+              position: 'absolute',
+              top: '1rem',
+              right: '1rem',
+              background: 'transparent',
+              border: 'none',
+              color: '#a3a3a3',
+              fontSize: '1.25rem',
+              cursor: 'pointer'
+            }}
+          >
+            ✕
+          </button>
+          
+          <h3 style={{ fontSize: '1.15rem', fontWeight: '800', margin: 0, color: '#ffffff', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span>🎓</span> Stage 2: Academic Verification
+          </h3>
+          
+          <p style={{ fontSize: '0.82rem', color: '#a3a3a3', lineHeight: '1.4', margin: 0 }}>
+            Upload a copy of your diploma or degree certificate, followed by a selfie biometric matching scan.
+          </p>
+
+          {eduLoading ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem 1rem', gap: '1rem' }}>
+              <div style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '50%',
+                border: '2px solid rgba(99, 102, 241, 0.1)',
+                borderTopColor: '#6366f1',
+                animation: 'spin 1s linear infinite'
+              }}></div>
+              <div style={{ fontSize: '0.8rem', color: '#6366f1', fontWeight: '700', animation: 'pulse 1.5s infinite' }}>
+                Scanning Diploma authenticity...
+              </div>
+            </div>
+          ) : eduDone ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.25rem', textAlign: 'center', padding: '1rem 0' }}>
+              <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', color: '#10b981' }}>
+                ✓
+              </div>
+              <div>
+                <h4 style={{ fontSize: '0.95rem', color: '#ffffff', margin: '0 0 0.25rem 0' }}>Academic Verification Complete!</h4>
+                <p style={{ fontSize: '0.78rem', color: '#a3a3a3', margin: 0 }}>
+                  Diploma matched with face biometrics successfully. Stanford Graduate GSB MBA verified.
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  const existingEdu = state.professionalProfile.education || [];
+                  const exists = existingEdu.some(e => e.institution?.includes('Stanford'));
+                  if (!exists) {
+                    const newEdu = [
+                      ...existingEdu,
+                      { degree: 'Master of Business Administration (MBA)', institution: 'Stanford Graduate School of Business', year: 2015, field: 'Fintech & Sustainable Development' }
+                    ];
+                    state.updateProfiles(null, null, { ...state.professionalProfile, education: newEdu });
+                  }
+                  setShowEduVettingModal(false);
+                  setEduDone(false);
+                }}
+                className="btn-primary"
+                style={{ width: '100%', justifyContent: 'center' }}
+              >
+                Add Credentials & Activate Arc
+              </button>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', background: 'rgba(255,255,255,0.01)', padding: '1.25rem', borderRadius: '8px', border: '1px dashed rgba(255,255,255,0.08)', alignItems: 'center', justifyContent: 'center', height: '120px' }}>
+                <span style={{ fontSize: '1.5rem' }}>📄</span>
+                <span style={{ fontSize: '0.78rem', color: '#ffffff', fontWeight: '600' }}>Drop diploma scan here</span>
+                <span style={{ fontSize: '0.64rem', color: '#737373' }}>PDF, JPG, or PNG up to 10MB</span>
+              </div>
+              <button
+                onClick={() => {
+                  setEduLoading(true);
+                  setTimeout(() => {
+                    setEduLoading(false);
+                    setEduDone(true);
+                  }, 1500);
+                }}
+                className="btn-primary"
+                style={{ width: '100%', justifyContent: 'center' }}
+              >
+                📁 Simulate Diploma & Selfie Upload
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const renderWorkVettingModal = () => {
+    return (
+      <div style={{
+        position: 'fixed',
+        inset: 0,
+        background: 'rgba(0,0,0,0.85)',
+        backdropFilter: 'blur(10px)',
+        zIndex: 100000,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '1rem'
+      }}>
+        <div className="glass-panel animate-fade-in-up" style={{
+          maxWidth: '420px',
+          width: '100%',
+          padding: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1.5rem',
+          position: 'relative'
+        }}>
+          <button 
+            onClick={() => {
+              setShowWorkVettingModal(false);
+              setWorkStage(1);
+              setWorkEmail('');
+              setWorkPin('');
+              setWorkError('');
+            }} 
+            style={{
+              position: 'absolute',
+              top: '1rem',
+              right: '1rem',
+              background: 'transparent',
+              border: 'none',
+              color: '#a3a3a3',
+              fontSize: '1.25rem',
+              cursor: 'pointer'
+            }}
+          >
+            ✕
+          </button>
+          
+          <h3 style={{ fontSize: '1.15rem', fontWeight: '800', margin: 0, color: '#ffffff', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span>👥</span> Stage 3: Professional Work Email
+          </h3>
+          
+          <p style={{ fontSize: '0.82rem', color: '#a3a3a3', lineHeight: '1.4', margin: 0 }}>
+            Confirm your current employment status by verifying your corporate work email.
+          </p>
+
+          {workLoading ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem 1rem', gap: '1rem' }}>
+              <div style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '50%',
+                border: '2px solid rgba(143, 0, 255, 0.1)',
+                borderTopColor: '#8f00ff',
+                animation: 'spin 1s linear infinite'
+              }}></div>
+              <div style={{ fontSize: '0.8rem', color: '#8f00ff', fontWeight: '700' }}>
+                Processing secure compliance sweep...
+              </div>
+            </div>
+          ) : workStage === 1 ? (
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              if (!workEmail.includes('@') || workEmail.length < 5) {
+                setWorkError('Please enter a valid work email.');
+                return;
+              }
+              setWorkError('');
+              setWorkLoading(true);
+              setTimeout(() => {
+                setWorkLoading(false);
+                setWorkStage(2);
+              }, 1200);
+            }} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                <label style={{ fontSize: '0.66rem', color: '#737373', fontWeight: '800', textTransform: 'uppercase' }}>Corporate Work Email</label>
+                <input
+                  type="email"
+                  placeholder="e.g. sarah@skynet-rebel.io"
+                  value={workEmail}
+                  onChange={(e) => setWorkEmail(e.target.value)}
+                  style={{
+                    background: 'rgba(255,255,255,0.03)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    borderRadius: '6px',
+                    padding: '0.65rem 0.85rem',
+                    color: '#ffffff',
+                    fontSize: '0.85rem',
+                    outline: 'none'
+                  }}
+                  required
+                />
+                {workError && <span style={{ fontSize: '0.7rem', color: '#f43f5e' }}>{workError}</span>}
+              </div>
+              <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
+                Send Verification PIN
+              </button>
+            </form>
+          ) : workStage === 2 ? (
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              if (workPin.trim().toUpperCase() !== 'PB-VERIFY') {
+                setWorkError('Invalid verification code. Enter mock code: PB-VERIFY');
+                return;
+              }
+              setWorkError('');
+              setWorkLoading(true);
+              setTimeout(() => {
+                setWorkLoading(false);
+                setWorkStage(3);
+              }, 1500);
+            }} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div style={{ background: 'rgba(16,185,129,0.05)', border: '1px solid rgba(16,185,129,0.15)', padding: '0.75rem', borderRadius: '6px', fontSize: '0.74rem', color: '#10b981' }}>
+                📩 Verification PIN sent! Use simulation code: **PB-VERIFY**
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                <label style={{ fontSize: '0.66rem', color: '#737373', fontWeight: '800', textTransform: 'uppercase' }}>Enter 2FA Code</label>
+                <input
+                  type="text"
+                  placeholder="PB-VERIFY"
+                  value={workPin}
+                  onChange={(e) => setWorkPin(e.target.value)}
+                  style={{
+                    background: 'rgba(255,255,255,0.03)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    borderRadius: '6px',
+                    padding: '0.65rem 0.85rem',
+                    color: '#ffffff',
+                    fontSize: '0.85rem',
+                    outline: 'none',
+                    textAlign: 'center',
+                    letterSpacing: '0.1rem'
+                  }}
+                  required
+                />
+                {workError && <span style={{ fontSize: '0.7rem', color: '#f43f5e' }}>{workError}</span>}
+              </div>
+              <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
+                Confirm Email Pin
+              </button>
+            </form>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.25rem', textAlign: 'center', padding: '1rem 0' }}>
+              <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', color: '#10b981' }}>
+                ✓
+              </div>
+              <div>
+                <h4 style={{ fontSize: '0.95rem', color: '#ffffff', margin: '0 0 0.25rem 0' }}>Work Experience Active!</h4>
+                <p style={{ fontSize: '0.78rem', color: '#a3a3a3', margin: 0 }}>
+                  Email matched with corporate node successfully. Job experience arc unlocked.
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  const existingExp = state.professionalProfile.experience || [];
+                  const exists = existingExp.some(e => e.company?.includes('CleanFlow'));
+                  if (!exists) {
+                    const newJob = [
+                      ...existingExp,
+                      { title: 'Venture Placement Director', company: 'CleanFlow Capital Partners', start_date: '2021-03', end_date: null, current: true, description: 'Led diligence for carbon capture and bio-algae scaleups. Closed $12M in seed allocations.' }
+                    ];
+                    state.updateProfiles(null, null, { ...state.professionalProfile, experience: newJob });
+                  }
+                  setShowWorkVettingModal(false);
+                  setWorkStage(1);
+                  setWorkEmail('');
+                  setWorkPin('');
+                }}
+                className="btn-primary"
+                style={{ width: '100%', justifyContent: 'center' }}
+              >
+                Update Experience & Lock Node
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const renderNetWorthVettingModal = () => {
+    const calculatedNetWorth = Number(cashAssets || 0) + Number(investAssets || 0) - Number(debtLiabilities || 0);
+    return (
+      <div style={{
+        position: 'fixed',
+        inset: 0,
+        background: 'rgba(0,0,0,0.85)',
+        backdropFilter: 'blur(10px)',
+        zIndex: 100000,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '1rem'
+      }}>
+        <div className="glass-panel animate-fade-in-up" style={{
+          maxWidth: '460px',
+          width: '100%',
+          padding: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1.5rem',
+          position: 'relative'
+        }}>
+          <button 
+            onClick={() => {
+              setShowNetWorthVettingModal(false);
+              setNetWorthDone(false);
+            }} 
+            style={{
+              position: 'absolute',
+              top: '1rem',
+              right: '1rem',
+              background: 'transparent',
+              border: 'none',
+              color: '#a3a3a3',
+              fontSize: '1.25rem',
+              cursor: 'pointer'
+            }}
+          >
+            ✕
+          </button>
+          
+          <h3 style={{ fontSize: '1.15rem', fontWeight: '800', margin: 0, color: '#ffffff', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span>🏛</span> Stage 4: Accredited Net Worth
+          </h3>
+          
+          <p style={{ fontSize: '0.82rem', color: '#a3a3a3', lineHeight: '1.4', margin: 0 }}>
+            Declare your liquid assets, bank holdings, capital investments, and debts to attest to your accredited status.
+          </p>
+
+          {netWorthLoading ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem 1rem', gap: '1rem' }}>
+              <div style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '50%',
+                border: '2px solid rgba(16, 185, 129, 0.1)',
+                borderTopColor: '#10b981',
+                animation: 'spin 1s linear infinite'
+              }}></div>
+              <div style={{ fontSize: '0.8rem', color: '#10b981', fontWeight: '700' }}>
+                Analyzing assets-to-debts ratios...
+              </div>
+            </div>
+          ) : netWorthDone ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.25rem', textAlign: 'center', padding: '1rem 0' }}>
+              <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', color: '#10b981' }}>
+                ✓
+              </div>
+              <div>
+                <h4 style={{ fontSize: '0.95rem', color: '#ffffff', margin: '0 0 0.25rem 0' }}>Wealth Node Verified!</h4>
+                <p style={{ fontSize: '0.78rem', color: '#a3a3a3', margin: 0 }}>
+                  Calculated Net Worth: **${calculatedNetWorth.toLocaleString()}**. Vetted under SEC accreditation parameters.
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  state.updateInvestorProfile({
+                    accreditation_status: true,
+                    portfolio_size: calculatedNetWorth
+                  });
+                  setShowNetWorthVettingModal(false);
+                  setNetWorthDone(false);
+                }}
+                className="btn-primary"
+                style={{ width: '100%', justifyContent: 'center' }}
+              >
+                Attest & Update Investor Node
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              setNetWorthLoading(true);
+              setTimeout(() => {
+                setNetWorthLoading(false);
+                setNetWorthDone(true);
+              }, 1800);
+            }} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '0.75rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                  <label style={{ fontSize: '0.62rem', color: '#737373', fontWeight: '800' }}>CASH & BANK BALANCES ($)</label>
+                  <input
+                    type="number"
+                    value={cashAssets}
+                    onChange={(e) => setCashAssets(e.target.value)}
+                    style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '6px', padding: '0.5rem 0.75rem', color: '#ffffff', fontSize: '0.8rem', outline: 'none' }}
+                    required
+                  />
+                </div>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                  <label style={{ fontSize: '0.62rem', color: '#737373', fontWeight: '800' }}>INVESTMENTS & EQUITY HOLDINGS ($)</label>
+                  <input
+                    type="number"
+                    value={investAssets}
+                    onChange={(e) => setInvestAssets(e.target.value)}
+                    style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '6px', padding: '0.5rem 0.75rem', color: '#ffffff', fontSize: '0.8rem', outline: 'none' }}
+                    required
+                  />
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                  <label style={{ fontSize: '0.62rem', color: '#737373', fontWeight: '800' }}>DEBTS & LIABILITIES ($)</label>
+                  <input
+                    type="number"
+                    value={debtLiabilities}
+                    onChange={(e) => setDebtLiabilities(e.target.value)}
+                    style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '6px', padding: '0.5rem 0.75rem', color: '#ffffff', fontSize: '0.8rem', outline: 'none' }}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div style={{ background: 'rgba(0,242,254,0.03)', border: '1px solid rgba(0,242,254,0.1)', padding: '0.75rem', borderRadius: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '0.72rem', color: '#737373', fontWeight: '700' }}>CALCULATED NET WORTH:</span>
+                <strong style={{ fontSize: '0.9rem', color: calculatedNetWorth >= 1000000 ? '#10b981' : '#00f2fe' }}>
+                  ${calculatedNetWorth.toLocaleString()}
+                </strong>
+              </div>
+
+              <span style={{ fontSize: '0.62rem', color: '#525252', lineHeight: '1.3' }}>
+                ⚖ Note: By submitting, you attest that these financial details are correct. Peer Bridge compliance sweeps may request physical bank statements or asset certificates if co-issuing rounds require direct regulatory audit checks.
+              </span>
+
+              <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
+                Attest & Submit Statement
+              </button>
+            </form>
+          )}
+        </div>
+      </div>
     );
   };
 
@@ -2146,6 +2778,277 @@ export default function Home() {
 
         {/* Right Sidebar (LinkedIn-Style Cockpit Panels) */}
         <aside className="right-sidebar-responsive" style={styles.rightSidebar}>
+          {/* Panel 0: Node Vetting Center */}
+          {(() => {
+            const cust = state.customer || {};
+            const basic = state.basicProfile || {};
+            const prof = state.professionalProfile || {};
+            const inv = state.investorProfile || {};
+
+            const hasJobVal = prof.experience && prof.experience.length > 0;
+            const hasAcadVal = prof.education && prof.education.length > 0;
+            const hasWealthVal = inv.accreditation_status || false;
+            const hasAddressAndSsn = basic.address?.trim().length > 3 && cust.ssn?.trim().length > 0;
+
+            const compliancePercentage = ((hasAddressAndSsn ? 25 : 0) + (hasAcadVal ? 25 : 0) + (hasJobVal ? 25 : 0) + (hasWealthVal ? 25 : 0));
+
+            return (
+              <div className="glass-panel animate-fade-in-up" style={{
+                background: 'rgba(10, 10, 10, 0.4)',
+                backdropFilter: 'blur(16px)',
+                border: '1px solid rgba(255, 255, 255, 0.05)',
+                borderRadius: '12px',
+                padding: '1.25rem',
+                marginBottom: '1rem',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '1rem'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <h3 style={{
+                    fontSize: '0.9rem',
+                    fontWeight: '850',
+                    color: '#ffffff',
+                    letterSpacing: '0.05em',
+                    margin: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.45rem'
+                  }}>
+                    <span style={{ fontSize: '1rem', color: '#d4af37' }}>🛡️</span>
+                    NODE VETTING CENTER
+                  </h3>
+                  <span style={{
+                    fontSize: '0.62rem',
+                    color: '#737373',
+                    background: 'rgba(255,255,255,0.03)',
+                    padding: '0.15rem 0.4rem',
+                    borderRadius: '4px',
+                    border: '1px solid rgba(255, 255, 255, 0.05)'
+                  }}>
+                    PB-SECURE
+                  </span>
+                </div>
+
+                <p style={{ fontSize: '0.74rem', color: '#a3a3a3', lineHeight: '1.3', margin: 0 }}>
+                  Verify your ecosystem node credentials under SEC Reg D guidelines to unlock primary venture syndicate allocations.
+                </p>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                  {/* Stage 1: Identity Proof */}
+                  <div 
+                    onClick={() => setShowIdVettingModal(true)}
+                    style={{
+                      background: hasAddressAndSsn ? 'rgba(212,175,55,0.03)' : 'rgba(255,255,255,0.01)',
+                      border: `1px solid ${hasAddressAndSsn ? 'rgba(212,175,55,0.2)' : 'rgba(255,255,255,0.04)'}`,
+                      borderRadius: '8px',
+                      padding: '0.65rem 0.8rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      cursor: 'pointer',
+                    }}
+                    className="vetting-item-hover"
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                      <div style={{
+                        width: '32px',
+                        height: '32px',
+                        borderRadius: '50%',
+                        background: hasAddressAndSsn ? 'rgba(212,175,55,0.1)' : 'rgba(0,242,254,0.05)',
+                        border: `1px solid ${hasAddressAndSsn ? '#d4af37' : '#00f2fe'}`,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '0.9rem',
+                        color: hasAddressAndSsn ? '#d4af37' : '#00f2fe'
+                      }}>
+                        👤
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <span style={{ fontSize: '0.76rem', fontWeight: '700', color: '#ffffff' }}>1. Identity & SSN</span>
+                        <span style={{ fontSize: '0.62rem', color: '#737373' }}>Passport / Driver's License</span>
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                      {hasAddressAndSsn ? (
+                        <span style={{ fontSize: '0.62rem', color: '#d4af37', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '0.15rem' }}>
+                          ✓ VETTED
+                        </span>
+                      ) : (
+                        <span style={{ fontSize: '0.62rem', color: '#00f2fe', fontWeight: '800' }}>
+                          VERIFY →
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Stage 2: Academic Credentials */}
+                  <div 
+                    onClick={() => setShowEduVettingModal(true)}
+                    style={{
+                      background: hasAcadVal ? 'rgba(99,102,241,0.03)' : 'rgba(255,255,255,0.01)',
+                      border: `1px solid ${hasAcadVal ? 'rgba(99,102,241,0.2)' : 'rgba(255,255,255,0.04)'}`,
+                      borderRadius: '8px',
+                      padding: '0.65rem 0.8rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      cursor: 'pointer',
+                    }}
+                    className="vetting-item-hover"
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                      <div style={{
+                        width: '32px',
+                        height: '32px',
+                        borderRadius: '50%',
+                        background: hasAcadVal ? 'rgba(99,102,241,0.1)' : 'rgba(255,255,255,0.02)',
+                        border: `1px solid ${hasAcadVal ? '#6366f1' : 'rgba(255,255,255,0.1)'}`,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '0.9rem',
+                        color: hasAcadVal ? '#6366f1' : '#a3a3a3'
+                      }}>
+                        🎓
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <span style={{ fontSize: '0.76rem', fontWeight: '700', color: '#ffffff' }}>2. Education Credentials</span>
+                        <span style={{ fontSize: '0.62rem', color: '#737373' }}>Degree / Diploma Upload</span>
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                      {hasAcadVal ? (
+                        <span style={{ fontSize: '0.62rem', color: '#6366f1', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '0.15rem' }}>
+                          ✓ VETTED
+                        </span>
+                      ) : (
+                        <span style={{ fontSize: '0.62rem', color: '#a3a3a3', fontWeight: '800' }}>
+                          VERIFY →
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Stage 3: Professional Work */}
+                  <div 
+                    onClick={() => setShowWorkVettingModal(true)}
+                    style={{
+                      background: hasJobVal ? 'rgba(143,0,255,0.03)' : 'rgba(255,255,255,0.01)',
+                      border: `1px solid ${hasJobVal ? 'rgba(143,0,255,0.2)' : 'rgba(255,255,255,0.04)'}`,
+                      borderRadius: '8px',
+                      padding: '0.65rem 0.8rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      cursor: 'pointer',
+                    }}
+                    className="vetting-item-hover"
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                      <div style={{
+                        width: '32px',
+                        height: '32px',
+                        borderRadius: '50%',
+                        background: hasJobVal ? 'rgba(143,0,255,0.1)' : 'rgba(255,255,255,0.02)',
+                        border: `1px solid ${hasJobVal ? '#8f00ff' : 'rgba(255,255,255,0.1)'}`,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '0.9rem',
+                        color: hasJobVal ? '#8f00ff' : '#a3a3a3'
+                      }}>
+                        💼
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <span style={{ fontSize: '0.76rem', fontWeight: '700', color: '#ffffff' }}>3. Current Employment</span>
+                        <span style={{ fontSize: '0.62rem', color: '#737373' }}>Work Email Confirmation</span>
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                      {hasJobVal ? (
+                        <span style={{ fontSize: '0.62rem', color: '#8f00ff', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '0.15rem' }}>
+                          ✓ VETTED
+                        </span>
+                      ) : (
+                        <span style={{ fontSize: '0.62rem', color: '#a3a3a3', fontWeight: '800' }}>
+                          VERIFY →
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Stage 4: Accredited Net Worth */}
+                  <div 
+                    onClick={() => setShowNetWorthVettingModal(true)}
+                    style={{
+                      background: hasWealthVal ? 'rgba(16,185,129,0.03)' : 'rgba(255,255,255,0.01)',
+                      border: `1px solid ${hasWealthVal ? 'rgba(16,185,129,0.2)' : 'rgba(255,255,255,0.04)'}`,
+                      borderRadius: '8px',
+                      padding: '0.65rem 0.8rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      cursor: 'pointer',
+                    }}
+                    className="vetting-item-hover"
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                      <div style={{
+                        width: '32px',
+                        height: '32px',
+                        borderRadius: '50%',
+                        background: hasWealthVal ? 'rgba(16,185,129,0.1)' : 'rgba(255,255,255,0.02)',
+                        border: `1px solid ${hasWealthVal ? '#10b981' : 'rgba(255,255,255,0.1)'}`,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '0.9rem',
+                        color: hasWealthVal ? '#10b981' : '#a3a3a3'
+                      }}>
+                        🏛️
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <span style={{ fontSize: '0.76rem', fontWeight: '700', color: '#ffffff' }}>4. Net Worth Attestation</span>
+                        <span style={{ fontSize: '0.62rem', color: '#737373' }}>Assets, Liabilities, Wealth</span>
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                      {hasWealthVal ? (
+                        <span style={{ fontSize: '0.62rem', color: '#10b981', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '0.15rem' }}>
+                          ✓ VETTED
+                        </span>
+                      ) : (
+                        <span style={{ fontSize: '0.62rem', color: '#a3a3a3', fontWeight: '800' }}>
+                          VERIFY →
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Vetting progress tracker */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', marginTop: '0.25rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '0.64rem', color: '#737373', fontWeight: '600' }}>OVERALL COMPLIANCE SCORE</span>
+                    <span style={{ fontSize: '0.66rem', color: '#ffffff', fontWeight: '800' }}>
+                      {compliancePercentage}%
+                    </span>
+                  </div>
+                  <div style={{ height: '4px', background: 'rgba(255,255,255,0.03)', borderRadius: '2px', overflow: 'hidden' }}>
+                    <div style={{
+                      height: '100%',
+                      width: `${compliancePercentage}%`,
+                      background: 'linear-gradient(90deg, #00f2fe 0%, #d4af37 35%, #8f00ff 70%, #10b981 100%)',
+                      transition: 'width 0.4s ease'
+                    }} />
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+
           {/* Panel 1: News Bulletin */}
           <div className="glass-panel animate-fade-in-up" style={styles.sidebarNewsCard}>
             <h3 style={styles.sidebarNewsTitle}>📰 Peer Bridge News</h3>
@@ -2233,6 +3136,10 @@ export default function Home() {
       {showViewersModal && renderViewersModal()}
       {showImpressionsModal && renderImpressionsModal()}
       {state.inspectedCustomer && renderInspectedCustomerModal()}
+      {showIdVettingModal && renderIdVettingModal()}
+      {showEduVettingModal && renderEduVettingModal()}
+      {showWorkVettingModal && renderWorkVettingModal()}
+      {showNetWorthVettingModal && renderNetWorthVettingModal()}
 
       {/* Render Floating Chat Widget */}
       {renderFloatingChatWidget()}
