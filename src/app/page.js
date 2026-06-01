@@ -14,6 +14,7 @@ import DocumentModule from './components/DocumentModule';
 import TaxModule from './components/TaxModule';
 import SupportModule from './components/SupportModule';
 import OnboardingWizard from './components/OnboardingWizard';
+import LendingModule from './components/LendingModule';
 
 export default function Home() {
   const state = usePeerBridge();
@@ -1309,6 +1310,8 @@ export default function Home() {
         return <ProfileModule state={state} />;
       case 'support':
         return <SupportModule state={state} />;
+      case 'lending':
+        return <LendingModule state={state} />;
       case 'admin':
         return <SalesAdminModule state={state} />;
       
@@ -3069,6 +3072,16 @@ export default function Home() {
               <span style={styles.sidebarLinkLabel}>Saved items</span>
             </div>
 
+            {/* Lending Center */}
+            <div 
+              onClick={() => state.setActiveModule('lending')} 
+              style={styles.sidebarLinkItem}
+              title="P2P Debt & Commercial Note Syndicates"
+            >
+              <span style={styles.sidebarLinkIcon}>🏛</span>
+              <span style={styles.sidebarLinkLabel}>Lending Center</span>
+            </div>
+
             {/* Network Directory */}
             <div 
               onClick={() => {
@@ -3132,7 +3145,7 @@ export default function Home() {
         {/* Right Sidebar (LinkedIn-Style Cockpit Panels) */}
         <aside className="right-sidebar-responsive" style={styles.rightSidebar}>
           {/* Panel 0: Node Vetting Center */}
-          {showVettingCenter && (() => {
+          {showVettingCenter && state.activeModule === 'documents' && (() => {
             const cust = state.customer || {};
             const basic = state.basicProfile || {};
             const prof = state.professionalProfile || {};

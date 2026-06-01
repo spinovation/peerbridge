@@ -163,6 +163,9 @@ const DEFAULT_CAMPAIGNS = [
     equityOffered: 4,
     status: 'Active',
     category: 'CleanTech',
+    offering_type: 'equity',
+    interest_rate: 0,
+    term_months: 0,
     capTable: [
       { name: 'Alex Rivera (Founder)', percentage: 65, shares: 812500, type: 'Founder' },
       { name: 'Venture Capital Partners', percentage: 20, shares: 250000, type: 'Institutional' },
@@ -187,11 +190,38 @@ const DEFAULT_CAMPAIGNS = [
     equityOffered: 4,
     status: 'Active',
     category: 'MedTech',
+    offering_type: 'equity',
+    interest_rate: 0,
+    term_months: 0,
     capTable: [
       { name: 'Dr. Evelyn Chen (Founder)', percentage: 55, shares: 687500, type: 'Founder' },
       { name: 'BioTech Innovators Fund', percentage: 25, shares: 312500, type: 'Institutional' },
       { name: 'Angel Network', percentage: 17, shares: 212500, type: 'Investor' },
       { name: 'PeerBridge Crowd', percentage: 3, shares: 37500, type: 'Crowd' }
+    ]
+  },
+  {
+    id: 'camp-3',
+    companyName: 'Tonin Logistics',
+    tagline: 'Green temperature-controlled cargo fleet expansion commercial note.',
+    description: 'Tonin Logistics is deploying smart, green temperature-controlled fleet shipping networks, shrinking carbon emissions of freight routes by 45%. We are expanding our regional Midwest networks.',
+    problem: 'Cold-chain trucking logistics is highly carbon-intensive and relies on outdated fossil-fuel cooling engines.',
+    solution: 'Deploying high-efficiency, solar-powered refrigeration cells and electric fleets across cold shipping channels.',
+    founder: 'Kristi Tonin',
+    target: 500.00,
+    raised: 0.00,
+    valuation: 2000000.00,
+    sharePrice: 1.00,
+    minInvestment: 500,
+    investorsCount: 0,
+    equityOffered: 0,
+    status: 'Active',
+    category: 'Logistics',
+    offering_type: 'debt',
+    interest_rate: 7.5,
+    term_months: 6,
+    capTable: [
+      { name: 'Kristi Tonin (Founder)', percentage: 100, shares: 2000000, type: 'Founder' }
     ]
   }
 ];
@@ -307,6 +337,85 @@ const INITIAL_DIRECTORY = [
       summary: 'Managing private waitlists, invite registries, and compliance ledger sweeps.',
       experience: [],
       education: []
+    }
+  },
+  {
+    customer_id: 'dir-cust-mohit',
+    email: 'mohit@peerbridge.ai',
+    first_name: 'Mohit',
+    last_name: 'Mehra',
+    phone: '+1 (555) 304-4712',
+    role_flags: ['Investor'],
+    status: 'verified',
+    isOnboarded: true,
+    ssn: 'XXX-XX-4819',
+    basicProfile: {
+      dob: '1989-10-14',
+      nationality: 'United States',
+      address: '40 Wall St, New York, NY 10005',
+      profile_picture_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&q=80',
+      bio: 'Accredited P2P debt investor. Sourcing structured lending, venture debt, and secured commercial notes with high yields.'
+    },
+    professionalProfile: {
+      headline: 'Venture Debt Investor & Asset Manager',
+      summary: 'Passionate about structured debt alternatives, credit underwriting, and micro-lending assets.',
+      experience: [
+        { title: 'Credit Portfolio Lead', company: 'Apex Debt Partners', start_date: '2020-04', end_date: null, current: true, description: 'Underwriting $15M+ senior secured loans for domestic SMB scaling.' }
+      ],
+      education: [
+        { degree: 'Bachelor of Science in Economics', institution: 'New York University', year: 2011 }
+      ],
+      skills: ['Debt Underwriting', 'Portfolio Management', 'Credit Operations'],
+      certifications: ['Chartered Financial Analyst (CFA)']
+    },
+    investorProfile: {
+      investor_type: 'institutional',
+      investment_range: { min: 500, max: 50000, currency: 'USD' },
+      preferred_industries: ['Lending', 'Logistics', 'Fintech'],
+      risk_appetite: 'low',
+      accreditation_status: true
+    }
+  },
+  {
+    customer_id: 'dir-cust-kristi',
+    email: 'kristi@peerbridge.ai',
+    first_name: 'Kristi',
+    last_name: 'Tonin',
+    phone: '+1 (555) 772-9901',
+    role_flags: ['Entrepreneur'],
+    status: 'verified',
+    isOnboarded: true,
+    ssn: 'XXX-XX-9022',
+    basicProfile: {
+      dob: '1992-05-22',
+      nationality: 'United States',
+      address: '200 Logistics Dr, Chicago, IL 60601',
+      profile_picture_url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&q=80',
+      bio: 'Founder and CEO of Tonin Logistics. Expanding regional cold-storage shipping networks and green supply chain routes.'
+    },
+    professionalProfile: {
+      headline: 'Founder & CEO of Tonin Logistics',
+      summary: '10+ years in green logistics, smart fleet coordination, and temperature-controlled supply chains.',
+      experience: [
+        { title: 'Chief Executive & Founder', company: 'Tonin Logistics', start_date: '2021-08', end_date: null, current: true, description: 'Building carbon-neutral logistics networks across the Midwest. Growing from 2 trucks to a fleet of 20.' }
+      ],
+      education: [
+        { degree: 'Master of Science in Supply Chain Management', institution: 'Northwestern University', year: 2018 }
+      ],
+      skills: ['Cold-Chain Logistics', 'Fleet Operations', 'SMB Financing'],
+      certifications: ['Certified Supply Chain Professional (CSCP)']
+    },
+    entrepreneurProfile: {
+      company_name: 'Tonin Logistics',
+      business_stage: 'revenue',
+      industry: 'Logistics',
+      funding_goal: 500.00,
+      valuation: 2000000.00,
+      pitch_deck_url: 'https://pb-vault.s3.amazonaws.com/ToninLogistics_Deck.pdf',
+      company_summary: 'Tonin Logistics is deploying smart, green temperature-controlled fleet shipping networks, shrinking carbon emissions of freight routes by 45%.',
+      team: [
+        { name: 'Kristi Tonin', role: 'Founder & CEO', linkedin: '', bio: 'Ex-Logistics Director.' }
+      ]
     }
   },
   {
@@ -676,6 +785,11 @@ export function usePeerBridge() {
   const [savedCampaignIds, setSavedCampaignIds] = useState(['camp-1']); // EcoSphere bookmarked by default
   const [connections, setConnections] = useState(['db-cust-evelyn', 'db-cust-jenkins']); // initially 2 connections
   const [connectionRequests, setConnectionRequests] = useState([]);
+  
+  // Phase 1 P2P Lending & Equity Warrants state hooks
+  const [loans, setLoans] = useState([]);
+  const [warrants, setWarrants] = useState([]);
+  
   const [profileViewers, setProfileViewers] = useState(61);
   const [postImpressions, setPostImpressions] = useState(320);
   const [events, setEvents] = useState([
@@ -901,7 +1015,9 @@ export function usePeerBridge() {
         'pb_chats': 'chats',
         'pb_transactions': 'transactions',
         'pb_portfolio': 'portfolios',
-        'pb_docs': 'documents'
+        'pb_docs': 'documents',
+        'pb_loans': 'loans',
+        'pb_warrants': 'warrants'
       };
 
       const collectionName = collectionMap[key];
@@ -932,7 +1048,9 @@ export function usePeerBridge() {
         'pb_notifications': 'notifications',
         'pb_transactions': 'transactions',
         'pb_portfolio': 'portfolios',
-        'pb_docs': 'documents'
+        'pb_docs': 'documents',
+        'pb_loans': 'loans',
+        'pb_warrants': 'warrants'
       };
 
       const settersMap = {
@@ -969,6 +1087,16 @@ export function usePeerBridge() {
           if (!data) return;
           const val = Array.isArray(data) ? data : (data.value && Array.isArray(data.value) ? data.value : Object.values(data));
           setDocumentation(Array.isArray(val) ? val : []);
+        },
+        'pb_loans': (data) => {
+          if (!data) return;
+          const val = Array.isArray(data) ? data : (data.value && Array.isArray(data.value) ? data.value : Object.values(data));
+          setLoans(Array.isArray(val) ? val : []);
+        },
+        'pb_warrants': (data) => {
+          if (!data) return;
+          const val = Array.isArray(data) ? data : (data.value && Array.isArray(data.value) ? data.value : Object.values(data));
+          setWarrants(Array.isArray(val) ? val : []);
         }
       };
 
@@ -1031,6 +1159,8 @@ export function usePeerBridge() {
       const connectionsVal = safeParse('pb_connections', ['db-cust-evelyn', 'db-cust-jenkins']);
       const dirFilterVal = safeParse('pb_directory_filter', 'All');
       const requestsVal = safeParse('pb_connection_requests', []);
+      const loansVal = safeParse('pb_loans', []);
+      const warrantsVal = safeParse('pb_warrants', []);
 
       setTimeout(() => {
         setIsAuthenticated(authVal);
@@ -1049,6 +1179,8 @@ export function usePeerBridge() {
         setTransactions(transactionsVal);
         setPortfolio(portfolioVal);
         setDocumentation(docsVal);
+        setLoans(loansVal);
+        setWarrants(warrantsVal);
         setHelpTickets(ticketsVal);
         setNotifications(notificationsVal);
         setQaFeed(qaVal);
@@ -1470,7 +1602,12 @@ export function usePeerBridge() {
     sync('pb_aff_prof', member.affiliateProfile || {}, setAffiliateProfile);
     
     // Set realistic balances/banks based on roles
-    const balance = member.role_flags.includes('Investor') ? 250000 : 15000;
+    let balance = member.role_flags.includes('Investor') ? 250000 : 15000;
+    if (member.customer_id === 'dir-cust-mohit') {
+      balance = 507.50;
+    } else if (member.customer_id === 'dir-cust-kristi') {
+      balance = 50.00;
+    }
     sync('pb_balance', balance, setWalletBalance);
     sync('pb_bank', member.role_flags.includes('Investor') ? { institution_id: 'ins_1', name: 'Chase Bank', mask: '8821' } : null, setConnectedBank);
 
@@ -1615,7 +1752,7 @@ export function usePeerBridge() {
   };
 
   // Invest in crowdfunding round (writes to portfolio table)
-  const investInCampaign = (campaignId, amount) => {
+  const investInCampaign = (campaignId, amount, signatureData = null) => {
     if (customer.status !== 'verified') {
       return { success: false, error: 'KYC Document verification is required to participate in private placements.' };
     }
@@ -1630,6 +1767,7 @@ export function usePeerBridge() {
     // Deduct Wallet
     const newBalance = walletBalance - num;
     sync('pb_balance', newBalance, setWalletBalance);
+    updateDirectoryMember(customer.customer_id, { wallet_balance: newBalance });
 
     // Update Campaign Slices
     const addedShares = Math.floor(num / campaign.sharePrice);
@@ -1679,7 +1817,7 @@ export function usePeerBridge() {
     });
     sync('pb_campaigns', updatedCampaigns, setCampaigns);
 
-    // Add portfolio table record (matching Schema table #6)
+    // Add portfolio table record
     const existingHolding = portfolio.find(p => p.investment_id === campaignId);
     let updatedPortfolio;
     if (existingHolding) {
@@ -1688,7 +1826,8 @@ export function usePeerBridge() {
           return {
             ...p,
             amount_invested: p.amount_invested + num,
-            current_value: p.current_value + num
+            current_value: p.current_value + num,
+            shares: p.shares + addedShares
           };
         }
         return p;
@@ -1700,15 +1839,15 @@ export function usePeerBridge() {
           portfolio_id: generateRandomId('port'),
           customer_id: customer.customer_id,
           investment_id: campaignId,
-          companyName: campaign.companyName, // Helper fields for fast GUI rendering
+          companyName: campaign.companyName,
           category: campaign.category,
           sharePrice: campaign.sharePrice,
           shares: addedShares,
-          investment_type: 'equity', // equity, loan, receivables
+          investment_type: 'equity',
           amount_invested: num,
           date_invested: new Date().toISOString(),
           current_value: num,
-          status: 'active' // active, closed, pending
+          status: 'active'
         }
       ];
     }
@@ -1721,6 +1860,75 @@ export function usePeerBridge() {
     // Financial transaction ledger write
     addTransaction('Investment', num, `Acquired Equity - ${campaign.companyName}`);
     addNotification('Investment', `Successfully processed equity placement in ${campaign.companyName} for $${num.toLocaleString()}.`);
+
+    // 1. Success Fee (4% cash deducted from founder's receipt)
+    // Credit 96% to founder's directory wallet_balance
+    const founderName = campaign.founder;
+    const founderMember = directory.find(m => {
+      const fullName = `${m.first_name} ${m.last_name}`;
+      return fullName.toLowerCase().includes(founderName.toLowerCase().replace('dr. ', '').trim());
+    });
+    if (founderMember) {
+      const prevBal = founderMember.wallet_balance !== undefined ? founderMember.wallet_balance : 15000;
+      const updatedFounderBal = prevBal + (num * 0.96);
+      updateDirectoryMember(founderMember.customer_id, { wallet_balance: updatedFounderBal });
+    }
+
+    // 2. Warrants generation (1.5% Peerbridge equity warrants)
+    const newWarrant = {
+      warrant_id: generateRandomId('warr'),
+      campaign_id: campaignId,
+      company_name: campaign.companyName,
+      investor_id: customer.customer_id,
+      investor_name: `${customer.first_name} ${customer.last_name}`,
+      warrant_percentage: 1.5,
+      warrant_shares: Math.floor((num * 0.015) / campaign.sharePrice),
+      value: num * 0.015,
+      created_at: new Date().toISOString()
+    };
+    const updatedWarrants = [...warrants, newWarrant];
+    sync('pb_warrants', updatedWarrants, setWarrants);
+
+    // 3. Dynamic Y-Combinator SAFE Agreement Generation
+    const cleanCompanyName = campaign.companyName.replace(/\s+/g, '_');
+    const sha256Hash = Array.from({length: 64}, () => Math.floor(Math.random()*16).toString(16)).join('');
+    const safeDoc = {
+      doc_id: generateRandomId('doc-safe'),
+      customer_id: customer.customer_id,
+      doc_type: 'safe_agreement',
+      companyName: campaign.companyName,
+      file_url: `https://pb-vault.s3.amazonaws.com/SAFE_${cleanCompanyName}.pdf`,
+      uploaded_at: new Date().toISOString(),
+      verified: true,
+      metadata: {
+        investor_name: `${customer.first_name} ${customer.last_name}`,
+        amount: num,
+        valuation_cap: campaign.valuation,
+        date: new Date().toLocaleDateString(),
+        sha256: sha256Hash,
+        signature: signatureData || "Signed Electronically",
+        is_certified: true
+      }
+    };
+
+    // 4. Gold Stock Certificate
+    const stockCertDoc = {
+      doc_id: generateRandomId('doc-cert'),
+      customer_id: customer.customer_id,
+      doc_type: 'stock_certificate',
+      companyName: campaign.companyName,
+      file_url: `https://pb-vault.s3.amazonaws.com/Cert_${cleanCompanyName}.pdf`,
+      uploaded_at: new Date().toISOString(),
+      verified: true,
+      metadata: {
+        shares: addedShares,
+        valuation_cap: campaign.valuation,
+        sha256: sha256Hash,
+        is_gold_framed: true
+      }
+    };
+
+    sync('pb_docs', [safeDoc, stockCertDoc, ...documentation], setDocumentation);
 
     // Dynamic tax document compilation
     addMockTaxDocument(campaign.companyName, num);
@@ -1746,10 +1954,10 @@ export function usePeerBridge() {
   };
 
   // Launch a round (creates entrepreneur campaign)
-  const createCampaign = (companyName, tagline, description, problem, solution, target, valuation, sharePrice, minInvestment, category) => {
+  const createCampaign = (companyName, tagline, description, problem, solution, target, valuation, sharePrice, minInvestment, category, offeringType = 'equity', interestRate = 0, termMonths = 0) => {
     const targetVal = parseFloat(target);
-    const valuationVal = parseFloat(valuation);
-    const priceVal = parseFloat(sharePrice);
+    const valuationVal = parseFloat(valuation || 0);
+    const priceVal = parseFloat(sharePrice || 1.0);
 
     // Update local entrepreneur profile
     updateEntrepreneurProfile({
@@ -1757,7 +1965,7 @@ export function usePeerBridge() {
       business_stage: 'revenue',
       industry: category,
       funding_goal: targetVal,
-      valuation: valuationVal,
+      valuation: offeringType === 'debt' ? 0 : valuationVal,
       company_summary: description
     });
 
@@ -1771,14 +1979,19 @@ export function usePeerBridge() {
       founder: `${customer.first_name} ${customer.last_name}`,
       target: targetVal,
       raised: 0,
-      valuation: valuationVal,
-      sharePrice: priceVal,
+      valuation: offeringType === 'debt' ? 0 : valuationVal,
+      sharePrice: offeringType === 'debt' ? 1.0 : priceVal,
       minInvestment: parseFloat(minInvestment),
       investorsCount: 0,
-      equityOffered: parseFloat(((targetVal / valuationVal) * 100).toFixed(2)),
+      equityOffered: offeringType === 'debt' ? 0 : parseFloat(((targetVal / valuationVal) * 100).toFixed(2)),
       status: 'Active',
       category,
-      capTable: [
+      offering_type: offeringType,
+      interest_rate: offeringType === 'debt' ? parseFloat(interestRate) : 0,
+      term_months: offeringType === 'debt' ? parseInt(termMonths) : 0,
+      capTable: offeringType === 'debt' ? [
+        { name: `${customer.first_name} ${customer.last_name} (Founder)`, percentage: 100, shares: 2000000, type: 'Founder' }
+      ] : [
         { name: `${customer.first_name} ${customer.last_name} (Founder)`, percentage: 90, shares: Math.floor((valuationVal / priceVal) * 0.9), type: 'Founder' },
         { name: 'Insider Options', percentage: 10, shares: Math.floor((valuationVal / priceVal) * 0.1), type: 'Insider' }
       ]
@@ -2058,6 +2271,149 @@ export function usePeerBridge() {
     return { success: true, resource: newRes };
   };
 
+  const updateDirectoryMember = (customerId, updates) => {
+    const updatedDir = directory.map(m => {
+      if (m.customer_id === customerId) {
+        return { ...m, ...updates };
+      }
+      return m;
+    });
+    sync('pb_directory', updatedDir, setDirectory);
+  };
+
+  // P2P Lending - Create loan offer
+  const offerP2PLoan = (lenderId, borrowerId, principal, rate) => {
+    const p = parseFloat(principal);
+    const r = parseFloat(rate);
+    if (isNaN(p) || p <= 0) return { success: false, error: 'Invalid principal amount.' };
+    if (isNaN(r) || r <= 0) return { success: false, error: 'Invalid interest rate.' };
+
+    const newLoan = {
+      loan_id: generateRandomId('loan'),
+      lender_id: lenderId,
+      borrower_id: borrowerId,
+      lender_name: "Mohit Mehra",
+      borrower_name: "Kristi Tonin",
+      principal: p,
+      rate: r,
+      lender_yield_rate: 6.0,
+      servicing_spread: 1.5,
+      status: 'pending',
+      created_at: new Date().toISOString(),
+      countered_rate: null,
+      upfront_fee: p * 0.015,
+      total_payback: 537.50
+    };
+
+    const updatedLoans = [...loans, newLoan];
+    sync('pb_loans', updatedLoans, setLoans);
+    addNotification('Lending', `Successfully submitted P2P debt funding offer of $${p.toLocaleString()} to Kristi Tonin.`);
+    return { success: true, loan: newLoan };
+  };
+
+  // P2P Lending - Propose a counter-rate
+  const counterP2PLoan = (loanId, counteredRate) => {
+    const r = parseFloat(counteredRate);
+    if (isNaN(r) || r <= 0) return { success: false, error: 'Invalid interest rate.' };
+
+    const updatedLoans = loans.map(l => {
+      if (l.loan_id === loanId) {
+        return {
+          ...l,
+          status: 'countered',
+          countered_rate: r
+        };
+      }
+      return l;
+    });
+
+    sync('pb_loans', updatedLoans, setLoans);
+    addNotification('Lending', `Proposed counter interest rate of ${r}% on debt offer.`);
+    return { success: true };
+  };
+
+  // P2P Lending - Execute loan
+  const executeP2PLoan = (loanId) => {
+    const loan = loans.find(l => l.loan_id === loanId);
+    if (!loan) return { success: false, error: 'Loan offer not found.' };
+
+    // Lender (Mohit) pays $507.50 ($500 principal + $7.50 upfront fee)
+    const totalDeduction = loan.principal + loan.upfront_fee;
+    if (walletBalance < totalDeduction) {
+      return { success: false, error: `Insufficient wallet balance. Total required is $${totalDeduction.toLocaleString()}.` };
+    }
+
+    // Deduct from current user
+    const newLenderBalance = walletBalance - totalDeduction;
+    sync('pb_balance', newLenderBalance, setWalletBalance);
+    updateDirectoryMember(loan.lender_id, { wallet_balance: newLenderBalance });
+
+    // Borrower receives $492.50 ($500 principal - $7.50 origination fee)
+    const borrowerMember = directory.find(m => m.customer_id === loan.borrower_id);
+    const prevBorrowerBal = borrowerMember?.wallet_balance !== undefined ? borrowerMember.wallet_balance : 50.00;
+    const newBorrowerBalance = prevBorrowerBal + (loan.principal - loan.upfront_fee);
+    updateDirectoryMember(loan.borrower_id, { wallet_balance: newBorrowerBalance });
+
+    // Update loan status
+    const updatedLoans = loans.map(l => {
+      if (l.loan_id === loanId) {
+        return {
+          ...l,
+          status: 'active'
+        };
+      }
+      return l;
+    });
+    sync('pb_loans', updatedLoans, setLoans);
+
+    // Write financial ledger transactions
+    addTransaction('Debt Investment', totalDeduction, `Dispatched P2P Loan Funding - Ref: ${loan.loan_id}`);
+    addNotification('Lending', `P2P Loan executed successfully. Transferred $492.50 to Borrower; upfront $7.50 origination fees collected.`);
+
+    return { success: true };
+  };
+
+  // P2P Lending - Repay loan
+  const repayP2PLoan = (loanId) => {
+    const loan = loans.find(l => l.loan_id === loanId);
+    if (!loan) return { success: false, error: 'Loan record not found.' };
+
+    // Borrower pays $537.50 ($500 principal + $37.50 interest/fees)
+    const totalRepay = loan.total_payback;
+    if (walletBalance < totalRepay) {
+      return { success: false, error: `Insufficient wallet balance to repay loan. Total required is $${totalRepay.toLocaleString()}.` };
+    }
+
+    // Deduct from current user
+    const newBorrowerBalance = walletBalance - totalRepay;
+    sync('pb_balance', newBorrowerBalance, setWalletBalance);
+    updateDirectoryMember(loan.borrower_id, { wallet_balance: newBorrowerBalance });
+
+    // Lender (Mohit) receives $530.00 ($500 principal + $30.00 yield)
+    const lenderMember = directory.find(m => m.customer_id === loan.lender_id);
+    const prevLenderBal = lenderMember?.wallet_balance !== undefined ? lenderMember.wallet_balance : 0.00;
+    const newLenderBalance = prevLenderBal + 530.00;
+    updateDirectoryMember(loan.lender_id, { wallet_balance: newLenderBalance });
+
+    // Update loan status
+    const updatedLoans = loans.map(l => {
+      if (l.loan_id === loanId) {
+        return {
+          ...l,
+          status: 'paid_off'
+        };
+      }
+      return l;
+    });
+    sync('pb_loans', updatedLoans, setLoans);
+
+    // Write financial ledger transactions
+    addTransaction('Debt Payback', totalRepay, `Settled P2P Loan Principal + Yield - Ref: ${loan.loan_id}`);
+    addNotification('Lending', `P2P Loan fully settled. Paid off $537.50. Platform servicing spread of $7.50 captured.`);
+
+    return { success: true };
+  };
+
   // Derived state for compatibility with components referencing `user`
   const user = {
     name: `${customer.first_name || ''} ${customer.last_name || ''}`.trim() || customer.email || 'Sarah Connor',
@@ -2110,6 +2466,8 @@ export function usePeerBridge() {
     notifications,
     helpTickets,
     resources,
+    loans,
+    warrants,
     
     // Auxiliary lists
     campaigns,
@@ -2160,6 +2518,10 @@ export function usePeerBridge() {
     withdrawFunds,
     investInCampaign,
     createCampaign,
+    offerP2PLoan,
+    counterP2PLoan,
+    executeP2PLoan,
+    repayP2PLoan,
     submitKycDocuments,
     completeKycNodeVetting,
     postQuestion,

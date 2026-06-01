@@ -244,6 +244,8 @@ export default function LandingView({ state }) {
                     <option value="" disabled>-- Choose a Member --</option>
                     <option value="sarah@skynet-rebel.io">Sarah Connor (Ex-Dir Investor - 1 Sector Vetted)</option>
                     <option value="salesadmin@peerbridge.ai">Sales Operations (salesadmin@peerbridge.ai Admin Control)</option>
+                    <option value="mohit@peerbridge.ai">Mohit Mehra (P2P Lender - $500 Capital Balance)</option>
+                    <option value="kristi@peerbridge.ai">Kristi Tonin (P2P Borrower Logistics Founder - $500 Request)</option>
                     <option value="marcus@vancegroup.ai">Marcus Vance (Fintech CPA GP - All 4 Sectors Vetted)</option>
                     <option value="elena@rostova.ai">Elena Rostova (AI Founder Investor - 1 Sector Vetted)</option>
                     <option value="devon@auroratech.io">Devon Lane (Hacker Dropout - 3 Sectors Vetted)</option>

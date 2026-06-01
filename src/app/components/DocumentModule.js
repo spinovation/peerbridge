@@ -90,6 +90,10 @@ export default function DocumentModule({ state }) {
         return 'Pitch Deck';
       case 'business_plan':
         return 'Business Plan';
+      case 'safe_agreement':
+        return '🤝 SAFE Agreement';
+      case 'stock_certificate':
+        return '🏆 Stock Certificate';
       default:
         return 'Compliance Doc';
     }
@@ -210,22 +214,45 @@ export default function DocumentModule({ state }) {
               <p style={styles.emptyText}>No documents uploaded in vault.</p>
             ) : (
               documentation.map((doc) => (
-                <div key={doc.doc_id} style={styles.vaultItem}>
+                <div 
+                  key={doc.doc_id} 
+                  style={{
+                    ...styles.vaultItem,
+                    border: doc.doc_type === 'stock_certificate' ? '1px solid rgba(212,175,55,0.3)' : '1px solid rgba(255,255,255,0.04)',
+                    boxShadow: doc.doc_type === 'stock_certificate' ? '0 4px 20px rgba(212,175,55,0.08)' : 'none'
+                  }}
+                >
                   <span style={styles.docAvatar}>
-                    {doc.doc_type === 'kyc' ? '🆔' : doc.doc_type === 'tax_document' ? '📄' : '📁'}
+                    {doc.doc_type === 'kyc' ? '🆔' 
+                      : doc.doc_type === 'tax_document' ? '📄' 
+                      : doc.doc_type === 'safe_agreement' ? '🤝' 
+                      : doc.doc_type === 'stock_certificate' ? '🏆' 
+                      : '📁'}
                   </span>
                   <div style={styles.docMeta}>
-                    <h4 style={styles.docTitle}>
+                    <h4 style={{
+                      ...styles.docTitle,
+                      color: doc.doc_type === 'stock_certificate' ? '#d4af37' : '#ffffff'
+                    }}>
                       {doc.doc_type === 'tax_document' && doc.companyName 
                         ? `1099-DIV_${doc.companyName.replace(/\s+/g, '_')}_2026.pdf`
                         : doc.file_url ? doc.file_url.split('/').pop() : 'Compliance_Document.pdf'}
                     </h4>
                     <span style={styles.docSub}>
                       {getDocTypeTag(doc.doc_type)} • {doc.verified ? 'Verified ✓' : 'Processing ⏱'}
+                      {(doc.doc_type === 'safe_agreement' || doc.doc_type === 'stock_certificate') && (
+                        <span style={{ color: '#10b981', marginLeft: '0.5rem', fontWeight: 'bold' }}>
+                          • Expiring Access Link (Active for 15m)
+                        </span>
+                      )}
                     </span>
                   </div>
-                  <span style={styles.docSize}>
-                    {doc.verified ? 'Verified' : 'Pending'}
+                  <span style={{
+                    ...styles.docSize,
+                    color: doc.doc_type === 'stock_certificate' ? '#d4af37' : '#737373',
+                    fontWeight: doc.doc_type === 'stock_certificate' ? 'bold' : 'normal'
+                  }}>
+                    {doc.doc_type === 'stock_certificate' ? 'GOLD FRAMED' : (doc.verified ? 'Verified' : 'Pending')}
                   </span>
                 </div>
               ))

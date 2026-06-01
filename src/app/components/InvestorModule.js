@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 export default function InvestorModule({ state }) {
   const { 
@@ -20,6 +20,84 @@ export default function InvestorModule({ state }) {
   const [investAmount, setInvestAmount] = useState('1000');
   const [investError, setInvestError] = useState('');
   const [investSuccess, setInvestSuccess] = useState('');
+
+  // SAFE Placement Wizard States
+  const [wizardStep, setWizardStep] = useState(1);
+  const [signatureDataUrl, setSignatureDataUrl] = useState('');
+  const canvasRef = useRef(null);
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [offeringTypeFilter, setOfferingTypeFilter] = useState('equity');
+
+  // Drawing event handlers
+  const startDrawing = (e) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const ctx = canvas.getContext('2d');
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    setIsDrawing(true);
+  };
+
+  const draw = (e) => {
+    if (!isDrawing) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const ctx = canvas.getContext('2d');
+    ctx.lineTo(x, y);
+    ctx.stroke();
+  };
+
+  const stopDrawing = () => {
+    setIsDrawing(false);
+    if (canvasRef.current) {
+      setSignatureDataUrl(canvasRef.current.toDataURL());
+    }
+  };
+
+  const clearSignature = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    setSignatureDataUrl('');
+  };
+
+  const startDrawingTouch = (e) => {
+    e.preventDefault();
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0];
+    const offsetX = touch.clientX - rect.left;
+    const offsetY = touch.clientY - rect.top;
+    const ctx = canvas.getContext('2d');
+    ctx.beginPath();
+    ctx.moveTo(offsetX, offsetY);
+    setIsDrawing(true);
+  };
+
+  const drawTouch = (e) => {
+    e.preventDefault();
+    if (!isDrawing) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0];
+    const offsetX = touch.clientX - rect.left;
+    const offsetY = touch.clientY - rect.top;
+    const ctx = canvas.getContext('2d');
+    ctx.lineTo(offsetX, offsetY);
+    ctx.stroke();
+  };
 
   // Investor Profile Form States (Table #5)
   const [investorType, setInvestorType] = useState(investorProfile.investor_type || 'angel');
@@ -77,13 +155,10 @@ export default function InvestorModule({ state }) {
     e.preventDefault();
     if (!selectedCampaign) return;
 
-    const res = investInCampaign(selectedCampaign.id, investAmount);
+    const res = investInCampaign(selectedCampaign.id, investAmount, signatureDataUrl);
     if (res.success) {
-      setInvestSuccess(`Congratulations! Successfully purchased equity shares in ${selectedCampaign.companyName}!`);
-      setTimeout(() => {
-        setInvestSuccess('');
-        setSelectedCampaign(null);
-      }, 3000);
+      setInvestSuccess(`SAFE Placement successfully executed! Tamper-proof certificate generated.`);
+      setWizardStep(3);
     } else {
       setInvestError(res.error);
     }
@@ -213,86 +288,188 @@ export default function InvestorModule({ state }) {
             <p style={styles.sub}>Vetted private placement campaigns open to accredited Peer Bridge members. Verify KYC to unlock transactions.</p>
           </div>
 
+          {/* HSL Segment Pills switcher */}
+          <div style={{
+            display: 'flex',
+            gap: '1rem',
+            background: 'rgba(255,255,255,0.02)',
+            border: '1px solid rgba(255,255,255,0.05)',
+            padding: '0.4rem',
+            borderRadius: '30px',
+            width: 'fit-content',
+            marginBottom: '1.5rem'
+          }}>
+            <button
+              onClick={() => setOfferingTypeFilter('equity')}
+              style={{
+                background: offeringTypeFilter === 'equity' ? '#ffffff' : 'transparent',
+                color: offeringTypeFilter === 'equity' ? '#000000' : '#a3a3a3',
+                border: 'none',
+                padding: '0.5rem 1.25rem',
+                borderRadius: '25px',
+                fontSize: '0.85rem',
+                fontWeight: '700',
+                cursor: 'pointer',
+                transition: 'all 0.25s ease'
+              }}
+            >
+              📈 Equity Placements ({campaigns.filter(c => c.offering_type !== 'debt').length})
+            </button>
+            <button
+              onClick={() => setOfferingTypeFilter('debt')}
+              style={{
+                background: offeringTypeFilter === 'debt' ? '#ffffff' : 'transparent',
+                color: offeringTypeFilter === 'debt' ? '#000000' : '#a3a3a3',
+                border: 'none',
+                padding: '0.5rem 1.25rem',
+                borderRadius: '25px',
+                fontSize: '0.85rem',
+                fontWeight: '700',
+                cursor: 'pointer',
+                transition: 'all 0.25s ease'
+              }}
+            >
+              🏛 P2P Debt Placements ({campaigns.filter(c => c.offering_type === 'debt').length})
+            </button>
+          </div>
+
           <div style={styles.grid}>
-            {campaigns.map((camp) => {
-              const pct = Math.min(100, Math.round((camp.raised / camp.target) * 100));
-              return (
-                <div key={camp.id} className="glass-panel" style={styles.campCard}>
-                  <div style={styles.campHeader}>
-                    <span style={styles.campSector}>{camp.category}</span>
-                    <span style={styles.campActive}>Active Campaign</span>
-                  </div>
-                  <h3 style={styles.campTitleText}>{camp.companyName}</h3>
-                  <p style={styles.campTagline}>{camp.tagline}</p>
-                  
-                  <div style={styles.progressContainer}>
-                    <div style={styles.progressBar}>
-                      <div style={{ ...styles.progressFill, width: `${pct}%` }}></div>
+            {campaigns
+              .filter(c => {
+                if (offeringTypeFilter === 'debt') {
+                  return c.offering_type === 'debt';
+                } else {
+                  return c.offering_type !== 'debt';
+                }
+              })
+              .map((camp) => {
+                const pct = Math.min(100, Math.round((camp.raised / camp.target) * 100));
+                const isDebt = camp.offering_type === 'debt';
+                return (
+                  <div key={camp.id} className="glass-panel" style={styles.campCard}>
+                    <div style={styles.campHeader}>
+                      <span style={{
+                        ...styles.campSector,
+                        background: isDebt ? 'rgba(59, 130, 246, 0.1)' : 'rgba(255, 255, 255, 0.05)',
+                        color: isDebt ? '#3b82f6' : '#a3a3a3'
+                      }}>
+                        {isDebt ? '🏛 P2P Note' : camp.category}
+                      </span>
+                      <span style={styles.campActive}>Active Offering</span>
                     </div>
-                    <div style={styles.progressLabelRow}>
-                      <span>Funded: <strong>${camp.raised.toLocaleString()}</strong></span>
-                      <span>{pct}% of ${camp.target.toLocaleString()}</span>
+                    <h3 style={styles.campTitleText}>{camp.companyName}</h3>
+                    <p style={styles.campTagline}>{camp.tagline}</p>
+                    
+                    <div style={styles.progressContainer}>
+                      <div style={styles.progressBar}>
+                        <div style={{ ...styles.progressFill, width: `${pct}%`, background: isDebt ? '#3b82f6' : '#ffffff' }}></div>
+                      </div>
+                      <div style={styles.progressLabelRow}>
+                        <span>Funded: <strong>${camp.raised.toLocaleString()}</strong></span>
+                        <span>{pct}% of ${camp.target.toLocaleString()}</span>
+                      </div>
                     </div>
-                  </div>
 
-                  <div style={styles.cardInfoGrid}>
-                    <div style={styles.infoCol}>
-                      <span style={styles.infoLabel}>Share Value</span>
-                      <span style={styles.infoVal}>${camp.sharePrice.toFixed(2)}</span>
+                    <div style={styles.cardInfoGrid}>
+                      <div style={styles.infoCol}>
+                        <span style={styles.infoLabel}>{isDebt ? 'Annual Rate' : 'Share Value'}</span>
+                        <span style={styles.infoVal}>{isDebt ? `${camp.interest_rate}%` : `$${camp.sharePrice.toFixed(2)}`}</span>
+                      </div>
+                      <div style={styles.infoCol}>
+                        <span style={styles.infoLabel}>{isDebt ? 'Term Months' : 'Min Entry'}</span>
+                        <span style={styles.infoVal}>{isDebt ? `${camp.term_months}m` : `$${camp.minInvestment.toLocaleString()}`}</span>
+                      </div>
+                      <div style={styles.infoCol}>
+                        <span style={styles.infoLabel}>{isDebt ? 'Net Yield' : 'Market Valuation'}</span>
+                        <span style={{
+                          ...styles.infoVal,
+                          color: isDebt ? '#10b981' : '#ffffff'
+                        }}>
+                          {isDebt ? `${(camp.interest_rate - 1.5).toFixed(1)}%` : `$${(camp.valuation / 1000000).toFixed(2)}M`}
+                        </span>
+                      </div>
                     </div>
-                    <div style={styles.infoCol}>
-                      <span style={styles.infoLabel}>Min Entry</span>
-                      <span style={styles.infoVal}>${camp.minInvestment.toLocaleString()}</span>
-                    </div>
-                    <div style={styles.infoCol}>
-                      <span style={styles.infoLabel}>Market Valuation</span>
-                      <span style={styles.infoVal}>${(camp.valuation / 1000000).toFixed(2)}M</span>
-                    </div>
-                  </div>
 
-                  <button
-                    onClick={() => handleOpenInvest(camp)}
-                    className="btn-primary"
-                    style={styles.investBtn}
-                  >
-                    Invest in Campaign
-                  </button>
-                </div>
-              );
-            })}
+                    <button
+                      onClick={() => {
+                        if (isDebt) {
+                          state.setActiveModule('lending');
+                        } else {
+                          handleOpenInvest(camp);
+                        }
+                      }}
+                      className="btn-primary"
+                      style={{
+                        ...styles.investBtn,
+                        background: isDebt ? 'linear-gradient(135deg, #3b82f6 0%, #1e40af 100%)' : 'linear-gradient(135deg, #ffffff 0%, #737373 100%)',
+                        color: isDebt ? '#ffffff' : '#000000',
+                        border: isDebt ? '1px solid rgba(59, 130, 246, 0.4)' : 'none'
+                      }}
+                    >
+                      {isDebt ? '🔑 Fund Commercial Note' : 'Invest in Campaign'}
+                    </button>
+                  </div>
+                );
+              })}
           </div>
 
           {/* Investment Transaction Wizard Dialog */}
           {selectedCampaign && (
             <div style={styles.modalBackdrop}>
-              <div className="glass-panel glow-accent-border" style={styles.modalCard}>
-                <h3 style={styles.modalTitle}>⚡ Invest in {selectedCampaign.companyName}</h3>
-                <p style={styles.modalSub}>
-                  Enter the amount you would like to invest. Minimum entry limit: <strong>${selectedCampaign.minInvestment.toLocaleString()}</strong>.
-                </p>
-
-                <div style={styles.modalMetaRow}>
-                  <div>
-                    <span style={styles.metaLabel}>Ecosystem Wallet Balance:</span>
-                    <span style={styles.metaVal}>${walletBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
-                  </div>
-                  <div>
-                    <span style={styles.metaLabel}>KYC Legal Badge Status:</span>
-                    <span style={{ 
-                      ...styles.metaVal, 
-                      color: user.isVerified ? '#ffffff' : '#f43f5e'
-                    }}>
-                      {user.isVerified ? '✓ Vetted Accredit' : '⚠ Verification Required'}
-                    </span>
-                  </div>
+              <div 
+                className="glass-panel glow-accent-border animate-fade-in-up" 
+                style={{ 
+                  ...styles.modalCard, 
+                  maxWidth: wizardStep === 2 ? '680px' : '480px',
+                  width: '95%'
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '1rem' }}>
+                  <h3 style={styles.modalTitle}>
+                    {wizardStep === 1 && `⚡ Invest in ${selectedCampaign.companyName}`}
+                    {wizardStep === 2 && `🖋 Secure SAFE Execution Wizard`}
+                    {wizardStep === 3 && `🎉 Allocation Confirmed!`}
+                  </h3>
+                  <button 
+                    onClick={() => {
+                      setSelectedCampaign(null);
+                      setWizardStep(1);
+                      setSignatureDataUrl('');
+                    }}
+                    style={{ background: 'none', border: 'none', color: '#737373', fontSize: '1.2rem', cursor: 'pointer' }}
+                  >
+                    ✕
+                  </button>
                 </div>
 
-                {investSuccess ? (
-                  <div style={styles.successBox}>
-                    🎉 {investSuccess}
-                  </div>
-                ) : (
-                  <form onSubmit={handleInvestSubmit} style={styles.modalForm}>
+                {wizardStep === 1 && (
+                  <form 
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      setWizardStep(2);
+                    }} 
+                    style={styles.modalForm}
+                  >
+                    <p style={styles.modalSub}>
+                      Enter the amount you would like to invest. Minimum entry limit: <strong>${selectedCampaign.minInvestment.toLocaleString()}</strong>.
+                    </p>
+
+                    <div style={styles.modalMetaRow}>
+                      <div>
+                        <span style={styles.metaLabel}>Ecosystem Wallet Balance:</span>
+                        <span style={styles.metaVal}>${walletBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                      </div>
+                      <div>
+                        <span style={styles.metaLabel}>KYC Legal Badge Status:</span>
+                        <span style={{ 
+                          ...styles.metaVal, 
+                          color: user.isVerified ? '#ffffff' : '#f43f5e'
+                        }}>
+                          {user.isVerified ? '✓ Vetted Accredit' : '⚠ Verification Required'}
+                        </span>
+                      </div>
+                    </div>
+
                     <div style={styles.inputGroup}>
                       <label style={styles.label}>Investment Capital Amount ($)</label>
                       <input
@@ -330,10 +507,187 @@ export default function InvestorModule({ state }) {
                           ? 'Complete KYC to Unlock' 
                           : walletBalance < parseFloat(investAmount)
                           ? 'Insufficient Funds'
-                          : 'Execute Core Purchase'}
+                          : 'Review & Sign SAFE Contract'}
                       </button>
                     </div>
                   </form>
+                )}
+
+                {wizardStep === 2 && (
+                  <form onSubmit={handleInvestSubmit} style={styles.modalForm}>
+                    <p style={styles.modalSub}>
+                      Please review the dynamically compiled Y-Combinator SAFE placement contract below and sign to authorize.
+                    </p>
+
+                    {/* SAFE Document scrollbox */}
+                    <div style={{
+                      background: 'rgba(0,0,0,0.4)',
+                      border: '1px solid rgba(255,255,255,0.08)',
+                      borderRadius: '8px',
+                      padding: '1.5rem',
+                      maxHeight: '220px',
+                      overflowY: 'auto',
+                      fontSize: '0.8rem',
+                      color: '#a3a3a3',
+                      lineHeight: '1.5',
+                      fontFamily: 'monospace',
+                      whiteSpace: 'pre-line'
+                    }}>
+                      {`PEERBRIDGE VENTURE PLACEMENTS SYSTEM
+                      SIMPLE AGREEMENT FOR FUTURE EQUITY (SAFE)
+
+                      This Simple Agreement for Future Equity ("SAFE") is made as of ${new Date().toLocaleDateString()} between ${state.customer?.first_name || 'Sarah'} ${state.customer?.last_name || 'Connor'} ("Investor") and ${selectedCampaign.companyName} ("Company") for the investment amount of $${parseFloat(investAmount).toLocaleString()}.
+
+                      1. Valuation Cap. The Valuation Cap for this offering is $${selectedCampaign.valuation.toLocaleString()}.
+                      2. Series A Equity. Upon the closing of the Company's next equity financing round exceeding $1,000,000, this SAFE shall automatically convert into fully paid, non-assessable Common Shares at the specified share price of $${selectedCampaign.sharePrice.toFixed(2)}.
+                      3. Compliance. This placement is executed under Regulation Crowdfunding (Reg CF) / Regulation D rules within the United States. Cross-border transfers outside of US jurisdictions are legally restricted.`}
+                    </div>
+
+                    {/* e-Signature Pad */}
+                    <div style={styles.inputGroup}>
+                      <label style={styles.label}>🖋 Accredit e-Signature Pad (Draw with Mouse/Touch)</label>
+                      <div style={{ position: 'relative' }}>
+                        <canvas
+                          ref={canvasRef}
+                          width={600}
+                          height={120}
+                          onMouseDown={startDrawing}
+                          onMouseMove={draw}
+                          onMouseUp={stopDrawing}
+                          onMouseLeave={stopDrawing}
+                          onTouchStart={startDrawingTouch}
+                          onTouchMove={drawTouch}
+                          onTouchEnd={stopDrawing}
+                          style={{
+                            background: '#0a0a0a',
+                            border: '1px solid rgba(255,255,255,0.1)',
+                            borderRadius: '6px',
+                            cursor: 'crosshair',
+                            width: '100%',
+                            height: '120px'
+                          }}
+                        />
+                        {signatureDataUrl && (
+                          <div style={{
+                            position: 'absolute',
+                            bottom: '10px',
+                            right: '10px',
+                            background: 'rgba(16,185,129,0.15)',
+                            border: '1px solid #10b981',
+                            color: '#10b981',
+                            fontSize: '0.65rem',
+                            padding: '0.2rem 0.5rem',
+                            borderRadius: '4px',
+                            pointerEvents: 'none'
+                          }}>
+                            ✓ Signature Captured
+                          </div>
+                        )}
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.25rem' }}>
+                        <span style={{ fontSize: '0.7rem', color: '#737373' }}>
+                          SHA-256 Tamper Lock: <strong style={{ fontFamily: 'monospace' }}>SEC-REG-D-A1</strong>
+                        </span>
+                        <button
+                          type="button"
+                          onClick={clearSignature}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            color: '#f43f5e',
+                            fontSize: '0.72rem',
+                            cursor: 'pointer',
+                            padding: 0
+                          }}
+                        >
+                          Clear Signature Pad
+                        </button>
+                      </div>
+                    </div>
+
+                    {investError && <div style={styles.errorBox}>{investError}</div>}
+
+                    <div style={styles.modalButtons}>
+                      <button
+                        type="button"
+                        onClick={() => setWizardStep(1)}
+                        className="btn-secondary"
+                        style={{ flex: 1 }}
+                      >
+                        Back
+                      </button>
+                      <button
+                        type="submit"
+                        className="btn-primary"
+                        style={{ flex: 2 }}
+                        disabled={!signatureDataUrl}
+                      >
+                        Execute SAFE & Claim Stock Cert
+                      </button>
+                    </div>
+                  </form>
+                )}
+
+                {wizardStep === 3 && (
+                  <div style={{ textAlign: 'center', padding: '1.5rem 0', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem' }}>
+                    <div style={{
+                      width: '64px',
+                      height: '64px',
+                      borderRadius: '50%',
+                      background: 'rgba(16,185,129,0.1)',
+                      border: '2px solid #10b981',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '2rem',
+                      color: '#10b981',
+                      boxShadow: '0 0 15px rgba(16,185,129,0.3)',
+                    }}>
+                      ✓
+                    </div>
+                    <div>
+                      <h4 style={{ fontSize: '1.25rem', fontWeight: '800', color: '#ffffff', marginBottom: '0.5rem' }}>Investment Executed Successfully!</h4>
+                      <p style={{ fontSize: '0.88rem', color: '#a3a3a3', lineHeight: '1.5', maxWidth: '360px' }}>
+                        Your Y-Combinator SAFE contract has been cryptographically signed with a SHA-256 stamp. Your gold-framed Stock Certificate is now secure in your <strong>Ecosystem Vault</strong>.
+                      </p>
+                    </div>
+
+                    {/* Gold certificate mockup inside success dialog */}
+                    <div style={{
+                      border: '2px solid #d4af37',
+                      background: 'linear-gradient(135deg, rgba(20,20,20,0.95) 0%, rgba(10,10,10,0.99) 100%)',
+                      boxShadow: '0 10px 30px rgba(212,175,55,0.15)',
+                      padding: '1.25rem',
+                      borderRadius: '8px',
+                      width: '100%',
+                      textAlign: 'center',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '0.5rem',
+                      position: 'relative'
+                    }}>
+                      <div style={{ position: 'absolute', top: 5, right: 5, fontSize: '0.55rem', color: '#d4af37', fontWeight: 'bold', border: '1px solid #d4af37', padding: '1px 3px', borderRadius: '3px' }}>
+                        GOLD FRAMED
+                      </div>
+                      <span style={{ fontSize: '0.65rem', color: '#d4af37', fontWeight: '700', letterSpacing: '0.1em' }}>PEERBRIDGE SECURITY INC.</span>
+                      <strong style={{ color: '#ffffff', fontSize: '0.9rem' }}>STOCK ACQUISITION CERTIFICATE</strong>
+                      <span style={{ fontSize: '0.8rem', color: '#a3a3a3' }}>ISSUED TO: <strong>{state.customer?.first_name} {state.customer?.last_name}</strong></span>
+                      <span style={{ fontSize: '0.75rem', color: '#a3a3a3' }}>SHARES QUANTITY: <strong>{Math.floor(parseFloat(investAmount || 0) / selectedCampaign.sharePrice).toLocaleString()} Stocks</strong></span>
+                      <span style={{ fontSize: '0.58rem', color: '#525252', fontFamily: 'monospace' }}>SEC SHA256 BLOCK: d41d8cd98f00b204e9800998ecf8427e</span>
+                    </div>
+
+                    <button
+                      onClick={() => {
+                        setSelectedCampaign(null);
+                        setWizardStep(1);
+                        setSignatureDataUrl('');
+                      }}
+                      className="btn-primary"
+                      style={{ width: '100%' }}
+                    >
+                      Return to Deal Feed
+                    </button>
+                  </div>
                 )}
               </div>
             </div>

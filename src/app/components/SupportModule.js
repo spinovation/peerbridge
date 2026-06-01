@@ -8,6 +8,22 @@ export default function SupportModule({ state }) {
   const [message, setMessage] = useState('');
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
+  const [openFaqIndex, setOpenFaqIndex] = useState(null);
+
+  const faqs = [
+    {
+      q: '🏛 How does the Peerbridge P2P lending engine work?',
+      a: 'Lenders offer debt capital (notes) to pre-screened founders in the Credit Registry. Under our USA domestic spread-yield model, Peerbridge extracts a 1.5% origination fee at disbursement, and a 1.5% servicing spread upon note settlement. For example, on a $500 principal note at 7.5% interest:\n\n• Lender disburses $507.50 ($500 principal + $7.50 entry fee).\n• Borrower receives $492.50 ($500 principal - $7.50 origination fee).\n• Upon repayment, Borrower pays $537.50 ($500 principal + $37.50 yield/fees).\n• Lender receives $530.00 (recovering principal + 6.0% net yield).\n• Peerbridge captures a total of $15.00 in platform service revenue.'
+    },
+    {
+      q: '⚡ How are venture equity placements and warrants structured?',
+      a: 'Placements are executed using standardized Y-Combinator Simple Agreements for Future Equity (SAFE) with valuation caps. When an investor completes the placement:\n\n1. The investor reviews the dynamically compiled SAFE terms and draws their legal signature on our touch-responsive e-signature pad.\n2. The contract is cryptographically signed and stamped with a unique SHA-256 compliance hash.\n3. The platform extracts a 4.0% cash success fee from the round proceeds (crediting 96.0% to the founder) and registers a 1.5% equity warrant to the Peerbridge warrants registry.\n4. A gold-framed, high-premium Stock Acquisition Certificate is issued instantly to the investor\'s Vault.'
+    },
+    {
+      q: '🌐 Why are retail transactions strictly domestic (USA only)?',
+      a: 'Peerbridge enforces a strict domestic-only routing policy for retail credit. Cross-border transactions between US citizens and international entities (such as India) are legally prohibited due to severe regulatory limits: RBI NBFC-P2P lending caps, FEMA foreign exchange guidelines, ECB interest thresholds, and IRS FATCA 30% automatic tax withholding. Therefore, all Phase 1 capital pools are restricted to domestic USA-to-USA transfers.'
+    }
+  ];
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -141,6 +157,69 @@ export default function SupportModule({ state }) {
               ))
             )}
           </div>
+        </div>
+      </div>
+
+      {/* Accordion FAQ Panel */}
+      <div className="glass-panel" style={{ ...styles.card, flex: '1 1 100%' }}>
+        <h3 style={styles.cardTitle}>❓ Frequently Asked Questions & Operational Guidelines</h3>
+        <p style={styles.cardDesc}>Browse details on P2P Debt structures, Equity Placements, e-signature safety, and cross-border regulatory policies.</p>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%', marginTop: '0.5rem' }}>
+          {faqs.map((faq, index) => {
+            const isOpen = openFaqIndex === index;
+            return (
+              <div 
+                key={index} 
+                style={{
+                  background: 'rgba(255,255,255,0.01)',
+                  border: '1px solid rgba(255,255,255,0.04)',
+                  borderRadius: '8px',
+                  overflow: 'hidden',
+                  transition: 'all 0.25s ease'
+                }}
+              >
+                <button
+                  onClick={() => setOpenFaqIndex(isOpen ? null : index)}
+                  style={{
+                    width: '100%',
+                    background: 'none',
+                    border: 'none',
+                    padding: '1.25rem',
+                    textAlign: 'left',
+                    color: '#ffffff',
+                    fontWeight: '700',
+                    fontSize: '0.92rem',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    cursor: 'pointer',
+                    outline: 'none'
+                  }}
+                >
+                  <span>{faq.q}</span>
+                  <span style={{ fontSize: '0.8rem', color: '#737373', transition: 'transform 0.2s', transform: isOpen ? 'rotate(90deg)' : 'rotate(0)' }}>
+                    ▶
+                  </span>
+                </button>
+
+                {isOpen && (
+                  <div 
+                    style={{
+                      padding: '0 1.25rem 1.25rem 1.25rem',
+                      color: '#a3a3a3',
+                      fontSize: '0.86rem',
+                      lineHeight: '1.6',
+                      borderTop: '1px solid rgba(255,255,255,0.03)',
+                      whiteSpace: 'pre-line'
+                    }}
+                  >
+                    {faq.a}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

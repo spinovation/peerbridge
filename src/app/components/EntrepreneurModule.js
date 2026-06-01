@@ -20,6 +20,9 @@ export default function EntrepreneurModule({ state }) {
   const [category, setCategory] = useState('CleanTech');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [offeringType, setOfferingType] = useState('equity');
+  const [interestRate, setInterestRate] = useState('7.5');
+  const [termMonths, setTermMonths] = useState('6');
 
   // Entrepreneur Profile Form States (Table #4)
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -72,7 +75,10 @@ export default function EntrepreneurModule({ state }) {
       valuation,
       sharePrice,
       minInvest,
-      category
+      category,
+      offeringType,
+      interestRate,
+      termMonths
     );
 
     if (res.success) {
@@ -82,7 +88,7 @@ export default function EntrepreneurModule({ state }) {
         business_stage: 'revenue',
         industry: category,
         funding_goal: parseFloat(target),
-        valuation: parseFloat(valuation),
+        valuation: offeringType === 'debt' ? 0 : parseFloat(valuation),
         company_summary: description
       });
 
@@ -211,6 +217,18 @@ export default function EntrepreneurModule({ state }) {
           <form onSubmit={handleLaunchRound} style={styles.formGrid}>
             <div style={styles.formCol}>
               <div style={styles.inputGroup}>
+                <label style={styles.label}>Ecosystem Offering Type</label>
+                <select
+                  value={offeringType}
+                  onChange={(e) => setOfferingType(e.target.value)}
+                  style={styles.select}
+                >
+                  <option value="equity">📈 Series Seed SAFE (Equity)</option>
+                  <option value="debt">🏛 P2P Commercial Credit Note (Debt)</option>
+                </select>
+              </div>
+
+              <div style={styles.inputGroup}>
                 <label style={styles.label}>Company Legal Name</label>
                 <input
                   type="text"
@@ -260,42 +278,98 @@ export default function EntrepreneurModule({ state }) {
             </div>
 
             <div style={styles.formCol}>
-              <div style={styles.inputGroup}>
-                <label style={styles.label}>Target Capital Raised ($)</label>
-                <input
-                  type="number"
-                  value={target}
-                  onChange={(e) => setTarget(e.target.value)}
-                  style={styles.input}
-                  required
-                />
-              </div>
+              {offeringType === 'equity' ? (
+                <>
+                  <div style={styles.inputGroup}>
+                    <label style={styles.label}>Target Capital Raised ($)</label>
+                    <input
+                      type="number"
+                      value={target}
+                      onChange={(e) => setTarget(e.target.value)}
+                      style={styles.input}
+                      required
+                    />
+                  </div>
 
-              <div style={styles.inputGroup}>
-                <label style={styles.label}>Pre-Money Valuation ($)</label>
-                <input
-                  type="number"
-                  value={valuation}
-                  onChange={(e) => setValuation(e.target.value)}
-                  style={styles.input}
-                  required
-                />
-              </div>
+                  <div style={styles.inputGroup}>
+                    <label style={styles.label}>Pre-Money Valuation ($)</label>
+                    <input
+                      type="number"
+                      value={valuation}
+                      onChange={(e) => setValuation(e.target.value)}
+                      style={styles.input}
+                      required
+                    />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div style={styles.inputGroup}>
+                    <label style={styles.label}>Target Principal Amount ($)</label>
+                    <input
+                      type="number"
+                      value={target}
+                      onChange={(e) => setTarget(e.target.value)}
+                      style={styles.input}
+                      required
+                    />
+                  </div>
 
-              <div style={styles.inputGroup2Col}>
-                <div style={styles.inputGroup}>
-                  <label style={styles.label}>Share Price ($)</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={sharePrice}
-                    onChange={(e) => setSharePrice(e.target.value)}
-                    style={styles.input}
-                    required
-                  />
+                  <div style={styles.inputGroup2Col}>
+                    <div style={styles.inputGroup}>
+                      <label style={styles.label}>Proposed Interest Rate (%)</label>
+                      <input
+                        type="number"
+                        step="0.1"
+                        value={interestRate}
+                        onChange={(e) => setInterestRate(e.target.value)}
+                        style={styles.input}
+                        required
+                      />
+                    </div>
+                    <div style={styles.inputGroup}>
+                      <label style={styles.label}>Note Term (Months)</label>
+                      <select
+                        value={termMonths}
+                        onChange={(e) => setTermMonths(e.target.value)}
+                        style={styles.select}
+                      >
+                        <option value="3">3 Months</option>
+                        <option value="6">6 Months</option>
+                        <option value="12">12 Months</option>
+                      </select>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {offeringType === 'equity' ? (
+                <div style={styles.inputGroup2Col}>
+                  <div style={styles.inputGroup}>
+                    <label style={styles.label}>Share Price ($)</label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={sharePrice}
+                      onChange={(e) => setSharePrice(e.target.value)}
+                      style={styles.input}
+                      required
+                    />
+                  </div>
+                  <div style={styles.inputGroup}>
+                    <label style={styles.label}>Min Investment ($)</label>
+                    <input
+                      type="number"
+                      value={minInvest}
+                      onChange={(e) => setMinInvest(e.target.value)}
+                      style={styles.input}
+                      required
+                    />
+                  </div>
                 </div>
+              ) : (
                 <div style={styles.inputGroup}>
-                  <label style={styles.label}>Min Investment ($)</label>
+                  <label style={styles.label}>Minimum Note Slice ($)</label>
                   <input
                     type="number"
                     value={minInvest}
@@ -304,7 +378,7 @@ export default function EntrepreneurModule({ state }) {
                     required
                   />
                 </div>
-              </div>
+              )}
 
               <div style={styles.inputGroup}>
                 <label style={styles.label}>Market Segment Sector</label>
@@ -318,6 +392,7 @@ export default function EntrepreneurModule({ state }) {
                   <option value="SaaS">SaaS & Enterprise Automation</option>
                   <option value="Fintech">Financial Infrastructure</option>
                   <option value="DeepTech">Advanced Robotics & Quantum Computing</option>
+                  <option value="Logistics">Logistics & Supply Chain</option>
                 </select>
               </div>
 
@@ -376,8 +451,12 @@ export default function EntrepreneurModule({ state }) {
                 return (
                   <div key={camp.id} className="glass-panel" style={styles.campaignCard}>
                     <div style={styles.campBadgeRow}>
-                      <span className="badge badge-verified">✓ Reg CF Active</span>
-                      <span style={styles.campSector}>{camp.category}</span>
+                      <span className="badge badge-verified">✓ {camp.offering_type === 'debt' ? 'P2P note Active' : 'Reg CF Active'}</span>
+                      <span style={{
+                        ...styles.campSector,
+                        background: camp.offering_type === 'debt' ? 'rgba(59, 130, 246, 0.1)' : 'rgba(255, 255, 255, 0.05)',
+                        color: camp.offering_type === 'debt' ? '#3b82f6' : '#a3a3a3'
+                      }}>{camp.offering_type === 'debt' ? '🏛 Debt placement' : camp.category}</span>
                     </div>
 
                     <h2 style={styles.companyTitle}>{camp.companyName}</h2>
@@ -390,16 +469,16 @@ export default function EntrepreneurModule({ state }) {
                         <span style={styles.statVal}>${camp.raised.toLocaleString()}</span>
                       </div>
                       <div style={styles.statBox}>
-                        <span style={styles.statLabel}>Target Round Goal</span>
+                        <span style={styles.statLabel}>{camp.offering_type === 'debt' ? 'Target Note Goal' : 'Target Round Goal'}</span>
                         <span style={styles.statVal}>${camp.target.toLocaleString()}</span>
                       </div>
                       <div style={styles.statBox}>
-                        <span style={styles.statLabel}>Pre-Money Valuation</span>
-                        <span style={styles.statVal}>${(camp.valuation / 1000000).toFixed(2)}M</span>
+                        <span style={styles.statLabel}>{camp.offering_type === 'debt' ? 'Proposed Rate' : 'Pre-Money Valuation'}</span>
+                        <span style={styles.statVal}>{camp.offering_type === 'debt' ? `${camp.interest_rate}%` : `$${(camp.valuation / 1000000).toFixed(2)}M`}</span>
                       </div>
                       <div style={styles.statBox}>
-                        <span style={styles.statLabel}>Vetted Investors</span>
-                        <span style={styles.statVal}>{camp.investorsCount}</span>
+                        <span style={styles.statLabel}>{camp.offering_type === 'debt' ? 'Term length' : 'Vetted Investors'}</span>
+                        <span style={styles.statVal}>{camp.offering_type === 'debt' ? `${camp.term_months} Months` : camp.investorsCount}</span>
                       </div>
                     </div>
 
