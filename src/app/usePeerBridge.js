@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { db, isFirebaseConfigured } from './firebase';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, onSnapshot } from 'firebase/firestore';
 
 // Initial Mock Datasets representing Database Tables
 
@@ -1059,19 +1059,19 @@ export function usePeerBridge() {
       };
       fetchGlobalDirectory();
 
-      // Fetch shared global connection requests from Firestore (if configured)
-      const fetchGlobalRequests = async () => {
-        if (isFirebaseConfigured) {
-          try {
-            const reqRef = doc(db, 'global_data', 'connection_requests');
-            const reqSnap = await getDoc(reqRef);
-            if (reqSnap.exists()) {
-              const reqData = reqSnap.data();
+      // Fetch shared global connection requests from Firestore dynamically in real-time (if configured)
+      let unsubscribeRequests = () => {};
+      if (isFirebaseConfigured) {
+        try {
+          const reqRef = doc(db, 'global_data', 'connection_requests');
+          unsubscribeRequests = onSnapshot(reqRef, (docSnap) => {
+            if (docSnap.exists()) {
+              const reqData = docSnap.data();
               if (reqData && Array.isArray(reqData.requests)) {
                 setConnectionRequests(reqData.requests);
                 localStorage.setItem('pb_connection_requests', JSON.stringify(reqData.requests));
                 
-                // Resolve mutual connections on mount from Firestore
+                // Resolve mutual connections dynamically from Firestore in real-time
                 if (storedCust) {
                   const parsed = JSON.parse(storedCust);
                   if (parsed && parsed.customer_id) {
@@ -1093,12 +1093,17 @@ export function usePeerBridge() {
                 }
               }
             }
-          } catch (err) {
-            console.error("Failed to fetch connection requests from Firestore:", err);
-          }
+          }, (err) => {
+            console.error("Failed to subscribe to connection requests from Firestore:", err);
+          });
+        } catch (err) {
+          console.error("Failed to setup connection requests Firestore listener:", err);
         }
+      }
+
+      return () => {
+        unsubscribeRequests();
       };
-      fetchGlobalRequests();
     }
   }, []);
 
