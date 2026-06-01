@@ -3432,34 +3432,15 @@ export default function Home() {
           <div className="glass-panel animate-fade-in-up" style={styles.sidebarNewsCard}>
             <h3 style={styles.sidebarNewsTitle}>📰 Peer Bridge News</h3>
             <ul style={styles.newsList}>
-              <li style={styles.newsItem}>
-                <span style={styles.newsBullet}>•</span>
-                <div style={styles.newsContent}>
-                  <strong style={styles.newsHeading}>SEC Form C Adjustments</strong>
-                  <span style={styles.newsText}>Exempt crowdfund limits set to expand to $5M annually.</span>
-                </div>
-              </li>
-              <li style={styles.newsItem}>
-                <span style={styles.newsBullet}>•</span>
-                <div style={styles.newsContent}>
-                  <strong style={styles.newsHeading}>Carbon Bio-Algae Boom</strong>
-                  <span style={styles.newsText}>CleanTech placements surge +210% across alternative SPVs.</span>
-                </div>
-              </li>
-              <li style={styles.newsItem}>
-                <span style={styles.newsBullet}>•</span>
-                <div style={styles.newsContent}>
-                  <strong style={styles.newsHeading}>P2P Cap Table Auditing</strong>
-                  <span style={styles.newsText}>Exempt ledger audit costs reduced 70% via smart automation.</span>
-                </div>
-              </li>
-              <li style={styles.newsItem}>
-                <span style={styles.newsBullet}>•</span>
-                <div style={styles.newsContent}>
-                  <strong style={styles.newsHeading}>IRS Reg D Tax Updates</strong>
-                  <span style={styles.newsText}>Exempt dividend tax deferrals approved for primary syndicates.</span>
-                </div>
-              </li>
+              {(state.news || []).map((item) => (
+                <li key={item.id} style={styles.newsItem}>
+                  <span style={styles.newsBullet}>•</span>
+                  <div style={styles.newsContent}>
+                    <strong style={styles.newsHeading}>{item.heading}</strong>
+                    <span style={styles.newsText}>{item.text}</span>
+                  </div>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -3469,15 +3450,15 @@ export default function Home() {
               <span style={styles.adLabel}>SPONSORED SPOTLIGHT</span>
               <span style={styles.adOptOut}>🎯</span>
             </div>
-            <h4 style={styles.adTitle}>EcoSphere Technologies Series A</h4>
+            <h4 style={styles.adTitle}>{state.spotlight?.title || 'EcoSphere Technologies Series A'}</h4>
             <p style={styles.adText}>
-              Pre-vetted closed-loop algae bioreactors targeting 400x carbon sequestration. SEC Form C compliant.
+              {state.spotlight?.text || 'Pre-vetted closed-loop algae bioreactors targeting 400x carbon sequestration. SEC Form C compliant.'}
             </p>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.75rem' }}>
-              <span style={styles.adMinEntry}>Min: $500</span>
+              <span style={styles.adMinEntry}>Min: {state.spotlight?.minEntry || '$500'}</span>
               <button 
                 onClick={() => {
-                  state.setTargetCampaignId('camp-1');
+                  state.setTargetCampaignId(state.spotlight?.campaignId || 'camp-1');
                   state.setActiveModule('portfolio');
                 }}
                 className="btn-primary" 
@@ -3492,20 +3473,15 @@ export default function Home() {
           <div className="glass-panel animate-fade-in-up" style={styles.sidebarAnnounceCard}>
             <h3 style={styles.sidebarAnnounceTitle}>📣 Node Announcements</h3>
             <div style={styles.announceList}>
-              <div style={styles.announceItem}>
-                <span style={styles.announceDot} />
-                <div>
-                  <strong style={styles.announceHeader}>Reg D Sync Node Completed</strong>
-                  <span style={styles.announceText}>SEC Form D secure filings ledger nodes successfully propagated.</span>
+              {(state.announcements || []).map((item) => (
+                <div key={item.id} style={styles.announceItem}>
+                  <span style={styles.announceDot} />
+                  <div>
+                    <strong style={styles.announceHeader}>{item.header}</strong>
+                    <span style={styles.announceText}>{item.text}</span>
+                  </div>
                 </div>
-              </div>
-              <div style={styles.announceItem}>
-                <span style={styles.announceDot} />
-                <div>
-                  <strong style={styles.announceHeader}>Biometrics Vetting Sweep</strong>
-                  <span style={styles.announceText}>Identity verification AML modules updated for international compliance.</span>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </aside>

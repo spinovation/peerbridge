@@ -799,6 +799,61 @@ export function usePeerBridge() {
   const [loans, setLoans] = useState([]);
   const [warrants, setWarrants] = useState([]);
   
+  // Dynamic Content Publisher state hooks
+  const [news, setNews] = useState([
+    { id: 'news-1', heading: 'SEC Form C Adjustments', text: 'Exempt crowdfund limits set to expand to $5M annually.' },
+    { id: 'news-2', heading: 'Carbon Bio-Algae Boom', text: 'CleanTech placements surge +210% across alternative SPVs.' },
+    { id: 'news-3', heading: 'P2P Cap Table Auditing', text: 'Exempt ledger audit costs reduced 70% via smart automation.' },
+    { id: 'news-4', heading: 'IRS Reg D Tax Updates', text: 'Exempt dividend tax deferrals approved for primary syndicates.' }
+  ]);
+
+  const [announcements, setAnnouncements] = useState([
+    { id: 'ann-1', header: 'Reg D Sync Node Completed', text: 'SEC Form D secure filings ledger nodes successfully propagated.' },
+    { id: 'ann-2', header: 'Biometrics Vetting Sweep', text: 'Identity verification AML modules updated for international compliance.' }
+  ]);
+
+  const [spotlight, setSpotlight] = useState({
+    title: 'EcoSphere Technologies Series A',
+    text: 'Pre-vetted closed-loop algae bioreactors targeting 400x carbon sequestration. SEC Form C compliant.',
+    minEntry: '$500',
+    campaignId: 'camp-1'
+  });
+
+  const addNews = (heading, text) => {
+    const newItem = { id: `news-${Date.now()}`, heading, text };
+    const updated = [newItem, ...news];
+    sync('pb_news', updated, setNews);
+    addNotification('System', `News Bulletin published: "${heading}"`);
+  };
+
+  const addAnnouncement = (header, text) => {
+    const newItem = { id: `ann-${Date.now()}`, header, text };
+    const updated = [newItem, ...announcements];
+    sync('pb_announcements', updated, setAnnouncements);
+    addNotification('System', `Node Announcement published: "${header}"`);
+  };
+
+  const updateSpotlight = (title, text, minEntry, campaignId) => {
+    const updated = { title, text, minEntry, campaignId };
+    sync('pb_spotlight', updated, setSpotlight);
+    addNotification('System', `Sponsored Spotlight Ad updated: "${title}"`);
+  };
+
+  const addEvent = (title, date, description, category) => {
+    const newEvt = {
+      id: `evt-${Date.now()}`,
+      title,
+      date,
+      description,
+      category,
+      attending: false,
+      attendees: Math.floor(Math.random() * 30) + 5
+    };
+    const updated = [...events, newEvt];
+    sync('pb_events', updated, setEvents);
+    addNotification('System', `Ecosystem Event published: "${title}"`);
+  };
+
   const [profileViewers, setProfileViewers] = useState(61);
   const [postImpressions, setPostImpressions] = useState(320);
   const [events, setEvents] = useState([
@@ -2657,6 +2712,15 @@ export function usePeerBridge() {
     acceptConnectionRequest,
     declineConnectionRequest,
     disconnectConnectionNode,
+    
+    // Dynamic Content Publisher
+    news,
+    announcements,
+    spotlight,
+    addNews,
+    addAnnouncement,
+    updateSpotlight,
+    addEvent,
     
     // Database writing actions
     loginWithInvite,

@@ -35,8 +35,74 @@ export default function SalesAdminModule({ state }) {
   const [filterCohort, setFilterCohort] = useState('All');
   const [filterGrade, setFilterGrade] = useState('All');
 
+  // Content Publisher Form States
+  const [announceTitle, setAnnounceTitle] = useState('');
+  const [announceText, setAnnounceText] = useState('');
+  const [newsHeading, setNewsHeading] = useState('');
+  const [newsText, setNewsText] = useState('');
+  const [eventTitle, setEventTitle] = useState('');
+  const [eventDate, setEventDate] = useState('');
+  const [eventDesc, setEventDesc] = useState('');
+  const [eventCategory, setEventCategory] = useState('Deal-Flow Pitch');
+  const [spotlightTitle, setSpotlightTitle] = useState(state.spotlight?.title || '');
+  const [spotlightText, setSpotlightText] = useState(state.spotlight?.text || '');
+  const [spotlightMin, setSpotlightMin] = useState(state.spotlight?.minEntry || '');
+  const [spotlightCamp, setSpotlightCamp] = useState(state.spotlight?.campaignId || 'camp-1');
+
   // Load active candidate PRI details
   const priDetails = MOCK_BORROWERS_PRI[selectedCandidate] || MOCK_BORROWERS_PRI['kristi@toninlogistics.com'];
+
+  // Content Publisher Handlers
+  const handlePublishAnnouncement = (e) => {
+    e.preventDefault();
+    if (!announceTitle.trim() || !announceText.trim()) {
+      setError('Please provide both announcement title and description.');
+      return;
+    }
+    state.addAnnouncement(announceTitle, announceText);
+    setSuccess(`Successfully published node announcement: "${announceTitle}"`);
+    setAnnounceTitle('');
+    setAnnounceText('');
+    setError('');
+  };
+
+  const handlePublishNews = (e) => {
+    e.preventDefault();
+    if (!newsHeading.trim() || !newsText.trim()) {
+      setError('Please provide both news heading and summary text.');
+      return;
+    }
+    state.addNews(newsHeading, newsText);
+    setSuccess(`Successfully published news bulletin: "${newsHeading}"`);
+    setNewsHeading('');
+    setNewsText('');
+    setError('');
+  };
+
+  const handlePublishEvent = (e) => {
+    e.preventDefault();
+    if (!eventTitle.trim() || !eventDate.trim() || !eventDesc.trim()) {
+      setError('Please fill in all event fields.');
+      return;
+    }
+    state.addEvent(eventTitle, eventDate, eventDesc, eventCategory);
+    setSuccess(`Successfully published ecosystem event: "${eventTitle}"`);
+    setEventTitle('');
+    setEventDate('');
+    setEventDesc('');
+    setError('');
+  };
+
+  const handleUpdateSpotlight = (e) => {
+    e.preventDefault();
+    if (!spotlightTitle.trim() || !spotlightText.trim() || !spotlightMin.trim()) {
+      setError('Please provide spotlight title, description, and minimum entry.');
+      return;
+    }
+    state.updateSpotlight(spotlightTitle, spotlightText, spotlightMin, spotlightCamp);
+    setSuccess(`Successfully updated sponsored spotlight banner: "${spotlightTitle}"`);
+    setError('');
+  };
 
   // Existing Waitlist token generator handlers
   const handleGenerateCode = (e) => {
@@ -293,6 +359,17 @@ export default function SalesAdminModule({ state }) {
             }}
           >
             📈 Vintage Risk Analytics
+          </button>
+          <button 
+            onClick={() => setActiveAdminTab('content_publisher')}
+            style={{ 
+              ...styles.tabBtn, 
+              color: activeAdminTab === 'content_publisher' ? '#ffffff' : '#737373',
+              background: activeAdminTab === 'content_publisher' ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
+              borderBottom: activeAdminTab === 'content_publisher' ? '2px solid #00f2fe' : 'none'
+            }}
+          >
+            📢 Content Publisher
           </button>
         </div>
       </div>
@@ -1337,6 +1414,190 @@ export default function SalesAdminModule({ state }) {
                 </svg>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Tab 4: Content Publisher Control Center (2x2 Dynamic Grid Form) */}
+      {activeAdminTab === 'content_publisher' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }} className="animate-fade-in-up">
+          <div className="glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+            <h3 style={{ ...styles.cardTitle, color: '#00f2fe' }}>📢 Ecosystem Content Publisher Control Center</h3>
+            <p style={styles.cardDesc}>Publish live bulletins, announcements, deal-flow event sessions, and manage sponsored spotlights across all peer endpoints reactively.</p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+            
+            {/* Form 1: Node Announcements */}
+            <div className="glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <span style={{ fontSize: '0.85rem', fontWeight: '800', color: '#00f2fe', letterSpacing: '0.04em' }}>📣 ANNOUNCE REGULATORY / NODE STATUS</span>
+              <form onSubmit={handlePublishAnnouncement} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                  <label style={styles.specLabel}>Announcement Header</label>
+                  <input 
+                    type="text" 
+                    placeholder="e.g. Reg D Sync Node Completed" 
+                    value={announceTitle} 
+                    onChange={(e) => setAnnounceTitle(e.target.value)}
+                    style={styles.input} 
+                  />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                  <label style={styles.specLabel}>Announcement Content Detail</label>
+                  <textarea 
+                    placeholder="Provide full announcement details..." 
+                    value={announceText} 
+                    onChange={(e) => setAnnounceText(e.target.value)}
+                    style={{ ...styles.input, minHeight: '80px', fontFamily: 'inherit', resize: 'vertical' }} 
+                  />
+                </div>
+                <button type="submit" className="btn-primary" style={{ alignSelf: 'flex-start', padding: '0.6rem 1.25rem' }}>
+                  🚀 Publish Node Announcement
+                </button>
+              </form>
+            </div>
+
+            {/* Form 2: News Bulletin */}
+            <div className="glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <span style={{ fontSize: '0.85rem', fontWeight: '800', color: '#00f2fe', letterSpacing: '0.04em' }}>📰 PUBLISH NEWS BULLETIN ITEM</span>
+              <form onSubmit={handlePublishNews} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                  <label style={styles.specLabel}>News Headline / Topic</label>
+                  <input 
+                    type="text" 
+                    placeholder="e.g. SEC Form C Adjustments" 
+                    value={newsHeading} 
+                    onChange={(e) => setNewsHeading(e.target.value)}
+                    style={styles.input} 
+                  />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                  <label style={styles.specLabel}>Brief Summary Bulletin Description</label>
+                  <textarea 
+                    placeholder="Enter short bulletin text (under 120 chars suggested)..." 
+                    value={newsText} 
+                    onChange={(e) => setNewsText(e.target.value)}
+                    style={{ ...styles.input, minHeight: '80px', fontFamily: 'inherit', resize: 'vertical' }} 
+                  />
+                </div>
+                <button type="submit" className="btn-primary" style={{ alignSelf: 'flex-start', padding: '0.6rem 1.25rem' }}>
+                  🚀 Publish News Bulletin
+                </button>
+              </form>
+            </div>
+
+            {/* Form 3: Events Scheduler */}
+            <div className="glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <span style={{ fontSize: '0.85rem', fontWeight: '800', color: '#00f2fe', letterSpacing: '0.04em' }}>📅 SCHEDULE ECOSYSTEM EVENT</span>
+              <form onSubmit={handlePublishEvent} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '1rem' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                    <label style={styles.specLabel}>Event Title</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. Reg D Private Pitch Round" 
+                      value={eventTitle} 
+                      onChange={(e) => setEventTitle(e.target.value)}
+                      style={styles.input} 
+                    />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                    <label style={styles.specLabel}>Event Category</label>
+                    <select 
+                      value={eventCategory} 
+                      onChange={(e) => setEventCategory(e.target.value)}
+                      style={styles.filterSelect}
+                    >
+                      <option value="Deal-Flow Pitch">Deal-Flow Pitch</option>
+                      <option value="Legal Audit">Legal Audit</option>
+                      <option value="Community Forum">Community Forum</option>
+                      <option value="Technical Seminar">Technical Seminar</option>
+                    </select>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                  <label style={styles.specLabel}>Scheduled Date & Time Description</label>
+                  <input 
+                    type="text" 
+                    placeholder="e.g. Tomorrow, 2:00 PM EST or June 12, 1:00 PM EST" 
+                    value={eventDate} 
+                    onChange={(e) => setEventDate(e.target.value)}
+                    style={styles.input} 
+                  />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                  <label style={styles.specLabel}>Brief Event Prospectus / Agenda Summary</label>
+                  <textarea 
+                    placeholder="Outline event agenda and speakers..." 
+                    value={eventDesc} 
+                    onChange={(e) => setEventDesc(e.target.value)}
+                    style={{ ...styles.input, minHeight: '80px', fontFamily: 'inherit', resize: 'vertical' }} 
+                  />
+                </div>
+                <button type="submit" className="btn-primary" style={{ alignSelf: 'flex-start', padding: '0.6rem 1.25rem' }}>
+                  🚀 Publish Ecosystem Event
+                </button>
+              </form>
+            </div>
+
+            {/* Form 4: Sponsored Spotlight Manager */}
+            <div className="glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <span style={{ fontSize: '0.85rem', fontWeight: '800', color: '#10b981', letterSpacing: '0.04em' }}>🎯 SPONSORED SPOTLIGHT AD BANNER</span>
+              <form onSubmit={handleUpdateSpotlight} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '1rem' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                    <label style={styles.specLabel}>Ad/Campaign Title</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. Tonin Logistics Fleet Note" 
+                      value={spotlightTitle} 
+                      onChange={(e) => setSpotlightTitle(e.target.value)}
+                      style={styles.input} 
+                    />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                    <label style={styles.specLabel}>Min Entry</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. $500" 
+                      value={spotlightMin} 
+                      onChange={(e) => setSpotlightMin(e.target.value)}
+                      style={styles.input} 
+                    />
+                  </div>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                  <label style={styles.specLabel}>Target Campaign Allocation Link</label>
+                  <select 
+                    value={spotlightCamp} 
+                    onChange={(e) => setSpotlightCamp(e.target.value)}
+                    style={styles.filterSelect}
+                  >
+                    {(state.campaigns || []).map(c => (
+                      <option key={c.id} value={c.id}>
+                        {c.companyName} ({c.category} - {c.offering_type})
+                      </option>
+                    ))}
+                    {state.campaigns.length === 0 && (
+                      <option value="camp-1">EcoSphere Technologies Series A</option>
+                    )}
+                  </select>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                  <label style={styles.specLabel}>High-Conversion Ad Body Text</label>
+                  <textarea 
+                    placeholder="Write a compelling investment description..." 
+                    value={spotlightText} 
+                    onChange={(e) => setSpotlightText(e.target.value)}
+                    style={{ ...styles.input, minHeight: '80px', fontFamily: 'inherit', resize: 'vertical' }} 
+                  />
+                </div>
+                <button type="submit" className="btn-primary" style={{ alignSelf: 'flex-start', padding: '0.6rem 1.25rem', background: '#10b981', color: '#000' }}>
+                  💾 Update Sponsored Spotlight Ad
+                </button>
+              </form>
+            </div>
+
           </div>
         </div>
       )}
