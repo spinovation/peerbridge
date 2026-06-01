@@ -33,6 +33,7 @@ export default function Home() {
   const [showEduVettingModal, setShowEduVettingModal] = useState(false);
   const [showWorkVettingModal, setShowWorkVettingModal] = useState(false);
   const [showNetWorthVettingModal, setShowNetWorthVettingModal] = useState(false);
+  const [showVettingCenter, setShowVettingCenter] = useState(false);
 
   // Sync chats with localStorage
   useEffect(() => {
@@ -2973,7 +2974,10 @@ export default function Home() {
 
             {/* KYC Status */}
             <div 
-              onClick={() => state.setActiveModule('documents')} 
+              onClick={() => {
+                state.setActiveModule('documents');
+                setShowVettingCenter(true);
+              }}
               style={styles.sidebarRowItem}
               title="Click to view KYC documents"
             >
@@ -3121,7 +3125,7 @@ export default function Home() {
         {/* Right Sidebar (LinkedIn-Style Cockpit Panels) */}
         <aside className="right-sidebar-responsive" style={styles.rightSidebar}>
           {/* Panel 0: Node Vetting Center */}
-          {(() => {
+          {showVettingCenter && (() => {
             const cust = state.customer || {};
             const basic = state.basicProfile || {};
             const prof = state.professionalProfile || {};
