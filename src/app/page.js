@@ -2449,7 +2449,10 @@ export default function Home() {
           {/* Connection Simulator Panel */}
           <div style={{ position: 'relative', display: 'inline-block' }}>
             <button
-              onClick={() => setShowSimulatorDropdown(!showSimulatorDropdown)}
+              onClick={() => {
+                setShowSimulatorDropdown(!showSimulatorDropdown);
+                setShowNotificationsDropdown(false);
+              }}
               style={{
                 background: isFirebaseConfigured ? 'rgba(16, 185, 129, 0.05)' : 'rgba(212, 175, 55, 0.05)',
                 border: isFirebaseConfigured ? '1px solid rgba(16, 185, 129, 0.2)' : '1px solid rgba(212, 175, 55, 0.2)',
@@ -2589,7 +2592,10 @@ export default function Home() {
 
           <div style={{ position: 'relative', display: 'inline-block' }}>
             <button
-              onClick={() => setShowNotificationsDropdown(!showNotificationsDropdown)}
+              onClick={() => {
+                setShowNotificationsDropdown(!showNotificationsDropdown);
+                setShowSimulatorDropdown(false);
+              }}
               style={{
                 background: showNotificationsDropdown ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.02)',
                 border: '1px solid rgba(255,255,255,0.05)',
@@ -2653,12 +2659,7 @@ export default function Home() {
                     <span style={{ fontSize: '0.76rem', fontWeight: '800', color: '#ffffff' }}>Ecosystem Alerts</span>
                     {(state.notifications || []).length > 0 && (
                       <button
-                        onClick={() => {
-                          state.setNotifications([]);
-                          if (typeof window !== 'undefined') {
-                            localStorage.setItem('pb_notifications', JSON.stringify([]));
-                          }
-                        }}
+                        onClick={() => state.clearAllNotifications()}
                         style={{
                           background: 'transparent',
                           border: 'none',
@@ -2766,13 +2767,7 @@ export default function Home() {
                           }}
                         >
                           <button
-                            onClick={() => {
-                              const updated = (state.notifications || []).filter(n => n.notification_id !== notif.notification_id);
-                              state.setNotifications(updated);
-                              if (typeof window !== 'undefined') {
-                                localStorage.setItem('pb_notifications', JSON.stringify(updated));
-                              }
-                            }}
+                            onClick={() => state.removeNotification(notif.notification_id)}
                             style={{
                               position: 'absolute',
                               top: '0.35rem',

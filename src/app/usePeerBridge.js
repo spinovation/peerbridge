@@ -767,7 +767,7 @@ export function usePeerBridge() {
       sync('pb_connections', nextConnections, setConnections);
     }
 
-    // Add current user to sender's connections in the shared directory
+    // Add current user and sender to each other's connections in the shared directory
     const updatedDir = directory.map(member => {
       if (member.customer_id === req.from_id) {
         const senderConnections = member.connections || [];
@@ -775,6 +775,15 @@ export function usePeerBridge() {
           return {
             ...member,
             connections: [...senderConnections, customer.customer_id]
+          };
+        }
+      }
+      if (member.customer_id === customer.customer_id) {
+        const receiverConnections = member.connections || [];
+        if (!receiverConnections.includes(req.from_id)) {
+          return {
+            ...member,
+            connections: [...receiverConnections, req.from_id]
           };
         }
       }
@@ -804,13 +813,20 @@ export function usePeerBridge() {
     const nextConnections = connections.filter(id => id !== memberId);
     sync('pb_connections', nextConnections, setConnections);
 
-    // Remove current user from target's connections in directory
+    // Remove current user and target from each other's connections inside directory
     const updatedDir = directory.map(member => {
       if (member.customer_id === memberId) {
         const senderConnections = member.connections || [];
         return {
           ...member,
           connections: senderConnections.filter(id => id !== customer.customer_id)
+        };
+      }
+      if (member.customer_id === customer.customer_id) {
+        const receiverConnections = member.connections || [];
+        return {
+          ...member,
+          connections: receiverConnections.filter(id => id !== memberId)
         };
       }
       return member;
@@ -1321,6 +1337,10 @@ export function usePeerBridge() {
     sync('pb_notifications', [], setNotifications);
     sync('pb_resources', INITIAL_RESOURCES, setResources);
 
+    const sarahInDir = directory.find(m => m.customer_id === INITIAL_CUSTOMERS.customer_id);
+    const sarahConns = sarahInDir?.connections || ['db-cust-evelyn', 'db-cust-jenkins'];
+    sync('pb_connections', sarahConns, setConnections);
+
     sync('pb_auth', true, setIsAuthenticated);
     setActiveTab('dashboard');
     return { success: true };
@@ -1379,6 +1399,9 @@ export function usePeerBridge() {
         sync('pb_directory', directory, setDirectory);
       }
       
+      const sarahConns = sarahInDir?.connections || ['db-cust-evelyn', 'db-cust-jenkins'];
+      sync('pb_connections', sarahConns, setConnections);
+
       sync('pb_balance', 150000, setWalletBalance);
       sync('pb_bank', { institution_id: 'ins_1', name: 'Chase Bank', mask: '8821' }, setConnectedBank);
       sync('pb_auth', true, setIsAuthenticated);
@@ -1426,6 +1449,9 @@ export function usePeerBridge() {
     const balance = member.role_flags.includes('Investor') ? 250000 : 15000;
     sync('pb_balance', balance, setWalletBalance);
     sync('pb_bank', member.role_flags.includes('Investor') ? { institution_id: 'ins_1', name: 'Chase Bank', mask: '8821' } : null, setConnectedBank);
+
+    const memberConns = member.connections || [];
+    sync('pb_connections', memberConns, setConnections);
 
     sync('pb_auth', true, setIsAuthenticated);
     setActiveTab('dashboard');
@@ -1523,6 +1549,15 @@ export function usePeerBridge() {
       created_at: new Date().toISOString()
     };
     sync('pb_notifications', [newNot, ...notifications], setNotifications);
+  };
+
+  const clearAllNotifications = () => {
+    sync('pb_notifications', [], setNotifications);
+  };
+
+  const removeNotification = (notifId) => {
+    const updated = (notifications || []).filter(n => n.notification_id !== notifId);
+    sync('pb_notifications', updated, setNotifications);
   };
 
   const depositFunds = (amount) => {
@@ -2109,6 +2144,8 @@ export function usePeerBridge() {
     toggleBlockUser,
     deleteUserFromDirectory,
     vetUserCredentials,
-    simulateIncomingRequest
+    simulateIncomingRequest,
+    clearAllNotifications,
+    removeNotification
   };
 }
