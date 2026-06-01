@@ -87,7 +87,7 @@ export default function Home() {
     const hasJobVal = prof.experience && prof.experience.length > 0;
     const hasAcadVal = prof.education && prof.education.length > 0;
     const hasWealthVal = inv.accreditation_status || false;
-    const hasAddressAndSsn = basic.address?.trim().length > 3 && cust.ssn?.trim().length > 0;
+    const hasAddressAndSsn = basic.address?.trim()?.length > 3 && cust.ssn?.trim()?.length > 0;
 
     const colorId = hasId ? (hasAddressAndSsn ? '#d4af37' : '#00f2fe') : 'rgba(255,255,255,0.08)';
     const colorJob = hasJobVal ? '#8f00ff' : 'rgba(255,255,255,0.08)';
@@ -758,7 +758,7 @@ export default function Home() {
       const hasJobVal = memberProf?.experience && memberProf.experience.length > 0;
       const hasAcadVal = memberProf?.education && memberProf.education.length > 0;
       const hasWealthVal = memberInv?.accreditation_status || false;
-      const hasAddressAndSsn = memberBasic?.address?.trim().length > 3 && memberCustomer?.ssn?.trim().length > 0;
+      const hasAddressAndSsn = memberBasic?.address?.trim()?.length > 3 && memberCustomer?.ssn?.trim()?.length > 0;
 
       const colorId = hasId ? (hasAddressAndSsn ? '#d4af37' : '#00f2fe') : 'rgba(255,255,255,0.08)'; // Gold or Cyan
       const colorJob = hasJobVal ? '#8f00ff' : 'rgba(255,255,255,0.08)'; // Purple
@@ -1327,7 +1327,7 @@ export default function Home() {
           const prof = m.professionalProfile || {};
           const inv = m.investorProfile || {};
 
-          const hasId = m.status === 'verified' || (basic.address?.trim().length > 3 && m.ssn?.trim().length > 0);
+          const hasId = m.status === 'verified' || (basic.address?.trim()?.length > 3 && m.ssn?.trim()?.length > 0);
           const hasJobVal = prof.experience && prof.experience.length > 0;
           const hasAcadVal = prof.education && prof.education.length > 0;
           const hasWealthVal = inv.accreditation_status || false;
@@ -1388,7 +1388,7 @@ export default function Home() {
               const basic = member.basicProfile || {};
               const prof = member.professionalProfile || {};
               const inv = member.investorProfile || {};
-              const hasId = member.status === 'verified' || (basic.address?.trim().length > 3 && member.ssn?.trim().length > 0);
+              const hasId = member.status === 'verified' || (basic.address?.trim()?.length > 3 && member.ssn?.trim()?.length > 0);
               const hasWealth = inv.accreditation_status || false;
               const hasAcad = prof.education && prof.education.length > 0;
               const hasJob = prof.experience && prof.experience.length > 0;
@@ -1420,7 +1420,7 @@ export default function Home() {
                 const basic = founderObj.basicProfile || {};
                 const prof = founderObj.professionalProfile || {};
                 const inv = founderObj.investorProfile || {};
-                const hasId = founderObj.status === 'verified' || (basic.address?.trim().length > 3 && founderObj.ssn?.trim().length > 0);
+                const hasId = founderObj.status === 'verified' || (basic.address?.trim()?.length > 3 && founderObj.ssn?.trim()?.length > 0);
                 const hasWealth = inv.accreditation_status || false;
                 const hasAcad = prof.education && prof.education.length > 0;
                 const hasJob = prof.experience && prof.experience.length > 0;
@@ -1457,7 +1457,7 @@ export default function Home() {
               const basic = member.basicProfile || {};
               const prof = member.professionalProfile || {};
               const inv = member.investorProfile || {};
-              const hasId = member.status === 'verified' || (basic.address?.trim().length > 3 && member.ssn?.trim().length > 0);
+              const hasId = member.status === 'verified' || (basic.address?.trim()?.length > 3 && member.ssn?.trim()?.length > 0);
               const hasWealth = inv.accreditation_status || false;
               const hasAcad = prof.education && prof.education.length > 0;
               const hasJob = prof.experience && prof.experience.length > 0;
@@ -2788,7 +2788,7 @@ export default function Home() {
             const hasJobVal = prof.experience && prof.experience.length > 0;
             const hasAcadVal = prof.education && prof.education.length > 0;
             const hasWealthVal = inv.accreditation_status || false;
-            const hasAddressAndSsn = basic.address?.trim().length > 3 && cust.ssn?.trim().length > 0;
+            const hasAddressAndSsn = basic.address?.trim()?.length > 3 && cust.ssn?.trim()?.length > 0;
 
             const compliancePercentage = ((hasAddressAndSsn ? 25 : 0) + (hasAcadVal ? 25 : 0) + (hasJobVal ? 25 : 0) + (hasWealthVal ? 25 : 0));
 

@@ -170,7 +170,7 @@ export default function ProfileModule({ state }) {
     const hasJobVal = memberProf?.experience && memberProf.experience.length > 0;
     const hasAcadVal = memberProf?.education && memberProf.education.length > 0;
     const hasWealthVal = memberInv?.accreditation_status || false;
-    const hasAddressAndSsn = memberBasic?.address?.trim().length > 3 && memberCustomer?.ssn?.trim().length > 0;
+    const hasAddressAndSsn = memberBasic?.address?.trim()?.length > 3 && memberCustomer?.ssn?.trim()?.length > 0;
 
     const colorId = hasId ? (hasAddressAndSsn ? '#d4af37' : '#00f2fe') : 'rgba(255,255,255,0.08)'; // Gold or Cyan
     const colorJob = hasJobVal ? '#8f00ff' : 'rgba(255,255,255,0.08)'; // Purple
