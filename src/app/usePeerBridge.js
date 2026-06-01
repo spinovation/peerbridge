@@ -514,6 +514,84 @@ const INITIAL_DIRECTORY = [
     },
     investorProfile: null,
     affiliateProfile: null
+  },
+  {
+    customer_id: 'db-cust-evelyn',
+    email: 'evelyn@aetherneuro.com',
+    first_name: 'Evelyn',
+    last_name: 'Chen',
+    phone: '+1 (555) 903-8822',
+    role_flags: ['Entrepreneur'],
+    status: 'verified',
+    isOnboarded: true,
+    ssn: 'XXX-XX-8822',
+    basicProfile: {
+      dob: '1991-04-12',
+      nationality: 'United States',
+      address: '250 Algae Way, San Jose, CA 95112',
+      profile_picture_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&q=80',
+      bio: 'Stanford PhD in bio-engineered micro-algae cells. Engineering next-gen carbon offset and med-tech bioreactors.'
+    },
+    professionalProfile: {
+      headline: 'Chief Algae Geneticist & CEO at Aether Neuro',
+      summary: 'Stanford PhD. Dedicated to building bio-engineered photo-bioreactor sleeve engines and non-invasive brain-computer interfaces.',
+      experience: [
+        { title: 'Chief Scientist', company: 'Aether Neuro', start_date: '2021-03', end_date: null, current: true, description: 'Led neural decoding algorithm design and solid state telemetry.' }
+      ],
+      education: [
+        { degree: 'PhD in Bio-Engineering', institution: 'Stanford University', year: 2018 }
+      ],
+      skills: ['Neural Telemetry', 'Algae Carbon Capture', 'Reg CF Fundraising'],
+      certifications: []
+    },
+    entrepreneurProfile: {
+      company_name: 'Aether Neuro',
+      business_stage: 'prototype',
+      industry: 'MedTech',
+      funding_goal: 500000.00,
+      valuation: 12500000.00,
+      pitch_deck_url: 'https://pb-vault.s3.amazonaws.com/Aether_Neuro_Deck.pdf',
+      company_summary: 'Aether Neuro builds non-invasive brain-computer interfaces powered by local edge AI sleeves, enabling stroke survivors to control robotic prostheses with sub-millisecond precision.',
+      team: [{ name: 'Dr. Evelyn Chen', role: 'Founder', linkedin: '', bio: 'Stanford PhD.' }]
+    }
+  },
+  {
+    customer_id: 'db-cust-jenkins',
+    email: 'sarah@jenkinslegal.com',
+    first_name: 'Sarah',
+    last_name: 'Jenkins',
+    phone: '+1 (555) 904-8833',
+    role_flags: ['Affiliate'],
+    status: 'verified',
+    isOnboarded: true,
+    ssn: 'XXX-XX-8833',
+    basicProfile: {
+      dob: '1979-06-25',
+      nationality: 'United States',
+      address: '150 Corporate Law Center, New York, NY 10005',
+      profile_picture_url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&h=150&fit=crop&q=80',
+      bio: 'Vetted corporate counsel and alternative investment legal advisor.'
+    },
+    professionalProfile: {
+      headline: 'Securities Law & Crowdfunding Compliance Partner',
+      summary: 'Representing startups and crowdfunding platforms in corporate placements, Reg CF/A+/D offerings, and joint co-issuer Form C SPVs.',
+      experience: [
+        { title: 'Senior Partner', company: 'Jenkins & Partners LLP', start_date: '2010-05', end_date: null, current: true, description: 'Advised on 100+ private placement filings and retail crowd structures.' }
+      ],
+      education: [
+        { degree: 'J.D. in Securities Law', institution: 'Harvard Law School', year: 2004 }
+      ],
+      skills: ['Securities Placement', 'Form C SPVs', 'SEC Diligence'],
+      certifications: ['Admitted to NY State Bar']
+    },
+    affiliateProfile: {
+      entity_type: 'company',
+      specialty: 'Securities Law & Crowdfunding Compliance',
+      firm: 'Jenkins & Partners LLP',
+      rating: 4.9,
+      reviews: 38,
+      bio: 'Full service corporate counsel representing early founders and crowdfunding portals. Specialized in filing joint co-issuer Form C SPVs.'
+    }
   }
 ];
 

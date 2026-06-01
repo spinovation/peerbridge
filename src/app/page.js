@@ -2034,6 +2034,23 @@ export default function Home() {
               <span style={styles.sidebarLinkLabel}>Saved items</span>
             </div>
 
+            {/* Network Directory */}
+            <div 
+              onClick={() => {
+                state.setActiveModule('profile');
+                state.setProfileActiveSubTab('network-directory');
+                state.setDirectoryRoleFilter('All');
+                if (typeof window !== 'undefined') {
+                  localStorage.setItem('pb_directory_filter', JSON.stringify('All'));
+                }
+              }} 
+              style={styles.sidebarLinkItem}
+              title="Browse and connect with ecosystem members"
+            >
+              <span style={styles.sidebarLinkIcon}>🌐</span>
+              <span style={styles.sidebarLinkLabel}>Network Directory</span>
+            </div>
+
             {/* Groups */}
             <div 
               onClick={() => alert("Simulating Vetted Crowdfunding Syndicate nodes. Full admissions group chat unlocks when SEC Reg D documents are completely approved.")} 
