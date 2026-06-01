@@ -262,3 +262,95 @@ a:hover {
 .animate-pulse-glow {
   animation: pulseGlow 3s infinite ease-in-out;
 }
+
+/* ==========================================
+   Responsive & Device Scaling Styles (Fixes Squeezing & Overlap)
+   ========================================== */
+
+/* 1. Large Laptops / Desktops (up to 1400px) */
+@media (max-width: 1400px) {
+  .main-layout-responsive {
+    grid-template-columns: 240px 1fr 280px !important;
+    gap: 1.5rem !important;
+    padding: 1.5rem 1rem !important;
+  }
+  .search-bar-container-responsive {
+    width: 200px !important;
+  }
+  .logo-text-responsive {
+    font-size: 1.25rem !important;
+  }
+}
+
+/* 2. Small Laptops / Tablets Landscape (up to 1200px) */
+@media (max-width: 1200px) {
+  .main-layout-responsive {
+    grid-template-columns: 240px 1fr !important; /* Hide right sidebar to prevent overlapping content */
+    gap: 1.5rem !important;
+  }
+  .right-sidebar-responsive {
+    display: none !important; /* Hide the right news sidebar */
+  }
+  .logo-slogan-responsive {
+    display: none !important; /* Hide the slogan to prevent logo block from squeezing */
+  }
+  .search-bar-container-responsive {
+    width: 180px !important;
+  }
+  .header-responsive {
+    padding: 0 1rem !important;
+    gap: 1rem !important;
+  }
+  .header-nav-responsive {
+    gap: 0.25rem !important;
+  }
+  .header-nav-btn-responsive {
+    padding: 0.4rem 0.5rem !important;
+    font-size: 0.68rem !important;
+  }
+}
+
+/* 3. Tablets Portrait (up to 992px) */
+@media (max-width: 992px) {
+  .main-layout-responsive {
+    grid-template-columns: 1fr !important; /* Single column stack */
+    gap: 2rem !important;
+  }
+  .left-sidebar-responsive {
+    position: relative !important;
+    top: 0 !important;
+    width: 100% !important;
+  }
+  .search-bar-container-responsive {
+    display: none !important; /* Hide header search bar, rely on central hub search */
+  }
+  .header-nav-responsive span:nth-child(2) {
+    display: none !important; /* Hide text, show icons only for nav buttons */
+  }
+  .header-nav-btn-responsive {
+    gap: 0 !important;
+  }
+  .floating-chat-responsive {
+    width: calc(100% - 40px) !important;
+    right: 20px !important;
+    left: 20px !important;
+  }
+}
+
+/* 4. Mobile Devices (up to 576px) */
+@media (max-width: 576px) {
+  .header-responsive {
+    height: 70px !important;
+  }
+  .logo-text-responsive {
+    font-size: 1rem !important;
+  }
+  .header-right-actions-responsive {
+    gap: 0.4rem !important;
+  }
+  .header-right-actions-responsive button {
+    padding: 0.35rem 0.5rem !important;
+    font-size: 0.65rem !important;
+  }
+}
+

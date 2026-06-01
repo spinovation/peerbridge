@@ -1374,7 +1374,7 @@ export default function Home() {
 
     return (
       <div 
-        className="glass-panel" 
+        className="floating-chat-responsive glass-panel" 
         style={{
           position: 'fixed',
           bottom: 0,
@@ -1601,7 +1601,7 @@ export default function Home() {
   return (
     <div style={styles.appContainer}>
       {/* Top Header (3-Column Layout) */}
-      <header style={styles.header}>
+      <header className="header-responsive" style={styles.header}>
         {/* Column 1: Logo & Adjacent Home Anchor */}
         <div style={styles.headerLeftGroup}>
           <div 
@@ -1610,8 +1610,8 @@ export default function Home() {
             title="Return to Ecosystem Home"
           >
             <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <h1 style={styles.logoText}>PEER BRIDGE</h1>
-              <span style={styles.logoSlogan}>Fund Smarter, Build Together</span>
+              <h1 className="logo-text-responsive" style={styles.logoText}>PEER BRIDGE</h1>
+              <span className="logo-slogan-responsive" style={styles.logoSlogan}>Fund Smarter, Build Together</span>
             </div>
           </div>
 
@@ -1625,7 +1625,7 @@ export default function Home() {
           </button>
 
           {/* Sleek Global Search Bar next to Logo/Home */}
-          <div style={styles.searchBarContainer}>
+          <div className="search-bar-container-responsive" style={styles.searchBarContainer}>
             <span style={styles.searchIcon}>🔍</span>
             <input
               type="text"
@@ -1648,9 +1648,10 @@ export default function Home() {
         </div>
 
         {/* Column 2: Center Ecosystem Horizontal Navigation */}
-        <nav style={styles.headerNav}>
+        <nav className="header-nav-responsive" style={styles.headerNav}>
           <button
             onClick={() => state.setActiveModule('entrepreneur')}
+            className="header-nav-btn-responsive"
             style={state.activeModule === 'entrepreneur' ? styles.headerNavBtnActive : styles.headerNavBtn}
           >
             <span>🚀</span>
@@ -1660,6 +1661,7 @@ export default function Home() {
 
           <button
             onClick={() => state.setActiveModule('affiliate')}
+            className="header-nav-btn-responsive"
             style={state.activeModule === 'affiliate' ? styles.headerNavBtnActive : styles.headerNavBtn}
           >
             <span>👥</span>
@@ -1669,6 +1671,7 @@ export default function Home() {
 
           <button
             onClick={() => state.setActiveModule('banking')}
+            className="header-nav-btn-responsive"
             style={state.activeModule === 'banking' ? styles.headerNavBtnActive : styles.headerNavBtn}
           >
             <span>🏛</span>
@@ -1678,6 +1681,7 @@ export default function Home() {
 
           <button
             onClick={() => state.setActiveModule('documents')}
+            className="header-nav-btn-responsive"
             style={state.activeModule === 'documents' ? styles.headerNavBtnActive : styles.headerNavBtn}
           >
             <span>🛡</span>
@@ -1687,6 +1691,7 @@ export default function Home() {
 
           <button
             onClick={() => state.setActiveModule('tax')}
+            className="header-nav-btn-responsive"
             style={state.activeModule === 'tax' ? styles.headerNavBtnActive : styles.headerNavBtn}
           >
             <span>📄</span>
@@ -1867,9 +1872,9 @@ export default function Home() {
       </header>
 
       {/* Main Framework Layout */}
-      <div style={styles.mainLayout}>
+      <div className="main-layout-responsive" style={styles.mainLayout}>
         {/* Left Sidebar Menu (Sleek Modular Cards like LinkedIn) */}
-        <aside style={styles.sidebar}>
+        <aside className="left-sidebar-responsive" style={styles.sidebar}>
           
           {/* Card 1: User Profile Card */}
           <div className="glass-panel" style={{ 
@@ -2140,7 +2145,7 @@ export default function Home() {
         </main>
 
         {/* Right Sidebar (LinkedIn-Style Cockpit Panels) */}
-        <aside style={styles.rightSidebar}>
+        <aside className="right-sidebar-responsive" style={styles.rightSidebar}>
           {/* Panel 1: News Bulletin */}
           <div className="glass-panel animate-fade-in-up" style={styles.sidebarNewsCard}>
             <h3 style={styles.sidebarNewsTitle}>📰 Peer Bridge News</h3>
