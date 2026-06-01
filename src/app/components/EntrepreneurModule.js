@@ -443,6 +443,14 @@ export default function EntrepreneurModule({ state }) {
                       setShowLauncher(true);
                     }}
                     className="btn-primary"
+                    style={{
+                      width: '280px',
+                      height: '45px',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.5rem'
+                    }}
                   >
                     🚀 Launch Capital Round
                   </button>
@@ -451,19 +459,23 @@ export default function EntrepreneurModule({ state }) {
                       setOfferingType('debt');
                       setShowLauncher(true);
                     }}
-                    className="btn-secondary"
+                    className="btn-secondary btn-hover-effect"
                     style={{ 
+                      width: '280px',
+                      height: '45px',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.5rem',
                       background: 'rgba(255, 255, 255, 0.05)',
                       border: '1px solid rgba(255, 255, 255, 0.1)',
                       color: '#ffffff',
-                      padding: '0.65rem 1.25rem',
                       borderRadius: '6px',
                       fontSize: '0.9rem',
                       fontWeight: '600',
                       cursor: 'pointer',
                       transition: 'all 0.2s ease'
                     }}
-                    className="btn-hover-effect"
                   >
                     🏛️ Launch Lending Request
                   </button>
