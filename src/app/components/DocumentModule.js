@@ -6,6 +6,7 @@ export default function DocumentModule({ state }) {
   const { user, documentation, submitKycDocuments, completeKycNodeVetting } = state;
   const [dragActive, setDragActive] = useState(false);
   const [fileName, setFileName] = useState('');
+  const [docTypeToVerify, setDocTypeToVerify] = useState('kyc');
   
   // KYC steps simulation
   const [kycProgress, setKycProgress] = useState(0); // 0: Idle, 1: Step1, 2: Step2, 3: Step3, 4: Done
@@ -45,33 +46,68 @@ export default function DocumentModule({ state }) {
     if (!fileName) return;
 
     // Create a pending KYC row in the documentation table (Table #7)
-    const newKycDoc = submitKycDocuments(fileName);
+    const newKycDoc = submitKycDocuments(fileName, docTypeToVerify);
     setActiveKycDocId(newKycDoc.doc_id);
 
     setKycProgress(1);
-    setStep1Status('Scanning Document...');
+    
+    if (docTypeToVerify === 'kyc') {
+      setStep1Status('Scanning ID Document...');
+    } else if (docTypeToVerify === 'safe_agreement') {
+      setStep1Status('Auditing SAFE Legal Covenants...');
+    } else if (docTypeToVerify === 'promissory_note') {
+      setStep1Status('Auditing Promissory Note Terms...');
+    } else {
+      setStep1Status('Auditing Bank Cash Balances...');
+    }
 
     // Step 1 Finish
     setTimeout(() => {
       setStep1Status('Complete ✓');
       setKycProgress(2);
-      setStep2Status('Evaluating Biometrics...');
+      
+      if (docTypeToVerify === 'kyc') {
+        setStep2Status('Evaluating Facial Biometrics...');
+      } else if (docTypeToVerify === 'safe_agreement') {
+        setStep2Status('Checking e-Signature & SHA-256 Keys...');
+      } else if (docTypeToVerify === 'promissory_note') {
+        setStep2Status('Checking Symmetrical Signatures...');
+      } else {
+        setStep2Status('Matching Plaid API Balance Feed...');
+      }
 
       // Step 2 Finish
       setTimeout(() => {
         setStep2Status('Complete ✓');
         setKycProgress(3);
-        setStep3Status('Checking Global Watchlists...');
+        
+        if (docTypeToVerify === 'kyc') {
+          setStep3Status('Checking Global AML Watchlists...');
+        } else if (docTypeToVerify === 'safe_agreement') {
+          setStep3Status('Running Cap Table Equity Registry Sync...');
+        } else if (docTypeToVerify === 'promissory_note') {
+          setStep3Status('Checking Escrow Wallet Settlements...');
+        } else {
+          setStep3Status('Sweeping Cash Clearing Covenants...');
+        }
 
-        // Step 3 Finish (AML check)
+        // Step 3 Finish (AML/Integrity check)
         setTimeout(() => {
           setStep3Status('Complete ✓');
           setKycProgress(4);
           
-          // Complete vetting in DB: mark document as verified and customer as verified!
+          // Complete vetting in DB
           completeKycNodeVetting(newKycDoc.doc_id);
           
-          setSimSuccess('Congratulations! Your passport and facial sweep have passed regulatory screening. Accredited Node Status unlocked!');
+          if (docTypeToVerify === 'kyc') {
+            setSimSuccess('Congratulations! Your passport scan and facial sweep passed all biometric screening. Accredited Node Status unlocked!');
+          } else if (docTypeToVerify === 'safe_agreement') {
+            setSimSuccess('Equity placement verified! Tamper-proof Y-Combinator SAFE agreement cleared & locked in the vault.');
+          } else if (docTypeToVerify === 'promissory_note') {
+            setSimSuccess('Debt option verified! SEC Reg D P2P Promissory Credit Note cleared & locked in the vault.');
+          } else {
+            setSimSuccess('Cash management statement verified! Liquid bank ledger account cleared & locked in the vault.');
+          }
         }, 1500);
 
       }, 1500);
@@ -94,6 +130,8 @@ export default function DocumentModule({ state }) {
         return '🤝 SAFE Agreement';
       case 'stock_certificate':
         return '🏆 Stock Certificate';
+      case 'promissory_note':
+        return '📜 Promissory Note';
       default:
         return 'Compliance Doc';
     }
@@ -116,23 +154,51 @@ export default function DocumentModule({ state }) {
       <div style={styles.grid}>
         {/* Verification Center */}
         <div className="glass-panel" style={styles.card}>
-          <h3 style={styles.cardTitle}>🛡 KYC / AML Identity Vetting</h3>
+          <h3 style={styles.cardTitle}>⚡ Automated Document Integrity Pipeline</h3>
           <p style={styles.cardDesc}>
-            Submit your government-issued ID to execute biometric match indexing and international anti-money laundering (AML) sweeps.
+            Submit your compliance assets to execute dynamic audits, SHA-256 stamps, and clearing sweeps under Regulation CF/D.
           </p>
 
-          {user.kycStatus === 'Verified' ? (
-            <div style={styles.verifiedNodeCard}>
-              <div style={styles.badgeRow}>
-                <span className="badge badge-verified">Status: Verified Member</span>
-              </div>
-              <p style={styles.verifiedText}>
-                Your identity node has passed active screening. Diligence restrictions are unlocked. You can participate in all crowdfunding offerings.
-              </p>
-            </div>
-          ) : kycProgress === 0 ? (
+          {kycProgress === 0 ? (
             /* Upload State */
             <div style={styles.uploadSection}>
+              {user.kycStatus === 'Verified' && (
+                <div style={styles.verifiedNodeCard}>
+                  <div style={styles.badgeRow}>
+                    <span className="badge badge-verified">Status: Verified Member</span>
+                  </div>
+                  <p style={styles.verifiedText}>
+                    Your primary identity node has been accredited. Select other assets below to run the cryptographic integrity pipeline.
+                  </p>
+                </div>
+              )}
+
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>Select Asset for Vetting & e-Sign Audit</label>
+                <select
+                  value={docTypeToVerify}
+                  onChange={(e) => setDocTypeToVerify(e.target.value)}
+                  style={{
+                    width: '100%',
+                    background: 'rgba(255,255,255,0.03)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    borderRadius: '8px',
+                    padding: '0.75rem 1rem',
+                    color: '#ffffff',
+                    fontSize: '0.9rem',
+                    outline: 'none',
+                    cursor: 'pointer',
+                  }}
+                >
+                  {user.kycStatus !== 'Verified' && (
+                    <option value="kyc">🆔 Identity Verification (Passport / ID Scan)</option>
+                  )}
+                  <option value="safe_agreement">📈 Venture SAFE Placements (Equity Option)</option>
+                  <option value="promissory_note">🏛️ P2P Promissory Notes (Debt Option)</option>
+                  <option value="tax_document">💵 Cash Management & Balance Ledgers</option>
+                </select>
+              </div>
+
               <div
                 style={{
                   ...styles.dragArea,
@@ -144,8 +210,18 @@ export default function DocumentModule({ state }) {
                 onDragLeave={handleDrag}
                 onDrop={handleDrop}
               >
-                <div style={styles.uploadIcon}>📁</div>
-                <h4 style={styles.uploadTitle}>Drag and Drop Passport / ID Scan</h4>
+                <div style={styles.uploadIcon}>
+                  {docTypeToVerify === 'kyc' ? '🆔' 
+                   : docTypeToVerify === 'safe_agreement' ? '🤝' 
+                   : docTypeToVerify === 'promissory_note' ? '📜' 
+                   : '💵'}
+                </div>
+                <h4 style={styles.uploadTitle}>
+                  {docTypeToVerify === 'kyc' ? 'Drag and Drop passport / ID scan'
+                   : docTypeToVerify === 'safe_agreement' ? 'Drag and Drop Venture SAFE draft'
+                   : docTypeToVerify === 'promissory_note' ? 'Drag and Drop Promissory Note draft'
+                   : 'Drag and Drop Bank Cash Statement'}
+                </h4>
                 <p style={styles.uploadSub}>Supports PDF, JPEG, or PNG up to 10MB</p>
                 <input
                   type="file"
@@ -166,18 +242,23 @@ export default function DocumentModule({ state }) {
                     className="btn-primary"
                     style={{ padding: '0.5rem 1rem', fontSize: '0.8rem' }}
                   >
-                    Submit for Verification
+                    Run Audit Pipeline
                   </button>
                 </div>
               )}
             </div>
-          ) : (
+          ) : kycProgress <= 3 ? (
             /* Active Simulation State */
             <div style={styles.progressContainer}>
               <div style={styles.stepItem}>
                 <span style={styles.stepNum}>1</span>
                 <div style={styles.stepMeta}>
-                  <h4 style={styles.stepTitle}>ID Document Integrity Audit</h4>
+                  <h4 style={styles.stepTitle}>
+                    {docTypeToVerify === 'kyc' ? 'ID Document Integrity Audit' 
+                     : docTypeToVerify === 'safe_agreement' ? 'SAFE Legal Covenant Audit' 
+                     : docTypeToVerify === 'promissory_note' ? 'Promissory Note Terms Audit' 
+                     : 'Bank Cash Balance Audit'}
+                  </h4>
                   <span style={styles.stepStatusText}>{step1Status}</span>
                 </div>
                 {kycProgress === 1 && <div style={styles.spinner}></div>}
@@ -186,7 +267,12 @@ export default function DocumentModule({ state }) {
               <div style={{ ...styles.stepItem, opacity: kycProgress >= 2 ? 1 : 0.5 }}>
                 <span style={styles.stepNum}>2</span>
                 <div style={styles.stepMeta}>
-                  <h4 style={styles.stepTitle}>Biometric Facial Liveness Match</h4>
+                  <h4 style={styles.stepTitle}>
+                    {docTypeToVerify === 'kyc' ? 'Biometric Facial Liveness Match' 
+                     : docTypeToVerify === 'safe_agreement' ? 'e-Signature & SHA-256 Keys Audit' 
+                     : docTypeToVerify === 'promissory_note' ? 'Symmetrical e-Signatures Match' 
+                     : 'Plaid API Real-time Balance Match'}
+                  </h4>
                   <span style={styles.stepStatusText}>{step2Status}</span>
                 </div>
                 {kycProgress === 2 && <div style={styles.spinner}></div>}
@@ -195,11 +281,55 @@ export default function DocumentModule({ state }) {
               <div style={{ ...styles.stepItem, opacity: kycProgress >= 3 ? 1 : 0.5 }}>
                 <span style={styles.stepNum}>3</span>
                 <div style={styles.stepMeta}>
-                  <h4 style={styles.stepTitle}>AML & Office of Foreign Assets Control (OFAC) Sweep</h4>
+                  <h4 style={styles.stepTitle}>
+                    {docTypeToVerify === 'kyc' ? 'AML & OFAC Watchlist Sweep' 
+                     : docTypeToVerify === 'safe_agreement' ? 'Cap Table Equity Registry Sync' 
+                     : docTypeToVerify === 'promissory_note' ? 'Escrow Wallet Clearing & Deposit Sync' 
+                     : 'Clearing House Settlement Limit Sweep'}
+                  </h4>
                   <span style={styles.stepStatusText}>{step3Status}</span>
                 </div>
                 {kycProgress === 3 && <div style={styles.spinner}></div>}
               </div>
+            </div>
+          ) : (
+            /* Finished/Vetted State */
+            <div style={{ ...styles.verifiedNodeCard, textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '1.25rem', padding: '2rem 1.5rem' }}>
+              <div style={{
+                width: '48px',
+                height: '48px',
+                borderRadius: '50%',
+                background: 'rgba(16,185,129,0.1)',
+                border: '1px solid #10b981',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '1.5rem',
+                color: '#10b981',
+                margin: '0 auto',
+                boxShadow: '0 0 10px rgba(16,185,129,0.2)'
+              }}>
+                ✓
+              </div>
+              <div>
+                <h4 style={{ fontSize: '1rem', fontWeight: '800', color: '#ffffff' }}>Audit Completed!</h4>
+                <p style={{ fontSize: '0.8rem', color: '#a3a3a3', marginTop: '0.35rem', lineHeight: '1.4' }}>
+                  {docTypeToVerify === 'kyc' && 'Biometric passport sweeps cleared. Accredited Node Status fully activated.'}
+                  {docTypeToVerify === 'safe_agreement' && 'Y-Combinator SAFE placement verified intact. Cap table ledger successfully synced.'}
+                  {docTypeToVerify === 'promissory_note' && 'P2P Commercial Note signature locks and wallet escrow clearances verified.'}
+                  {docTypeToVerify === 'tax_document' && 'Bank statement ledger and Plaid API balance statements linked successfully.'}
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setKycProgress(0);
+                  setFileName('');
+                }}
+                className="btn-secondary"
+                style={{ alignSelf: 'center', padding: '0.45rem 1rem', fontSize: '0.8rem' }}
+              >
+                ← Return to Pipeline
+              </button>
             </div>
           )}
         </div>
@@ -218,8 +348,8 @@ export default function DocumentModule({ state }) {
                   key={doc.doc_id} 
                   style={{
                     ...styles.vaultItem,
-                    border: doc.doc_type === 'stock_certificate' ? '1px solid rgba(212,175,55,0.3)' : '1px solid rgba(255,255,255,0.04)',
-                    boxShadow: doc.doc_type === 'stock_certificate' ? '0 4px 20px rgba(212,175,55,0.08)' : 'none'
+                    border: doc.doc_type === 'stock_certificate' ? '1px solid rgba(212,175,55,0.3)' : doc.doc_type === 'promissory_note' ? '1px solid rgba(59,130,246,0.3)' : '1px solid rgba(255,255,255,0.04)',
+                    boxShadow: doc.doc_type === 'stock_certificate' ? '0 4px 20px rgba(212,175,55,0.08)' : doc.doc_type === 'promissory_note' ? '0 4px 20px rgba(59,130,246,0.08)' : 'none'
                   }}
                 >
                   <span style={styles.docAvatar}>
@@ -227,12 +357,13 @@ export default function DocumentModule({ state }) {
                       : doc.doc_type === 'tax_document' ? '📄' 
                       : doc.doc_type === 'safe_agreement' ? '🤝' 
                       : doc.doc_type === 'stock_certificate' ? '🏆' 
+                      : doc.doc_type === 'promissory_note' ? '📜'
                       : '📁'}
                   </span>
                   <div style={styles.docMeta}>
                     <h4 style={{
                       ...styles.docTitle,
-                      color: doc.doc_type === 'stock_certificate' ? '#d4af37' : '#ffffff'
+                      color: doc.doc_type === 'stock_certificate' ? '#d4af37' : doc.doc_type === 'promissory_note' ? '#60a5fa' : '#ffffff'
                     }}>
                       {doc.doc_type === 'tax_document' && doc.companyName 
                         ? `1099-DIV_${doc.companyName.replace(/\s+/g, '_')}_2026.pdf`
@@ -240,7 +371,7 @@ export default function DocumentModule({ state }) {
                     </h4>
                     <span style={styles.docSub}>
                       {getDocTypeTag(doc.doc_type)} • {doc.verified ? 'Verified ✓' : 'Processing ⏱'}
-                      {(doc.doc_type === 'safe_agreement' || doc.doc_type === 'stock_certificate') && (
+                      {(doc.doc_type === 'safe_agreement' || doc.doc_type === 'stock_certificate' || doc.doc_type === 'promissory_note') && (
                         <span style={{ color: '#10b981', marginLeft: '0.5rem', fontWeight: 'bold' }}>
                           • Expiring Access Link (Active for 15m)
                         </span>
@@ -249,10 +380,12 @@ export default function DocumentModule({ state }) {
                   </div>
                   <span style={{
                     ...styles.docSize,
-                    color: doc.doc_type === 'stock_certificate' ? '#d4af37' : '#737373',
-                    fontWeight: doc.doc_type === 'stock_certificate' ? 'bold' : 'normal'
+                    color: doc.doc_type === 'stock_certificate' ? '#d4af37' : doc.doc_type === 'promissory_note' ? '#60a5fa' : '#737373',
+                    fontWeight: (doc.doc_type === 'stock_certificate' || doc.doc_type === 'promissory_note') ? 'bold' : 'normal'
                   }}>
-                    {doc.doc_type === 'stock_certificate' ? 'GOLD FRAMED' : (doc.verified ? 'Verified' : 'Pending')}
+                    {doc.doc_type === 'stock_certificate' ? 'GOLD FRAMED' 
+                     : doc.doc_type === 'promissory_note' ? 'SEC REG D' 
+                     : (doc.verified ? 'Verified' : 'Pending')}
                   </span>
                 </div>
               ))

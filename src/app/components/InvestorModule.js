@@ -245,9 +245,10 @@ export default function InvestorModule({ state }) {
   const industriesList = ['CleanTech', 'MedTech', 'Fintech', 'AI/ML', 'SaaS', 'DeepTech'];
 
   return (
-    <div style={styles.container} className="animate-fade-in-up">
-      {/* Subnavigation Bar */}
-      <div style={styles.navRow}>
+    <>
+      <div style={styles.container}>
+        {/* Subnavigation Bar */}
+        <div style={styles.navRow}>
         <div style={styles.tabButtons}>
           <button
             onClick={() => setSubTab('marketplace')}
@@ -282,7 +283,7 @@ export default function InvestorModule({ state }) {
 
       {/* Main View Render */}
       {subTab === 'marketplace' && (
-        <div style={styles.marketplaceView}>
+        <div style={styles.marketplaceView} className="animate-fade-in-up">
           <div style={styles.introHeader}>
             <h2 style={styles.title}>Capital Placement Offerings</h2>
             <p style={styles.sub}>Vetted private placement campaigns open to accredited Peer Bridge members. Verify KYC to unlock transactions.</p>
@@ -413,7 +414,351 @@ export default function InvestorModule({ state }) {
               })}
           </div>
 
-          {/* Investment Transaction Wizard Dialog */}
+          
+        </div>
+      )}
+
+      {subTab === 'portfolio' && (
+        <div style={styles.portfolioView} className="animate-fade-in-up">
+          <div style={styles.introHeader}>
+            <h2 style={styles.title}>Asset Portfolio Tracker</h2>
+            <p style={styles.sub}>Analyze your private equity acquisitions, wallet distributions, and annual ROI calculations.</p>
+          </div>
+
+          <div style={styles.portfolioGrid}>
+            {/* Visual Allocation Card */}
+            <div className="glass-panel" style={styles.visualAllocationCard}>
+              <h3 style={styles.panelTitle}>📊 Capital Allocation</h3>
+              <p style={styles.panelDesc}>Visual overview of your active Peer Bridge assets.</p>
+              
+              <div style={styles.svgSection}>
+                {renderPortfolioSVG()}
+                <div style={styles.svgCenterText}>
+                  <span style={styles.svgInnerLabel}>Net Worth</span>
+                  <span style={styles.svgInnerVal}>
+                    ${(walletBalance + portfolio.reduce((acc, curr) => acc + curr.amount_invested, 0)).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                  </span>
+                </div>
+              </div>
+
+              <div style={styles.legendContainer}>
+                <div style={styles.legendItem}>
+                  <div style={{ ...styles.legendBox, background: '#ffffff' }}></div>
+                  <span style={styles.legendLabel}>Wallet Capital</span>
+                  <span style={styles.legendVal}>${walletBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                </div>
+                <div style={styles.legendItem}>
+                  <div style={{ ...styles.legendBox, background: '#525252' }}></div>
+                  <span style={styles.legendLabel}>Startup Equity</span>
+                  <span style={styles.legendVal}>${portfolio.reduce((acc, curr) => acc + curr.amount_invested, 0).toLocaleString()}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Portfolio Logs Table */}
+            <div className="glass-panel" style={styles.investmentsTableCard}>
+              <h3 style={styles.panelTitle}>📄 Private Placements Portfolio Ledger (Table #6)</h3>
+              
+              {portfolio.length === 0 ? (
+                <div style={styles.emptyPortfolioBox}>
+                  <p>You have not executed any investment transactions yet.</p>
+                  <button onClick={() => setSubTab('marketplace')} className="btn-primary" style={{ marginTop: '1rem' }}>
+                    Browse Offerings
+                  </button>
+                </div>
+              ) : (
+                <div style={styles.tableContainer}>
+                  <table style={styles.table}>
+                    <thead>
+                      <tr style={styles.tr}>
+                        <th style={styles.th}>Company Name</th>
+                        <th style={styles.th}>Capital Placed</th>
+                        <th style={styles.th}>Shares Purchased</th>
+                        <th style={styles.th}>Avg Buy Price</th>
+                        <th style={styles.th}>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {portfolio.map((inv) => (
+                        <tr key={inv.portfolio_id} style={styles.trItem}>
+                          <td style={styles.tdBold}>{inv.companyName}</td>
+                          <td style={styles.td}>${inv.amount_invested.toLocaleString()}</td>
+                          <td style={styles.td}>{inv.shares.toLocaleString()} Shares</td>
+                          <td style={styles.td}>${inv.sharePrice.toFixed(2)}</td>
+                          <td style={styles.td}>
+                            <span className="badge badge-verified" style={{ textTransform: 'capitalize' }}>{inv.status}</span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {subTab === 'profile' && (
+        <div style={styles.profileView} className="animate-fade-in-up">
+          <div style={styles.introHeader}>
+            <h2 style={styles.title}>Investor Profile Sheet (Table #5)</h2>
+            <p style={styles.sub}>Configure your preferred industry filters, risk tolerances, and accreditation limits linked to your database records.</p>
+          </div>
+
+          <div className="glass-panel" style={styles.card}>
+            <div style={styles.cardHeader}>
+              <h3 style={styles.cardTitle}>👤 Database Record Ledger</h3>
+              <button
+                onClick={() => setIsEditingProfile(!isEditingProfile)}
+                className="btn-secondary"
+                style={styles.editBtn}
+              >
+                {isEditingProfile ? 'Cancel Edit' : 'Edit Preferences'}
+              </button>
+            </div>
+
+            {!isEditingProfile ? (
+              <div style={styles.profileDetailsGrid}>
+                <div style={styles.profileItem}>
+                  <span style={styles.profileLabel}>Investor Type Classification</span>
+                  <strong style={{ ...styles.profileVal, textTransform: 'capitalize' }}>{investorType} Investor</strong>
+                </div>
+
+                <div style={styles.profileItem}>
+                  <span style={styles.profileLabel}>Risk Tolerance Level</span>
+                  <strong style={{ ...styles.profileVal, textTransform: 'capitalize' }}>{riskAppetite} Risk</strong>
+                </div>
+
+                <div style={styles.profileItem}>
+                  <span style={styles.profileLabel}>Investment Range Thresholds</span>
+                  <strong style={styles.profileVal}>
+                    ${minRange.toLocaleString()} Min – ${maxRange.toLocaleString()} Max
+                  </strong>
+                </div>
+
+                <div style={styles.profileItem}>
+                  <span style={styles.profileLabel}>Accreditation Compliance Status</span>
+                  <strong style={{ 
+                    ...styles.profileVal, 
+                    color: investorProfile.accreditation_status ? '#ffffff' : '#f43f5e'
+                  }}>
+                    {investorProfile.accreditation_status ? '✓ KYC Verified & Accredited' : '⚠ Action Required: KYC Unverified'}
+                  </strong>
+                </div>
+
+                <div style={{ ...styles.profileItem, gridColumn: 'span 2' }}>
+                  <span style={styles.profileLabel}>Preferred Investment Sectors</span>
+                  <div style={styles.preferredRow}>
+                    {preferredIndustries.length === 0 ? (
+                      <span style={styles.emptyText}>No sectors selected. Edit preferences to select sectors.</span>
+                    ) : (
+                      preferredIndustries.map((ind) => (
+                        <span key={ind} style={styles.industryTag}>{ind}</span>
+                      ))
+                    )}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={handleSaveProfile} style={styles.profileForm}>
+                <div style={styles.formRow2Col}>
+                  <div style={styles.inputGroup}>
+                    <label style={styles.label}>Investor Type</label>
+                    <select
+                      value={investorType}
+                      onChange={(e) => setInvestorType(e.target.value)}
+                      style={styles.select}
+                    >
+                      <option value="angel">Angel Investor</option>
+                      <option value="vc">Venture Capitalist</option>
+                      <option value="institutional">Institutional Asset Manager</option>
+                      <option value="group">Syndicate Group Manager</option>
+                    </select>
+                  </div>
+
+                  <div style={styles.inputGroup}>
+                    <label style={styles.label}>Risk Appetite</label>
+                    <select
+                      value={riskAppetite}
+                      onChange={(e) => setRiskAppetite(e.target.value)}
+                      style={styles.select}
+                    >
+                      <option value="low">Conservative (Low)</option>
+                      <option value="medium">Balanced (Medium)</option>
+                      <option value="high">Speculative (High)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div style={styles.formRow2Col}>
+                  <div style={styles.inputGroup}>
+                    <label style={styles.label}>Minimum Investment Capacity ($)</label>
+                    <input
+                      type="number"
+                      value={minRange}
+                      onChange={(e) => setMinRange(e.target.value)}
+                      style={styles.input}
+                    />
+                  </div>
+
+                  <div style={styles.inputGroup}>
+                    <label style={styles.label}>Maximum Investment Capacity ($)</label>
+                    <input
+                      type="number"
+                      value={maxRange}
+                      onChange={(e) => setMaxRange(e.target.value)}
+                      style={styles.input}
+                    />
+                  </div>
+                </div>
+
+                <div style={styles.inputGroup}>
+                  <label style={styles.label}>Toggle Preferred Sectors</label>
+                  <div style={styles.preferredRow}>
+                    {industriesList.map((ind) => {
+                      const isSelected = preferredIndustries.includes(ind);
+                      return (
+                        <button
+                          key={ind}
+                          type="button"
+                          onClick={() => handleToggleIndustry(ind)}
+                          style={{
+                            ...styles.sectorToggleBtn,
+                            background: isSelected ? '#ffffff' : 'transparent',
+                            color: isSelected ? '#000000' : '#ffffff',
+                            border: isSelected ? '1px solid #ffffff' : '1px solid rgba(255,255,255,0.1)'
+                          }}
+                        >
+                          {ind} {isSelected ? '✕' : '+'}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <button type="submit" className="btn-primary" style={{ alignSelf: 'flex-start' }}>
+                  Sync Investor Profile
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+
+      {subTab === 'diligence' && (
+        <div style={styles.diligenceView} className="animate-fade-in-up">
+          <div style={styles.introHeader}>
+            <h2 style={styles.title}>Due Diligence Compliance Workspace</h2>
+            <p style={styles.sub}>Check off compliance parameters, review filing dates, and inspect audits before committing investment assets.</p>
+          </div>
+
+          <div className="glass-panel" style={styles.diligenceCard}>
+            <h3 style={styles.panelTitle}>📂 Form C SEC Filing Checklist</h3>
+            <p style={styles.panelDesc}>Verify active regulatory items to satisfy SEC Regulation Crowdfunding placement rules.</p>
+            
+            <div style={styles.checklist}>
+              <div style={styles.checkItem}>
+                <div style={styles.checkMain}>
+                  <input
+                    type="checkbox"
+                    checked={diligenceList.secFormC}
+                    onChange={(e) => setDiligenceList({ ...diligenceList, secFormC: e.target.checked })}
+                    style={styles.checkbox}
+                  />
+                  <div>
+                    <h4 style={styles.checkTitle}>SEC Form C Filing & Financial Audit</h4>
+                    <p style={styles.checkSub}>Operating company must have filed standard Form C with historical P&L audits.</p>
+                  </div>
+                </div>
+                <span className={`badge ${diligenceList.secFormC ? 'badge-verified' : 'badge-unverified'}`}>
+                  {diligenceList.secFormC ? 'Audited' : 'Pending Review'}
+                </span>
+              </div>
+
+              <div style={styles.checkItem}>
+                <div style={styles.checkMain}>
+                  <input
+                    type="checkbox"
+                    checked={diligenceList.legalAudit}
+                    onChange={(e) => setDiligenceList({ ...diligenceList, legalAudit: e.target.checked })}
+                    style={styles.checkbox}
+                  />
+                  <div>
+                    <h4 style={styles.checkTitle}>Startup Bylaws & Articles of Incorporation</h4>
+                    <p style={styles.checkSub}>Corporate bylaws, member agreements, board appointments must be in regulatory standing.</p>
+                  </div>
+                </div>
+                <span className={`badge ${diligenceList.legalAudit ? 'badge-verified' : 'badge-unverified'}`}>
+                  {diligenceList.legalAudit ? 'Audited' : 'Pending Review'}
+                </span>
+              </div>
+
+              <div style={styles.checkItem}>
+                <div style={styles.checkMain}>
+                  <input
+                    type="checkbox"
+                    checked={diligenceList.capTableReview}
+                    onChange={(e) => setDiligenceList({ ...diligenceList, capTableReview: e.target.checked })}
+                    style={styles.checkbox}
+                  />
+                  <div>
+                    <h4 style={styles.checkTitle}>Shareholder Cap Table Distribution Review</h4>
+                    <p style={styles.checkSub}>Review dilution tables, investor preference sheets, option pools, and convertible notes.</p>
+                  </div>
+                </div>
+                <span className={`badge ${diligenceList.capTableReview ? 'badge-verified' : 'badge-unverified'}`}>
+                  {diligenceList.capTableReview ? 'Audited' : 'Pending Review'}
+                </span>
+              </div>
+
+              <div style={styles.checkItem}>
+                <div style={styles.checkMain}>
+                  <input
+                    type="checkbox"
+                    checked={diligenceList.techPatentVerification}
+                    onChange={(e) => setDiligenceList({ ...diligenceList, techPatentVerification: e.target.checked })}
+                    style={styles.checkbox}
+                  />
+                  <div>
+                    <h4 style={styles.checkTitle}>Technical IP & Patent Verification</h4>
+                    <p style={styles.checkSub}>Vetting that all software designs, bioscience patents, and manufacturing licenses are legally claimed.</p>
+                  </div>
+                </div>
+                <span className={`badge ${diligenceList.techPatentVerification ? 'badge-verified' : 'badge-unverified'}`}>
+                  {diligenceList.techPatentVerification ? 'Audited' : 'Pending Review'}
+                </span>
+              </div>
+
+              <div style={styles.checkItem}>
+                <div style={styles.checkMain}>
+                  <input
+                    type="checkbox"
+                    checked={diligenceList.backgroundChecksVerified}
+                    onChange={(e) => setDiligenceList({ ...diligenceList, backgroundChecksVerified: e.target.checked })}
+                    style={styles.checkbox}
+                  />
+                  <div>
+                    <h4 style={styles.checkTitle}>Founder & Core Executive Background checks</h4>
+                    <p style={styles.checkSub}>Verify that executive profiles have passed standard anti-fraud and criminal background audits.</p>
+                  </div>
+                </div>
+                <span className={`badge ${diligenceList.backgroundChecksVerified ? 'badge-verified' : 'badge-unverified'}`}>
+                  {diligenceList.backgroundChecksVerified ? 'Audited' : 'Pending Review'}
+                </span>
+              </div>
+            </div>
+
+            <div style={styles.diligenceTip}>
+              <strong>💡 Pro Tip:</strong> If you are unsure about structural compliance on a campaign, navigate to the **Advisory Forum** tab and ask a vetted legal advisor!
+            </div>
+          </div>
+        </div>
+      )}
+    
+      </div>
+
+      {/* Investment Transaction Wizard Dialog */}
           {selectedCampaign && (
             <div style={styles.modalBackdrop}>
               <div 
@@ -471,19 +816,71 @@ export default function InvestorModule({ state }) {
                     </div>
 
                     <div style={styles.inputGroup}>
-                      <label style={styles.label}>Investment Capital Amount ($)</label>
-                      <input
-                        type="number"
-                        min={selectedCampaign.minInvestment}
-                        value={investAmount}
-                        onChange={(e) => setInvestAmount(e.target.value)}
-                        style={styles.input}
-                        required
-                      />
-                      <span style={styles.shareCountLabel}>
-                        Approximate Shares to Purchase:{' '}
-                        <strong>{Math.floor(parseFloat(investAmount || 0) / selectedCampaign.sharePrice).toLocaleString()} Stocks</strong>
-                      </span>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
+                        <label style={styles.label}>Investment Capital Amount ($)</label>
+                        <input
+                          type="number"
+                          min={selectedCampaign.minInvestment}
+                          max={walletBalance}
+                          value={investAmount}
+                          onChange={(e) => {
+                            let val = e.target.value;
+                            setInvestAmount(val);
+                          }}
+                          style={{
+                            ...styles.input,
+                            width: '120px',
+                            padding: '0.4rem 0.6rem',
+                            fontSize: '0.95rem',
+                            textAlign: 'right',
+                          }}
+                          required
+                        />
+                      </div>
+                      
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '0.5rem' }}>
+                        <input
+                          type="range"
+                          min={selectedCampaign.minInvestment}
+                          max={walletBalance}
+                          step={500}
+                          value={investAmount || selectedCampaign.minInvestment}
+                          onChange={(e) => setInvestAmount(e.target.value)}
+                          style={{
+                            flex: 1,
+                            accentColor: '#ffffff',
+                            cursor: 'pointer',
+                          }}
+                        />
+                      </div>
+
+                      <div style={{ 
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        gap: '0.75rem', 
+                        background: 'rgba(255,255,255,0.02)',
+                        border: '1px solid rgba(255,255,255,0.05)',
+                        borderRadius: '8px',
+                        padding: '1rem',
+                        marginTop: '1rem' 
+                      }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: '#a3a3a3' }}>
+                          <span>Approximate Shares to Purchase:</span>
+                          <strong style={{ color: '#ffffff' }}>
+                            {Math.floor(parseFloat(investAmount || 0) / selectedCampaign.sharePrice).toLocaleString()} Stocks
+                          </strong>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: '#a3a3a3' }}>
+                          <span>Venture Valuation Cap:</span>
+                          <span style={{ color: '#ffffff' }}>${selectedCampaign.valuation.toLocaleString()}</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', color: '#a3a3a3', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '0.75rem' }}>
+                          <span>Projected Equity Stake:</span>
+                          <strong style={{ color: '#10b981', fontSize: '0.9rem' }}>
+                            {((parseFloat(investAmount || 0) / selectedCampaign.valuation) * 100).toFixed(4)}%
+                          </strong>
+                        </div>
+                      </div>
                     </div>
 
                     {investError && <div style={styles.errorBox}>{investError}</div>}
@@ -692,347 +1089,7 @@ export default function InvestorModule({ state }) {
               </div>
             </div>
           )}
-        </div>
-      )}
-
-      {subTab === 'portfolio' && (
-        <div style={styles.portfolioView}>
-          <div style={styles.introHeader}>
-            <h2 style={styles.title}>Asset Portfolio Tracker</h2>
-            <p style={styles.sub}>Analyze your private equity acquisitions, wallet distributions, and annual ROI calculations.</p>
-          </div>
-
-          <div style={styles.portfolioGrid}>
-            {/* Visual Allocation Card */}
-            <div className="glass-panel" style={styles.visualAllocationCard}>
-              <h3 style={styles.panelTitle}>📊 Capital Allocation</h3>
-              <p style={styles.panelDesc}>Visual overview of your active Peer Bridge assets.</p>
-              
-              <div style={styles.svgSection}>
-                {renderPortfolioSVG()}
-                <div style={styles.svgCenterText}>
-                  <span style={styles.svgInnerLabel}>Net Worth</span>
-                  <span style={styles.svgInnerVal}>
-                    ${(walletBalance + portfolio.reduce((acc, curr) => acc + curr.amount_invested, 0)).toLocaleString(undefined, { maximumFractionDigits: 0 })}
-                  </span>
-                </div>
-              </div>
-
-              <div style={styles.legendContainer}>
-                <div style={styles.legendItem}>
-                  <div style={{ ...styles.legendBox, background: '#ffffff' }}></div>
-                  <span style={styles.legendLabel}>Wallet Capital</span>
-                  <span style={styles.legendVal}>${walletBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
-                </div>
-                <div style={styles.legendItem}>
-                  <div style={{ ...styles.legendBox, background: '#525252' }}></div>
-                  <span style={styles.legendLabel}>Startup Equity</span>
-                  <span style={styles.legendVal}>${portfolio.reduce((acc, curr) => acc + curr.amount_invested, 0).toLocaleString()}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Portfolio Logs Table */}
-            <div className="glass-panel" style={styles.investmentsTableCard}>
-              <h3 style={styles.panelTitle}>📄 Private Placements Portfolio Ledger (Table #6)</h3>
-              
-              {portfolio.length === 0 ? (
-                <div style={styles.emptyPortfolioBox}>
-                  <p>You have not executed any investment transactions yet.</p>
-                  <button onClick={() => setSubTab('marketplace')} className="btn-primary" style={{ marginTop: '1rem' }}>
-                    Browse Offerings
-                  </button>
-                </div>
-              ) : (
-                <div style={styles.tableContainer}>
-                  <table style={styles.table}>
-                    <thead>
-                      <tr style={styles.tr}>
-                        <th style={styles.th}>Company Name</th>
-                        <th style={styles.th}>Capital Placed</th>
-                        <th style={styles.th}>Shares Purchased</th>
-                        <th style={styles.th}>Avg Buy Price</th>
-                        <th style={styles.th}>Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {portfolio.map((inv) => (
-                        <tr key={inv.portfolio_id} style={styles.trItem}>
-                          <td style={styles.tdBold}>{inv.companyName}</td>
-                          <td style={styles.td}>${inv.amount_invested.toLocaleString()}</td>
-                          <td style={styles.td}>{inv.shares.toLocaleString()} Shares</td>
-                          <td style={styles.td}>${inv.sharePrice.toFixed(2)}</td>
-                          <td style={styles.td}>
-                            <span className="badge badge-verified" style={{ textTransform: 'capitalize' }}>{inv.status}</span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {subTab === 'profile' && (
-        <div style={styles.profileView}>
-          <div style={styles.introHeader}>
-            <h2 style={styles.title}>Investor Profile Sheet (Table #5)</h2>
-            <p style={styles.sub}>Configure your preferred industry filters, risk tolerances, and accreditation limits linked to your database records.</p>
-          </div>
-
-          <div className="glass-panel" style={styles.card}>
-            <div style={styles.cardHeader}>
-              <h3 style={styles.cardTitle}>👤 Database Record Ledger</h3>
-              <button
-                onClick={() => setIsEditingProfile(!isEditingProfile)}
-                className="btn-secondary"
-                style={styles.editBtn}
-              >
-                {isEditingProfile ? 'Cancel Edit' : 'Edit Preferences'}
-              </button>
-            </div>
-
-            {!isEditingProfile ? (
-              <div style={styles.profileDetailsGrid}>
-                <div style={styles.profileItem}>
-                  <span style={styles.profileLabel}>Investor Type Classification</span>
-                  <strong style={{ ...styles.profileVal, textTransform: 'capitalize' }}>{investorType} Investor</strong>
-                </div>
-
-                <div style={styles.profileItem}>
-                  <span style={styles.profileLabel}>Risk Tolerance Level</span>
-                  <strong style={{ ...styles.profileVal, textTransform: 'capitalize' }}>{riskAppetite} Risk</strong>
-                </div>
-
-                <div style={styles.profileItem}>
-                  <span style={styles.profileLabel}>Investment Range Thresholds</span>
-                  <strong style={styles.profileVal}>
-                    ${minRange.toLocaleString()} Min – ${maxRange.toLocaleString()} Max
-                  </strong>
-                </div>
-
-                <div style={styles.profileItem}>
-                  <span style={styles.profileLabel}>Accreditation Compliance Status</span>
-                  <strong style={{ 
-                    ...styles.profileVal, 
-                    color: investorProfile.accreditation_status ? '#ffffff' : '#f43f5e'
-                  }}>
-                    {investorProfile.accreditation_status ? '✓ KYC Verified & Accredited' : '⚠ Action Required: KYC Unverified'}
-                  </strong>
-                </div>
-
-                <div style={{ ...styles.profileItem, gridColumn: 'span 2' }}>
-                  <span style={styles.profileLabel}>Preferred Investment Sectors</span>
-                  <div style={styles.preferredRow}>
-                    {preferredIndustries.length === 0 ? (
-                      <span style={styles.emptyText}>No sectors selected. Edit preferences to select sectors.</span>
-                    ) : (
-                      preferredIndustries.map((ind) => (
-                        <span key={ind} style={styles.industryTag}>{ind}</span>
-                      ))
-                    )}
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <form onSubmit={handleSaveProfile} style={styles.profileForm}>
-                <div style={styles.formRow2Col}>
-                  <div style={styles.inputGroup}>
-                    <label style={styles.label}>Investor Type</label>
-                    <select
-                      value={investorType}
-                      onChange={(e) => setInvestorType(e.target.value)}
-                      style={styles.select}
-                    >
-                      <option value="angel">Angel Investor</option>
-                      <option value="vc">Venture Capitalist</option>
-                      <option value="institutional">Institutional Asset Manager</option>
-                      <option value="group">Syndicate Group Manager</option>
-                    </select>
-                  </div>
-
-                  <div style={styles.inputGroup}>
-                    <label style={styles.label}>Risk Appetite</label>
-                    <select
-                      value={riskAppetite}
-                      onChange={(e) => setRiskAppetite(e.target.value)}
-                      style={styles.select}
-                    >
-                      <option value="low">Conservative (Low)</option>
-                      <option value="medium">Balanced (Medium)</option>
-                      <option value="high">Speculative (High)</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div style={styles.formRow2Col}>
-                  <div style={styles.inputGroup}>
-                    <label style={styles.label}>Minimum Investment Capacity ($)</label>
-                    <input
-                      type="number"
-                      value={minRange}
-                      onChange={(e) => setMinRange(e.target.value)}
-                      style={styles.input}
-                    />
-                  </div>
-
-                  <div style={styles.inputGroup}>
-                    <label style={styles.label}>Maximum Investment Capacity ($)</label>
-                    <input
-                      type="number"
-                      value={maxRange}
-                      onChange={(e) => setMaxRange(e.target.value)}
-                      style={styles.input}
-                    />
-                  </div>
-                </div>
-
-                <div style={styles.inputGroup}>
-                  <label style={styles.label}>Toggle Preferred Sectors</label>
-                  <div style={styles.preferredRow}>
-                    {industriesList.map((ind) => {
-                      const isSelected = preferredIndustries.includes(ind);
-                      return (
-                        <button
-                          key={ind}
-                          type="button"
-                          onClick={() => handleToggleIndustry(ind)}
-                          style={{
-                            ...styles.sectorToggleBtn,
-                            background: isSelected ? '#ffffff' : 'transparent',
-                            color: isSelected ? '#000000' : '#ffffff',
-                            border: isSelected ? '1px solid #ffffff' : '1px solid rgba(255,255,255,0.1)'
-                          }}
-                        >
-                          {ind} {isSelected ? '✕' : '+'}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                <button type="submit" className="btn-primary" style={{ alignSelf: 'flex-start' }}>
-                  Sync Investor Profile
-                </button>
-              </form>
-            )}
-          </div>
-        </div>
-      )}
-
-      {subTab === 'diligence' && (
-        <div style={styles.diligenceView}>
-          <div style={styles.introHeader}>
-            <h2 style={styles.title}>Due Diligence Compliance Workspace</h2>
-            <p style={styles.sub}>Check off compliance parameters, review filing dates, and inspect audits before committing investment assets.</p>
-          </div>
-
-          <div className="glass-panel" style={styles.diligenceCard}>
-            <h3 style={styles.panelTitle}>📂 Form C SEC Filing Checklist</h3>
-            <p style={styles.panelDesc}>Verify active regulatory items to satisfy SEC Regulation Crowdfunding placement rules.</p>
-            
-            <div style={styles.checklist}>
-              <div style={styles.checkItem}>
-                <div style={styles.checkMain}>
-                  <input
-                    type="checkbox"
-                    checked={diligenceList.secFormC}
-                    onChange={(e) => setDiligenceList({ ...diligenceList, secFormC: e.target.checked })}
-                    style={styles.checkbox}
-                  />
-                  <div>
-                    <h4 style={styles.checkTitle}>SEC Form C Filing & Financial Audit</h4>
-                    <p style={styles.checkSub}>Operating company must have filed standard Form C with historical P&L audits.</p>
-                  </div>
-                </div>
-                <span className={`badge ${diligenceList.secFormC ? 'badge-verified' : 'badge-unverified'}`}>
-                  {diligenceList.secFormC ? 'Audited' : 'Pending Review'}
-                </span>
-              </div>
-
-              <div style={styles.checkItem}>
-                <div style={styles.checkMain}>
-                  <input
-                    type="checkbox"
-                    checked={diligenceList.legalAudit}
-                    onChange={(e) => setDiligenceList({ ...diligenceList, legalAudit: e.target.checked })}
-                    style={styles.checkbox}
-                  />
-                  <div>
-                    <h4 style={styles.checkTitle}>Startup Bylaws & Articles of Incorporation</h4>
-                    <p style={styles.checkSub}>Corporate bylaws, member agreements, board appointments must be in regulatory standing.</p>
-                  </div>
-                </div>
-                <span className={`badge ${diligenceList.legalAudit ? 'badge-verified' : 'badge-unverified'}`}>
-                  {diligenceList.legalAudit ? 'Audited' : 'Pending Review'}
-                </span>
-              </div>
-
-              <div style={styles.checkItem}>
-                <div style={styles.checkMain}>
-                  <input
-                    type="checkbox"
-                    checked={diligenceList.capTableReview}
-                    onChange={(e) => setDiligenceList({ ...diligenceList, capTableReview: e.target.checked })}
-                    style={styles.checkbox}
-                  />
-                  <div>
-                    <h4 style={styles.checkTitle}>Shareholder Cap Table Distribution Review</h4>
-                    <p style={styles.checkSub}>Review dilution tables, investor preference sheets, option pools, and convertible notes.</p>
-                  </div>
-                </div>
-                <span className={`badge ${diligenceList.capTableReview ? 'badge-verified' : 'badge-unverified'}`}>
-                  {diligenceList.capTableReview ? 'Audited' : 'Pending Review'}
-                </span>
-              </div>
-
-              <div style={styles.checkItem}>
-                <div style={styles.checkMain}>
-                  <input
-                    type="checkbox"
-                    checked={diligenceList.techPatentVerification}
-                    onChange={(e) => setDiligenceList({ ...diligenceList, techPatentVerification: e.target.checked })}
-                    style={styles.checkbox}
-                  />
-                  <div>
-                    <h4 style={styles.checkTitle}>Technical IP & Patent Verification</h4>
-                    <p style={styles.checkSub}>Vetting that all software designs, bioscience patents, and manufacturing licenses are legally claimed.</p>
-                  </div>
-                </div>
-                <span className={`badge ${diligenceList.techPatentVerification ? 'badge-verified' : 'badge-unverified'}`}>
-                  {diligenceList.techPatentVerification ? 'Audited' : 'Pending Review'}
-                </span>
-              </div>
-
-              <div style={styles.checkItem}>
-                <div style={styles.checkMain}>
-                  <input
-                    type="checkbox"
-                    checked={diligenceList.backgroundChecksVerified}
-                    onChange={(e) => setDiligenceList({ ...diligenceList, backgroundChecksVerified: e.target.checked })}
-                    style={styles.checkbox}
-                  />
-                  <div>
-                    <h4 style={styles.checkTitle}>Founder & Core Executive Background checks</h4>
-                    <p style={styles.checkSub}>Verify that executive profiles have passed standard anti-fraud and criminal background audits.</p>
-                  </div>
-                </div>
-                <span className={`badge ${diligenceList.backgroundChecksVerified ? 'badge-verified' : 'badge-unverified'}`}>
-                  {diligenceList.backgroundChecksVerified ? 'Audited' : 'Pending Review'}
-                </span>
-              </div>
-            </div>
-
-            <div style={styles.diligenceTip}>
-              <strong>💡 Pro Tip:</strong> If you are unsure about structural compliance on a campaign, navigate to the **Advisory Forum** tab and ask a vetted legal advisor!
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+    </>
   );
 }
 

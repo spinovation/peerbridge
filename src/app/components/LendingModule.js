@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 export default function LendingModule({ state }) {
   const {
@@ -24,6 +24,105 @@ export default function LendingModule({ state }) {
   const [errorMsg, setErrorMsg] = useState('');
   const [isCustomRate, setIsCustomRate] = useState(false);
   const [customRate, setCustomRate] = useState(8.5);
+
+  // Promissory Note e-Sign States
+  const [selectedLoanForExecution, setSelectedLoanForExecution] = useState(null);
+  const [sigWizardStep, setSigWizardStep] = useState(1);
+  const [signatureDataUrl, setSignatureDataUrl] = useState('');
+  const canvasRef = useRef(null);
+  const [isDrawing, setIsDrawing] = useState(false);
+
+  // Drawing event handlers for P2P Promissory Note
+  const startDrawing = (e) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const ctx = canvas.getContext('2d');
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    setIsDrawing(true);
+  };
+
+  const draw = (e) => {
+    if (!isDrawing) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const ctx = canvas.getContext('2d');
+    ctx.lineTo(x, y);
+    ctx.stroke();
+  };
+
+  const stopDrawing = () => {
+    setIsDrawing(false);
+    if (canvasRef.current) {
+      setSignatureDataUrl(canvasRef.current.toDataURL());
+    }
+  };
+
+  const clearSignature = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    setSignatureDataUrl('');
+  };
+
+  const startDrawingTouch = (e) => {
+    e.preventDefault();
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0];
+    const offsetX = touch.clientX - rect.left;
+    const offsetY = touch.clientY - rect.top;
+    const ctx = canvas.getContext('2d');
+    ctx.beginPath();
+    ctx.moveTo(offsetX, offsetY);
+    setIsDrawing(true);
+  };
+
+  const drawTouch = (e) => {
+    e.preventDefault();
+    if (!isDrawing) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0];
+    const offsetX = touch.clientX - rect.left;
+    const offsetY = touch.clientY - rect.top;
+    const ctx = canvas.getContext('2d');
+    ctx.lineTo(offsetX, offsetY);
+    ctx.stroke();
+  };
+
+  const handleStartExecuteWizard = (loan) => {
+    setSelectedLoanForExecution(loan);
+    setSigWizardStep(1);
+    setSignatureDataUrl('');
+    setSuccessMsg('');
+    setErrorMsg('');
+  };
+
+  const handleExecuteLoanWithSignature = (e) => {
+    e.preventDefault();
+    if (!signatureDataUrl) return;
+
+    const res = executeP2PLoan(selectedLoanForExecution.loan_id, signatureDataUrl);
+    if (res.success) {
+      setSigWizardStep(2);
+      if (refreshUserData) refreshUserData();
+    } else {
+      setErrorMsg(res.error || 'Failed to execute Promissory Note.');
+    }
+  };
 
   const isLender = customer.email !== 'salesadmin@peerbridge.ai';
   const isBorrower = customer.email !== 'salesadmin@peerbridge.ai';
@@ -105,7 +204,8 @@ export default function LendingModule({ state }) {
   const totalRevenue = upfrontFeeTotal + spreadTotal;
 
   return (
-    <div style={styles.container} className="animate-fade-in-up">
+    <>
+      <div style={styles.container}>
       <div style={styles.introHeader}>
         <h2 style={styles.title}>🏛 P2P Debt & Lending Center</h2>
         <p style={styles.sub}>Access premium Spread-Based yield vehicles. Transact compliant peer-to-peer credit pools securely inside the USA.</p>
@@ -149,7 +249,7 @@ export default function LendingModule({ state }) {
       </div>
 
       {activeSubTab === 'marketplace' && (
-        <div style={styles.grid}>
+        <div style={styles.grid} className="animate-fade-in-up">
           {/* LENDER CONSOLE PANEL */}
           {isLender && (
             <div className="glass-panel" style={styles.card}>
@@ -343,7 +443,7 @@ export default function LendingModule({ state }) {
                           </div>
                           
                           <button
-                            onClick={() => handleExecuteLoan(loan.loan_id)}
+                            onClick={() => handleStartExecuteWizard(loan)}
                             className="btn-primary"
                             style={{ padding: '0.5rem 1rem', fontSize: '0.8rem' }}
                           >
@@ -405,7 +505,7 @@ export default function LendingModule({ state }) {
                             Borrower countered rate to: <strong style={{ color: '#ffffff' }}>{loan.countered_rate}%</strong>
                           </div>
                           <button
-                            onClick={() => handleExecuteLoan(loan.loan_id)}
+                            onClick={() => handleStartExecuteWizard(loan)}
                             className="btn-primary"
                             style={{ padding: '0.5rem 1rem', fontSize: '0.8rem' }}
                           >
@@ -429,7 +529,7 @@ export default function LendingModule({ state }) {
       )}
 
       {activeSubTab === 'active_loans' && (
-        <div style={styles.card} className="glass-panel">
+        <div style={styles.card} className="glass-panel animate-fade-in-up">
           <h3 style={styles.cardTitle}>📁 Active Lending Portfolio (Table #10)</h3>
           <p style={styles.cardDesc}>Legally binding debt agreements cleared and servicing payments.</p>
 
@@ -514,7 +614,7 @@ export default function LendingModule({ state }) {
       )}
 
       {activeSubTab === 'ledger' && (
-        <div style={styles.grid}>
+        <div style={styles.grid} className="animate-fade-in-up">
           {/* PLATFORM REVENUE SUMMARY */}
           <div className="glass-panel" style={{ ...styles.card, flex: 0.8 }}>
             <h3 style={styles.cardTitle}>📊 Platform Revenue Summary</h3>
@@ -565,11 +665,253 @@ export default function LendingModule({ state }) {
           </div>
         </div>
       )}
-    </div>
+      </div>
+
+      {/* Promissory Note e-Sign Signature Wizard */}
+      {selectedLoanForExecution && (
+        <div style={styles.modalBackdrop}>
+          <div 
+            className="glass-panel glow-accent-border animate-fade-in-up" 
+            style={{ 
+              ...styles.modalCard, 
+              maxWidth: sigWizardStep === 2 ? '640px' : '480px',
+              width: '95%',
+              background: 'rgba(10, 10, 10, 0.95)',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255,255,255,0.08)',
+              padding: '2.5rem',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '1.5rem',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '1rem' }}>
+              <h3 style={styles.modalTitle}>
+                {sigWizardStep === 1 && `🏛 SEC Reg D Promissory Note Wizard`}
+                {sigWizardStep === 2 && `🎉 Credit Pool Disbursed!`}
+              </h3>
+              <button 
+                onClick={() => {
+                  setSelectedLoanForExecution(null);
+                  setSigWizardStep(1);
+                  setSignatureDataUrl('');
+                }}
+                style={{ background: 'none', border: 'none', color: '#737373', fontSize: '1.2rem', cursor: 'pointer' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {sigWizardStep === 1 && (
+              <form onSubmit={handleExecuteLoanWithSignature} style={styles.modalForm}>
+                <p style={styles.modalSub}>
+                  Please review the dynamically compiled SEC Reg D Commercial Promissory Note below and draw your signature to authorize the placement.
+                </p>
+
+                {/* Promissory Note Textbox */}
+                <div style={{
+                  background: 'rgba(0,0,0,0.4)',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  borderRadius: '8px',
+                  padding: '1.5rem',
+                  maxHeight: '200px',
+                  overflowY: 'auto',
+                  fontSize: '0.8rem',
+                  color: '#a3a3a3',
+                  lineHeight: '1.5',
+                  fontFamily: 'monospace',
+                  whiteSpace: 'pre-line'
+                }}>
+                  {`PEERBRIDGE CREDIT PLACEMENT REGISTRY
+                  SEC REGULATION D COMMERCIAL PROMISSORY NOTE
+
+                  This Promissory Note ("Note") is executed as of ${new Date().toLocaleDateString()} between the undersigned parties:
+                  
+                  LENDER: ${selectedLoanForExecution.lender_name}
+                  BORROWER: ${selectedLoanForExecution.borrower_name}
+
+                  1. Principal Advance: The Lender hereby agrees to advance a principal sum of $${selectedLoanForExecution.principal.toLocaleString()} to the Borrower at an annual gross borrower rate of ${(selectedLoanForExecution.countered_rate || selectedLoanForExecution.rate)}%.
+                  
+                  2. Payback Terms: The Borrower covenants and agrees to repay the full principal plus accrued interest totaling $${selectedLoanForExecution.total_payback.toLocaleString()} in a single bullet payment at the end of the 6-month term.
+                  
+                  3. Spread & Servicing: Peer Bridge acts as secure placement broker, retaining a 1.5% borrower origination fee ($${(selectedLoanForExecution.principal * 0.015).toFixed(2)}) from proceeds, and collecting a 1.0% servicing spread sweep upon maturity.
+                  
+                  4. Tamper-Proof Cryptographic Lock: This Note is registered under Regulation D rules, signed, and stamped with a unique SHA-256 audit block hash.`}
+                </div>
+
+                {/* signature drawing canvas pad */}
+                <div style={styles.inputGroup}>
+                  <label style={styles.label}>🖋 Authorized Signature Pad (Draw with Mouse/Touch)</label>
+                  <div style={{ position: 'relative' }}>
+                    <canvas
+                      ref={canvasRef}
+                      width={400}
+                      height={120}
+                      onMouseDown={startDrawing}
+                      onMouseMove={draw}
+                      onMouseUp={stopDrawing}
+                      onMouseLeave={stopDrawing}
+                      onTouchStart={startDrawingTouch}
+                      onTouchMove={drawTouch}
+                      onTouchEnd={stopDrawing}
+                      style={{
+                        background: 'rgba(255,255,255,0.02)',
+                        border: '1px dashed rgba(255,255,255,0.15)',
+                        borderRadius: '6px',
+                        cursor: 'crosshair',
+                        width: '100%',
+                        height: '120px',
+                        display: 'block',
+                      }}
+                    />
+                    {signatureDataUrl && (
+                      <div style={{ position: 'absolute', bottom: 5, right: 5, fontSize: '0.65rem', color: '#10b981', background: 'rgba(0,0,0,0.7)', padding: '2px 5px', borderRadius: '3px' }}>
+                        ✓ Capture Active
+                      </div>
+                    )}
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.35rem' }}>
+                    <span style={{ fontSize: '0.72rem', color: '#737373' }}>Use mouse or trackpad to sign in the box.</span>
+                    <button
+                      type="button"
+                      onClick={clearSignature}
+                      style={{ background: 'none', border: 'none', color: '#f43f5e', fontSize: '0.72rem', cursor: 'pointer', fontWeight: 'bold' }}
+                    >
+                      ✕ Clear Canvas
+                    </button>
+                  </div>
+                </div>
+
+                {errorMsg && <div style={styles.errorToast}>{errorMsg}</div>}
+
+                <div style={styles.modalButtons}>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedLoanForExecution(null)}
+                    className="btn-secondary"
+                    style={{ flex: 1 }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="btn-primary"
+                    style={{ flex: 2 }}
+                    disabled={!signatureDataUrl}
+                  >
+                    Sign & Disburse Funds
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {sigWizardStep === 2 && (
+              <div style={{ textAlign: 'center', padding: '1.5rem 0', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem' }}>
+                <div style={{
+                  width: '64px',
+                  height: '64px',
+                  borderRadius: '50%',
+                  background: 'rgba(16,185,129,0.1)',
+                  border: '2px solid #10b981',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '2rem',
+                  color: '#10b981',
+                  boxShadow: '0 0 15px rgba(16,185,129,0.3)',
+                }}>
+                  ✓
+                </div>
+                <div>
+                  <h4 style={{ fontSize: '1.25rem', fontWeight: '800', color: '#ffffff', marginBottom: '0.5rem' }}>P2P Promissory Note Executed!</h4>
+                  <p style={{ fontSize: '0.88rem', color: '#a3a3a3', lineHeight: '1.5', maxWidth: '360px' }}>
+                    The commercial Promissory Note is now cryptographically locked with a unique SHA-256 compliance hash. Duplicate executed copies have been deposited in the **Document Vault** for both lender and borrower.
+                  </p>
+                </div>
+
+                {/* Gold certificate mockup inside success dialog */}
+                <div style={{
+                  border: '2px solid #3b82f6',
+                  background: 'linear-gradient(135deg, rgba(20,20,20,0.95) 0%, rgba(10,10,10,0.99) 100%)',
+                  boxShadow: '0 10px 30px rgba(59, 130, 246, 0.15)',
+                  padding: '1.25rem',
+                  borderRadius: '8px',
+                  width: '100%',
+                  textAlign: 'center',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.5rem',
+                  position: 'relative'
+                }}>
+                  <div style={{ position: 'absolute', top: 5, right: 5, fontSize: '0.55rem', color: '#3b82f6', fontWeight: 'bold', border: '1px solid #3b82f6', padding: '1px 3px', borderRadius: '3px' }}>
+                    SEC REG D
+                  </div>
+                  <span style={{ fontSize: '0.65rem', color: '#3b82f6', fontWeight: '700', letterSpacing: '0.1em' }}>PEERBRIDGE CREDIT NETWORK</span>
+                  <strong style={{ color: '#ffffff', fontSize: '0.9rem' }}>COMMERCIAL PROMISSORY NOTE CERTIFICATE</strong>
+                  <span style={{ fontSize: '0.8rem', color: '#a3a3a3' }}>LENDER: <strong>{selectedLoanForExecution.lender_name}</strong></span>
+                  <span style={{ fontSize: '0.8rem', color: '#a3a3a3' }}>BORROWER: <strong>{selectedLoanForExecution.borrower_name}</strong></span>
+                  <span style={{ fontSize: '0.75rem', color: '#a3a3a3' }}>PRINCIPAL TARGET: <strong>${selectedLoanForExecution.principal.toFixed(2)}</strong></span>
+                  <span style={{ color: '#a3a3a3', fontSize: '0.75rem' }}>RATE: <strong>{(selectedLoanForExecution.countered_rate || selectedLoanForExecution.rate)}% Gross Yield</strong></span>
+                  <span style={{ fontSize: '0.58rem', color: '#525252', fontFamily: 'monospace' }}>SEC SHA256 BLOCK: 77f8aa8810eb0cf83b77abffea56bc18</span>
+                </div>
+
+                <button
+                  onClick={() => {
+                    setSelectedLoanForExecution(null);
+                    setSigWizardStep(1);
+                    setSignatureDataUrl('');
+                  }}
+                  className="btn-primary"
+                  style={{ width: '100%' }}
+                >
+                  Close & Return to Dashboard
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
 const styles = {
+  modalBackdrop: {
+    position: 'fixed',
+    inset: 0,
+    background: 'rgba(0,0,0,0.8)',
+    backdropFilter: 'blur(8px)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 10000,
+  },
+  modalCard: {
+    width: '100%',
+    maxWidth: '480px',
+    padding: '2.5rem',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1.5rem',
+  },
+  modalTitle: {
+    fontSize: '1.5rem',
+    fontWeight: '800',
+  },
+  modalSub: {
+    fontSize: '0.9rem',
+    color: '#a3a3a3',
+    lineHeight: '1.4',
+  },
+  modalForm: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1.25rem',
+  },
+  modalButtons: {
+    display: 'flex',
+    gap: '1rem',
+  },
   container: {
     display: 'flex',
     flexDirection: 'column',

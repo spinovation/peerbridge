@@ -2016,19 +2016,28 @@ export function usePeerBridge() {
   };
 
   // KYC submission (adds records to documentation table)
-  const submitKycDocuments = (fileName) => {
+  const submitKycDocuments = (fileName, docType = 'kyc') => {
+    const cleanFileName = fileName.replace(/\s+/g, '_');
+    const prefix = docType === 'kyc' ? 'KYC' : docType === 'safe_agreement' ? 'SAFE' : docType === 'promissory_note' ? 'Promissory' : 'Tax_Statement';
+    const typeLabel = docType === 'kyc' ? 'doc-kyc' : docType === 'safe_agreement' ? 'doc-safe' : docType === 'promissory_note' ? 'doc-promissory' : 'doc-tax';
     const newKycDoc = {
-      doc_id: generateRandomId('doc-kyc'),
+      doc_id: generateRandomId(typeLabel),
       customer_id: customer.customer_id,
-      doc_type: 'kyc',
-      file_url: `https://pb-vault.s3.amazonaws.com/KYC_${fileName.replace(/\s+/g, '_')}`,
+      doc_type: docType,
+      companyName: docType === 'safe_agreement' ? 'Venture SAFE' : docType === 'promissory_note' ? 'Tonin Logistics Commercial Note' : undefined,
+      file_url: `https://pb-vault.s3.amazonaws.com/${prefix}_${cleanFileName}`,
       uploaded_at: new Date().toISOString(),
       verified: false
     };
     
     const updatedDocs = [newKycDoc, ...documentation];
     sync('pb_docs', updatedDocs, setDocumentation);
-    addNotification('Document', 'Identity passport scan uploaded. Running 3-step biometric sweeps.');
+    
+    const notifMsg = docType === 'kyc' ? 'Identity passport scan uploaded. Running 3-step biometric sweeps.'
+                   : docType === 'safe_agreement' ? 'Venture SAFE agreement uploaded. Initiating SEC Reg CF compliance audit.'
+                   : docType === 'promissory_note' ? 'P2P Promissory Note uploaded. Initiating symmetrical signature validation & escrow audit.'
+                   : 'Cash Statement uploaded. Coordinating Plaid API balance sweeps.';
+    addNotification('Document', notifMsg);
     return newKycDoc;
   };
 
@@ -2338,7 +2347,7 @@ export function usePeerBridge() {
   };
 
   // P2P Lending - Execute loan
-  const executeP2PLoan = (loanId) => {
+  const executeP2PLoan = (loanId, signatureData = "") => {
     const loan = loans.find(l => l.loan_id === loanId);
     if (!loan) return { success: false, error: 'Loan offer not found.' };
 
@@ -2370,6 +2379,37 @@ export function usePeerBridge() {
       return l;
     });
     sync('pb_loans', updatedLoans, setLoans);
+
+    // Dynamic SEC Reg D Commercial Promissory Note Agreement Generation (Document Integrity)
+    const sha256Hash = Array.from({length: 64}, () => Math.floor(Math.random()*16).toString(16)).join('');
+    const promissoryNoteDoc = {
+      doc_id: generateRandomId('doc-promissory'),
+      customer_id: loan.lender_id,
+      doc_type: 'promissory_note',
+      companyName: `${loan.borrower_name} Commercial Note`,
+      file_url: `https://pb-vault.s3.amazonaws.com/Promissory_Note_${loan.loan_id.toUpperCase()}.pdf`,
+      uploaded_at: new Date().toISOString(),
+      verified: true,
+      metadata: {
+        lender_name: loan.lender_name,
+        borrower_name: loan.borrower_name,
+        amount: loan.principal,
+        interest_rate: loan.rate,
+        term_months: 6,
+        sha256: sha256Hash,
+        signature: signatureData || "Signed Electronically",
+        is_certified: true
+      }
+    };
+
+    // Make a copy for the borrower too
+    const borrowerNoteDoc = {
+      ...promissoryNoteDoc,
+      doc_id: generateRandomId('doc-promissory'),
+      customer_id: loan.borrower_id
+    };
+
+    sync('pb_docs', [promissoryNoteDoc, borrowerNoteDoc, ...documentation], setDocumentation);
 
     // Write financial ledger transactions
     addTransaction('Debt Investment', totalDeduction, `Dispatched P2P Loan Funding - Ref: ${loan.loan_id}`);
