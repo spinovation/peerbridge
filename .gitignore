@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Peerbridge Private Strategic Documents (For Your Eyes Only)
+peerbridge_confidential_master_strategy.md
