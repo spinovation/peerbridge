@@ -15,6 +15,7 @@ import TaxModule from './components/TaxModule';
 import SupportModule from './components/SupportModule';
 import OnboardingWizard from './components/OnboardingWizard';
 import LendingModule from './components/LendingModule';
+import AIAgentHub from './components/AIAgentHub';
 
 export default function Home() {
   const state = usePeerBridge();
@@ -1314,6 +1315,8 @@ export default function Home() {
         return <LendingModule state={state} />;
       case 'admin':
         return <SalesAdminModule state={state} />;
+      case 'ai_agent_hub':
+        return <AIAgentHub state={state} />;
       
       // Technology Behind Saved Items
       case 'saved':
@@ -2454,6 +2457,16 @@ export default function Home() {
               <span>📄</span>
               <span>Taxes</span>
               {state.activeModule === 'tax' && <div style={styles.activeIndicator} />}
+            </button>
+
+            <button
+              onClick={() => state.setActiveModule('ai_agent_hub')}
+              className="header-nav-btn-responsive"
+              style={state.activeModule === 'ai_agent_hub' ? styles.headerNavBtnActive : styles.headerNavBtn}
+            >
+              <span>🤖</span>
+              <span>AI Agents</span>
+              {state.activeModule === 'ai_agent_hub' && <div style={styles.activeIndicator} />}
             </button>
           </nav>
         )}

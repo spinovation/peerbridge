@@ -13,7 +13,8 @@ export default function InvestorModule({ state }) {
     updateInvestorProfile 
   } = state;
 
-  const [subTab, setSubTab] = useState('marketplace'); // marketplace, portfolio, profile, diligence
+  const [subTab, setSubTab] = useState('marketplace'); // marketplace, portfolio, profile, diligence, venture_analytics
+  const [selectedStartupMetrics, setSelectedStartupMetrics] = useState('ecosphere');
   
   // Investment states
   const [selectedCampaign, setSelectedCampaign] = useState(null);
@@ -273,6 +274,12 @@ export default function InvestorModule({ state }) {
             style={subTab === 'diligence' ? styles.tabActive : styles.tabInactive}
           >
             📋 Due Diligence Workspace
+          </button>
+          <button
+            onClick={() => setSubTab('venture_analytics')}
+            style={subTab === 'venture_analytics' ? styles.tabActive : styles.tabInactive}
+          >
+            📈 Venture Metrics
           </button>
         </div>
 
@@ -755,7 +762,233 @@ export default function InvestorModule({ state }) {
           </div>
         </div>
       )}
-    
+
+      {subTab === 'venture_analytics' && (
+        <div style={styles.diligenceView} className="animate-fade-in-up">
+          {!(state.customer?.subscription_tier === 'lender_pro' || state.customer?.subscription_tier === 'founder_pro') ? (
+            /* Promotional Glassmorphic upsell gate */
+            <div className="glass-panel" style={{
+              padding: '3rem',
+              textAlign: 'center',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '1.5rem',
+              background: 'radial-gradient(circle, rgba(0, 242, 254, 0.03) 0%, rgba(0,0,0,0.5) 100%)',
+              border: '1px solid rgba(0, 242, 254, 0.15)',
+              boxShadow: '0 20px 40px rgba(0,0,0,0.8)',
+              borderRadius: '12px'
+            }}>
+              <span style={{
+                fontSize: '0.68rem',
+                fontWeight: '850',
+                background: 'rgba(0, 242, 254, 0.1)',
+                color: '#00f2fe',
+                padding: '0.2rem 0.65rem',
+                borderRadius: '4px',
+                border: '1px solid rgba(0, 242, 254, 0.25)',
+                textTransform: 'uppercase'
+              }}>
+                💼 Lender Pro Membership Required
+              </span>
+              <h2 style={{ fontSize: '1.45rem', fontWeight: '850', color: '#ffffff', maxWidth: '640px', lineHeight: '1.3', margin: 0 }}>
+                Unlock Institutional-Grade Venture Financial Telemetry & Auto-Invest Tools
+              </h2>
+              <p style={{ fontSize: '0.85rem', color: '#a3a3a3', maxWidth: '560px', lineHeight: '1.5', margin: 0 }}>
+                Gain real-time insights, ARR tracks, cash-reserves forecasts, EBITDA indicators, fractional auto-invest sweeps, and compiled IRS Form 1099-INT P2P interest tax ledgers.
+              </p>
+              <div style={{ display: 'flex', gap: '2.5rem', marginTop: '0.5rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', textAlign: 'center' }}>
+                  <span style={{ fontSize: '0.62rem', color: '#737373', textTransform: 'uppercase', fontWeight: '700' }}>Fractional Bids</span>
+                  <strong style={{ color: '#ffffff', fontSize: '1.25rem' }}>Auto-Matched</strong>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', textAlign: 'center' }}>
+                  <span style={{ fontSize: '0.62rem', color: '#737373', textTransform: 'uppercase', fontWeight: '700' }}>IRS Tax Forms</span>
+                  <strong style={{ color: '#00f2fe', fontSize: '1.25rem' }}>Auto-Compiled</strong>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', textAlign: 'center' }}>
+                  <span style={{ fontSize: '0.62rem', color: '#737373', textTransform: 'uppercase', fontWeight: '700' }}>Venture Telemetry</span>
+                  <strong style={{ color: '#a78bfa', fontSize: '1.25rem' }}>EBITDA / ARR</strong>
+                </div>
+              </div>
+              <button 
+                onClick={() => {
+                  state.updateUserProfile({ subscription_tier: 'lender_pro' });
+                  setSuccess('Successfully upgraded to Lender Pro! Autonomous venture tools unlocked.');
+                  setTimeout(() => setSuccess(''), 4000);
+                }} 
+                className="btn-primary" 
+                style={{
+                  background: 'linear-gradient(135deg, #00f2fe 0%, #8b5cf6 100%)',
+                  color: '#000000',
+                  fontWeight: '900',
+                  fontSize: '0.9rem',
+                  padding: '0.75rem 2rem',
+                  borderRadius: '8px',
+                  border: 'none',
+                  cursor: 'pointer',
+                  boxShadow: '0 5px 15px rgba(0,242,254,0.3)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                Upgrade to Lender Pro – $29/Month
+              </button>
+            </div>
+          ) : (
+            /* Full Pro Venture Analytics Dashboard */
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
+                <div>
+                  <h2 style={styles.title}>📈 Active Venture Portfolio Telemetry</h2>
+                  <p style={styles.sub}>Track ARR growth vectoring, cash burn reserves, and key start-up EBITDA markers.</p>
+                </div>
+                
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span style={{ fontSize: '0.76rem', color: '#a3a3a3' }}>Select Portfolio Holding:</span>
+                  <select 
+                    value={selectedStartupMetrics} 
+                    onChange={(e) => setSelectedStartupMetrics(e.target.value)}
+                    style={{
+                      background: '#000000',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      color: '#ffffff',
+                      fontSize: '0.78rem',
+                      padding: '0.25rem 0.5rem',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      outline: 'none'
+                    }}
+                  >
+                    <option value="ecosphere">EcoSphere Technologies (SAFE Equity)</option>
+                    <option value="aether">Aether Neuro (SAFE Equity)</option>
+                    <option value="tonin">Tonin Logistics (P2P Commercial Note)</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Startup Metrics KPIs Cards */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1.25rem' }}>
+                <div className="glass-panel" style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                  <span style={{ fontSize: '0.62rem', color: '#737373', textTransform: 'uppercase', fontWeight: '800' }}>Annual Recurring Revenue (ARR)</span>
+                  <strong style={{ fontSize: '1.5rem', color: '#ffffff' }}>
+                    {selectedStartupMetrics === 'ecosphere' && '$1,250,000'}
+                    {selectedStartupMetrics === 'aether' && '$420,000'}
+                    {selectedStartupMetrics === 'tonin' && '$150,000'}
+                  </strong>
+                  <span style={{ fontSize: '0.62rem', color: '#10b981' }}>
+                    {selectedStartupMetrics === 'ecosphere' && '▲ +24% YoY growth'}
+                    {selectedStartupMetrics === 'aether' && '▲ +12% YoY growth'}
+                    {selectedStartupMetrics === 'tonin' && '▲ +8% YoY growth'}
+                  </span>
+                </div>
+
+                <div className="glass-panel" style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                  <span style={{ fontSize: '0.62rem', color: '#737373', textTransform: 'uppercase', fontWeight: '800' }}>EBITDA Margins</span>
+                  <strong style={{ 
+                    fontSize: '1.5rem', 
+                    color: selectedStartupMetrics === 'aether' ? '#f43f5e' : '#10b981'
+                  }}>
+                    {selectedStartupMetrics === 'ecosphere' && '+$180,000'}
+                    {selectedStartupMetrics === 'aether' && '-$85,000'}
+                    {selectedStartupMetrics === 'tonin' && '+$22,000'}
+                  </strong>
+                  <span style={{ fontSize: '0.62rem', color: selectedStartupMetrics === 'aether' ? '#f43f5e' : '#10b981' }}>
+                    {selectedStartupMetrics === 'ecosphere' && '🟢 Net Operating Profitable'}
+                    {selectedStartupMetrics === 'aether' && '🔴 Net cash burner'}
+                    {selectedStartupMetrics === 'tonin' && '🟢 Net Operating Profitable'}
+                  </span>
+                </div>
+
+                <div className="glass-panel" style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                  <span style={{ fontSize: '0.62rem', color: '#737373', textTransform: 'uppercase', fontWeight: '800' }}>Net Monthly Burn Rate</span>
+                  <strong style={{ fontSize: '1.5rem', color: '#ffffff' }}>
+                    {selectedStartupMetrics === 'ecosphere' && '-$35,000'}
+                    {selectedStartupMetrics === 'aether' && '-$48,000'}
+                    {selectedStartupMetrics === 'tonin' && '-$12,000'}
+                  </strong>
+                  <span style={{ fontSize: '0.62rem', color: '#737373' }}>Outflows for ops salaries</span>
+                </div>
+
+                <div className="glass-panel" style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                  <span style={{ fontSize: '0.62rem', color: '#737373', textTransform: 'uppercase', fontWeight: '800' }}>Cash Reserves Runway</span>
+                  <strong style={{ fontSize: '1.5rem', color: '#ffffff' }}>
+                    {selectedStartupMetrics === 'ecosphere' && '18 Months'}
+                    {selectedStartupMetrics === 'aether' && '9 Months'}
+                    {selectedStartupMetrics === 'tonin' && '12 Months'}
+                  </strong>
+                  <span style={{ fontSize: '0.62rem', color: selectedStartupMetrics === 'aether' ? '#d4af37' : '#10b981' }}>
+                    {selectedStartupMetrics === 'aether' ? '⚠️ Dilution hazard - Round suggested' : '🟢 Strong cash health'}
+                  </span>
+                </div>
+              </div>
+
+              {/* SVG Charts Grid */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                {/* SVG ARR Growth Chart */}
+                <div className="glass-panel" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  <h3 style={{ fontSize: '1rem', fontWeight: '800', color: '#ffffff', margin: 0 }}>📊 Annual Recurring Revenue (ARR) Growth</h3>
+                  <div style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.04)', borderRadius: '6px', padding: '1rem' }}>
+                    <svg viewBox="0 0 400 180" style={{ width: '100%', height: '180px' }}>
+                      <line x1="40" y1="20" x2="380" y2="20" stroke="rgba(255,255,255,0.03)" strokeDasharray="3" />
+                      <line x1="40" y1="70" x2="380" y2="70" stroke="rgba(255,255,255,0.03)" strokeDasharray="3" />
+                      <line x1="40" y1="120" x2="380" y2="120" stroke="rgba(255,255,255,0.03)" strokeDasharray="3" />
+                      <line x1="40" y1="150" x2="380" y2="150" stroke="rgba(255,255,255,0.08)" />
+
+                      {/* Expected ARR Plots based on startups */}
+                      {selectedStartupMetrics === 'ecosphere' && (
+                        <path d="M40,150 L100,120 L180,95 L260,70 L380,30 L380,150 Z" fill="rgba(0,242,254,0.05)" stroke="#00f2fe" strokeWidth="2.5" />
+                      )}
+                      {selectedStartupMetrics === 'aether' && (
+                        <path d="M40,150 L100,140 L180,132 L260,125 L380,110 L380,150 Z" fill="rgba(139,92,246,0.05)" stroke="#8b5cf6" strokeWidth="2.5" />
+                      )}
+                      {selectedStartupMetrics === 'tonin' && (
+                        <path d="M40,150 L100,148 L180,142 L260,138 L380,130 L380,150 Z" fill="rgba(16,185,129,0.05)" stroke="#10b981" strokeWidth="2.5" />
+                      )}
+
+                      {/* Axis Labels */}
+                      <text x="40" y="164" fill="#737373" fontSize="8" textAnchor="middle">Q1 25</text>
+                      <text x="180" y="164" fill="#737373" fontSize="8" textAnchor="middle">Q3 25</text>
+                      <text x="380" y="164" fill="#737373" fontSize="8" textAnchor="middle">Q1 26 (Current)</text>
+                    </svg>
+                  </div>
+                </div>
+
+                {/* SVG Cash Reserves Trend Chart */}
+                <div className="glass-panel" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  <h3 style={{ fontSize: '1rem', fontWeight: '800', color: '#ffffff', margin: 0 }}>📊 Cash Balance Runway Forecast</h3>
+                  <div style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.04)', borderRadius: '6px', padding: '1rem' }}>
+                    <svg viewBox="0 0 400 180" style={{ width: '100%', height: '180px' }}>
+                      <line x1="40" y1="20" x2="380" y2="20" stroke="rgba(255,255,255,0.03)" strokeDasharray="3" />
+                      <line x1="40" y1="70" x2="380" y2="70" stroke="rgba(255,255,255,0.03)" strokeDasharray="3" />
+                      <line x1="40" y1="120" x2="380" y2="120" stroke="rgba(255,255,255,0.03)" strokeDasharray="3" />
+                      <line x1="40" y1="150" x2="380" y2="150" stroke="rgba(255,255,255,0.08)" />
+
+                      {/* Cash balance curves */}
+                      {selectedStartupMetrics === 'ecosphere' && (
+                        <path d="M40,30 L120,40 L200,60 L280,75 L380,95" fill="none" stroke="#00f2fe" strokeWidth="2.5" />
+                      )}
+                      {selectedStartupMetrics === 'aether' && (
+                        <path d="M40,90 L120,110 L200,128 L280,140 L380,148" fill="none" stroke="#f43f5e" strokeWidth="2.5" />
+                      )}
+                      {selectedStartupMetrics === 'tonin' && (
+                        <path d="M40,110 L120,115 L200,122 L280,125 L380,128" fill="none" stroke="#10b981" strokeWidth="2.5" />
+                      )}
+
+                      <text x="40" y="164" fill="#737373" fontSize="8" textAnchor="middle">Current</text>
+                      <text x="200" y="164" fill="#737373" fontSize="8" textAnchor="middle">+6 Months</text>
+                      <text x="380" y="164" fill="#737373" fontSize="8" textAnchor="middle">+12 Months (Runway)</text>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          )}
+        </div>
+      )}
+
       </div>
 
       {/* Investment Transaction Wizard Dialog */}

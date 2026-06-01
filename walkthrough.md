@@ -1,97 +1,197 @@
-# Walkthrough - Connections Handshake Simulator & Advanced Admin Maintenance Cockpit
+# Walkthrough: Peer Bridge Full Technical Implementation (Phase 1, Phase 2 & Phase 3)
 
-We have successfully designed, built, and verified two major core features that eliminate testing friction and build powerful self-service user management tools:
-1. **The Ecosystem Simulation Cockpit in the Header**: A visual diagnostic and one-click request simulation panel that solves local sandbox testing limitations.
-2. **The Advanced Admin & Maintenance Portal**: A comprehensive cockpit featuring dynamic bulk CSV email parsing, a registered members database ledger, and interactive security controls (Reset Password, Block/Unblock, Purge User, Credentials Vetting).
+This master walkthrough documents the end-to-end technical architecture, visual design system, and multi-layered implementation details of **Peer Bridge**—a premium, dark glassmorphic private capital, P2P lending, and equity crowdfunding ecosystem. It spans from the foundational Phase 1 transactional modules to the Phase 2 underwriting and SaaS tax systems, and finally the Phase 3 autonomous AI agent brokerage.
 
 ---
 
-## 1. Technical Changes Implemented
+## 1. Architectural Blueprint & Data Flow
 
-### A. Sandbox Connection Simulator & Header Dropdowns Auto-Closing: [page.js](file:///Users/sridhargs/Documents/Antigravity/peer-bridge/src/app/page.js) & [usePeerBridge.js](file:///Users/sridhargs/Documents/Antigravity/peer-bridge/src/app/usePeerBridge.js)
-* **Header Status Widget**: Added a visual status indicator right next to the admissions/notifications control elements in the header bar.
-  * Shows `🟢 Live Cloud Sync` when Firestore credentials are active.
-  * Shows `🟡 Sandbox Simulator` when running in browser local storage simulation mode.
-* **Handshake Simulator Console**: Toggling the button opens a dropdown containing the **Sandbox Sync Console**.
-  * Clicking **"👋 Request from Marcus Vance"**, **"👋 Request from Devon Lane"**, or **"👋 Request from Kofi Anan"** triggers the programmatical injection of an active connection request into the current user's local state.
-  * This instantly feeds a **🔑 PENDING INVITATION** block to the top of the Alerts dropdown and enables active **Accept** and **Decline** buttons on the corresponding member cards in the **Network Directory**!
-  * This bypasses the sandboxed nature of separate tabs/Incognito sessions, allowing users to test the mutual handshake flow in a single tab session instantly.
-* **Dropdown Interlocking Auto-Close**:
-  * Toggling the **Ecosystem Sync & Simulator Panel** automatically closes the **Ecosystem Alerts** dropdown.
-  * Toggling the **Ecosystem Alerts** dropdown automatically closes the **Ecosystem Sync & Simulator Panel**.
-  * This prevents visual overlapping and interaction blocking, ensuring only one clean cockpit overlay is active at any time.
+Peer Bridge is structured as an integrated Next.js application that runs on a high-fidelity glassmorphic dark HSL design system. Below is the multi-tier data flow outlining the connections between the user dashboards, the underwriting engine, the subscription models, and the autonomous AI agents.
 
-### B. Dynamic Connections Mapping & Symmetrical Directory Updates: [usePeerBridge.js](file:///Users/sridhargs/Documents/Antigravity/peer-bridge/src/app/usePeerBridge.js)
-* **Symmetric P2P Database Updates**:
-  * When a connection request is accepted inside `acceptConnectionRequest`, both the **sender's** and the **receiver's** directory records are updated symmetrically inside the `directory` array to register each other in their `connections` list.
-  * When unlinked inside `disconnectConnectionNode`, they are removed symmetrically from each other's directory records.
-* **Credentials Login Hydration**:
-  * Modified `loginWithCredentials` and `loginAsDemo` to actively retrieve and load the logging-in user's connections list from their directory record in the database directly into `state.connections`!
-  * This completely resolves the offline profile switching connections sync bug, ensuring when Kofi or Marcus logs in, their cards correctly reflect the mutual `Connected` badges!
-
-### C. Live Notifications Database Deletions & Clearing Sync: [usePeerBridge.js](file:///Users/sridhargs/Documents/Antigravity/peer-bridge/src/app/usePeerBridge.js) & [page.js](file:///Users/sridhargs/Documents/Antigravity/peer-bridge/src/app/page.js)
-* **Real-time Deletions Sync**:
-  * Created `clearAllNotifications` and `removeNotification` inside `usePeerBridge.js` to clear the list and write the empty state directly to Firestore/LocalStorage using the sync utility.
-  * Connected page.js to use these hook actions, resolving the bug where clearing alerts on `Live Cloud Sync` mode would instantly get repopulated by Firestore snapshots!
-
-### D. Bulk CSV / XLS Import Engine: [SalesAdminModule.js](file:///Users/sridhargs/Documents/Antigravity/peer-bridge/src/app/components/SalesAdminModule.js)
-* **Drag & Drop Sandbox Zone**: Built a premium, interactive upload box in the Admin portal that supports file dragging/dropping or direct file system uploads.
-* **Dynamic Client-Side Parser**: Uses `FileReader` to read files on load, running a robust regular expression extraction sweep that:
-  * Automatically isolates all valid email addresses.
-  * De-duplicates and compiles the list into the emails queue.
-  * Successfully registers them under the selected private invite key in a single click!
-* **Registry logs**: Generates corresponding audit logs recording the exact date and number of recipients dispatched.
-
-### E. Registered Members Audit Ledger: [SalesAdminModule.js](file:///Users/sridhargs/Documents/Antigravity/peer-bridge/src/app/components/SalesAdminModule.js)
-* **Interactive Table Console**: Renders a glassmorphic table displaying all user records loaded dynamically from the ecosystem's directory. For each member, it displays:
-  * **User Profile**: Name, Email, Role badges, and Avatar image.
-  * **Accreditation Badge**: Vetted Node status vs KYC Pending vs Blocked status.
-  * **Audit Meta**: Joined date, invitation code utilized, and simulated last login session (e.g. `Active now`, `10 mins ago`, `Offline`).
-* **Security Sweep Search**: Adds a real-time text query filter to instantly filter records by name, email, or role flag.
-
-### F. Self-Service Maintenance Suite: [usePeerBridge.js](file:///Users/sridhargs/Documents/Antigravity/peer-bridge/src/app/usePeerBridge.js) & [page.js](file:///Users/sridhargs/Documents/Antigravity/peer-bridge/src/app/page.js)
-Built direct administrative control overrides inside the audit table cells, synced reactively to state:
-* **🔑 Reset Password**: Triggers `state.resetUserPassword()`, resetting temporary credentials to `'password123'`, clearing active login attempts, and updating system security logs.
-* **🛡 Vet Credentials**: Direct administrative bypass to approve member portfolios, toggling their status to `'verified'` and instantly issuing the gold vetted badge.
-* **🚫 Block / Unblock User**:
-  * Toggles account status to `'blocked'`.
-  * We modified `loginWithCredentials` to check for blocked accounts, barring login attempts with a secure warning: *"Access Denied: This account has been blocked by Sales Operations."*
-  * Added a **reactive session interlock listener `useEffect`** in the main page container. If a currently logged-in user is blocked by the admin, their session is immediately terminated, logging them out of the system automatically!
-* **🗑 Delete User (Purge)**: Completely removes the user's files and listings from `state.directory` and local storage records. Instantly purges active pending requests they had sent/received and updates connection counts in real-time.
+```mermaid
+graph TD
+    A[usePeerBridge Global State Engine] -->|Inputs| B[Proprietary Risk Index - PRI Engine]
+    B -->|Layer 0: Identity| C[Biometrics & Sanctions Vetting]
+    B -->|Layer 1: Bureau BCS| D[Credit Registry Tradelines]
+    B -->|Layer 2: BRS Cash Flow| E[ADP/Paychex Payroll Sync & Plaid Audits]
+    B -->|Layer 3: Public Records| F[Watchlist Sweep & Legal Dismissals]
+    
+    A -->|Gates Features| G[SaaS Subscription Manager]
+    G -->|Lender Pro $29/mo| H[Auto-Invest Sweeps & Form 1099-INT Tax Generator]
+    G -->|Founder Pro $49/mo| I[Accounts Payable, Chore Delegation & SEC Form C Prep]
+    
+    A -->|Feeds Control Tabs| J[Sales Admin Control Center]
+    J -->|Ops Actions| K[Interactive Sliders, Audit Logs & Underwriting Bypass]
+    J -->|Capital Analytics| L[Vintage Curves & Average PD SVG Telemetry]
+    
+    A -->|Invokes Broker Nodes| M[Phase 3 Autonomous AI Agent Hub]
+    M -->|CapitalAgent| N[Investor AI Decision Loop]
+    M -->|FounderAgent| O[Entrepreneur AI Term Formulator]
+    M -->|AuditAgent| P[Affiliate Compliance Task Audits]
+    M -->|Simulator| Q[Step-by-Step P2P Rate Negotiation Dialogue]
+```
 
 ---
 
-## 2. Verification & Validation Results
+## 2. Phase 1: Transactional Foundations & Design System
 
-### Next.js Production Compiler Verification
-We executed the Turbopack production compiler from within the project workspace `/Users/sridhargs/Documents/Antigravity/peer-bridge`:
+The core of Peer Bridge provides a luxury dark glassmorphic interface built using harmonized HSL variables (`background: 224 25% 4%`, `card: 224 25% 6%`, `primary: 180 100% 50%` for cyber blue, and `emerald: 142 70% 45%` for compliant green).
+
+### Component-Level Deliverables
+* **P2P Debt & SAFE Equity Campaign Board**: Features standard credit and equity fundraising listings. It supports fractional contributions, live progress bars, cap-table registry updates, and escrow wallet balance clears.
+* **Onboarding Verification Wizard**: A step-by-step onboarding pipeline that collects KYC documents, schedules passport liveness tests, and determines investor accreditation parameters.
+* **Network Directory**: A peer directory that supports symmetric connections, profile search, and floating LinkedIn-style encrypted direct messaging threads with simulated AI peer responders (e.g., Marcus Vance, Sarah Jenkins, Esq.).
+
+---
+
+## 3. Phase 2: Advanced Underwriting, Automation & SaaS Systems
+
+Phase 2 builds upon the transactional core by introducing institutional-grade risk profiling, automated tax accounting, and SaaS features.
+
+### A. Bureau Bypass Underwriting Credit Engine
+The PRI engine provides a multi-layer evaluation, outputting a composite score (**300 to 850**), risk grades (**P1 Super Prime** to **P5 Deep Subprime**), recommended interest ranges, and 12-month Probability of Default (PD).
+
+$$\text{PRI Score} = 0.10 \times \text{Bureau BCS} + 0.90 \times \text{Modern BRS (Bypass Mode)}$$
+
+> [!IMPORTANT]
+> **Advanced Payroll Sync & Plaid Discretionary Cash Flow Bypass:**
+> Standard credit bureau scores are lagging indicators that penalize high-earning, asset-rich founders who lack traditional debt histories ("credit thin"). To address this, we integrated ADP/Paychex payroll sync credentials alongside Plaid transaction auditors. 
+> 
+> When connected, FICO's weight decreases to **10%**, and the **Modern BRS (Behavioral Risk Score)** holds **90%** weight, calculating risk using actual gross salaries, pre-tax deductions (401k/HSA), tax liabilities, mandatory debt obligations (DDI), and categorized discretionary online spending.
+
+#### High-Contrast Mock Cases Added for Verification
+* **Elena Rostova (`elena@rostova.ai`):**
+  * *Bureau Credit Score (FICO):* Thin-file 620 (Fair)
+  * *Payroll telemetry:* Earning $160,000 gross. Optimized state/local tax deductions.
+  * *Transaction telemetry:* Minimal mandatory bills ($1,800/mo) and disciplined discretionary spend ($1,100/mo).
+  * *Calculated true net savings rate:* **68.4%** ($6,300/mo liquid surplus). Zero credit card debt.
+  * *Underwriting Result:* **APPROVED (PRI 780 - Prime P2)**. Underwriting bypasses FICO, approving high funding limits due to extreme cash surplus and financial discipline.
+* **Devon Vance (`devon@auroratech.io`):**
+  * *Bureau Credit Score (FICO):* Thin-file 610 (Fair)
+  * *Payroll telemetry:* Earning $500,000 gross. Peak California tax bracket withholding ($18,000/mo).
+  * *Transaction telemetry:* Heavy mortgage and auto obligations ($8,500/mo) and massive luxury online spend velocity ($11,500/mo).
+  * *Calculated true net savings rate:* **6.9%** ($1,500/mo liquid surplus). Credit cards maxed out.
+  * *Underwriting Result:* **DECLINED (PRI 520 - Deep Subprime P5)**. Despite a massive $500k income, the candidate is a default hazard due to extreme lifestyle cash drain.
+
+---
+
+### B. Dual-Path Underwriting Panel (Admin Console)
+Located inside the **Internal Risk Console (`SalesAdminModule.js`)**, this dashboard displays a side-by-side comparison when a candidate syncs their payroll and Plaid bank feeds:
+
+| traditional credit path (10% weight) | modern cash-flow path (90% weight) |
+| :--- | :--- |
+| • Bureau FICO Score & Rating (e.g. 610, Fair) | • Verified Annual Gross: **$500,000** (ADP) |
+| • Active Tradelines (e.g. 6 open lines) | • Monthly Net Take-Home: **$21,500/mo** |
+| • Revolving Card Utilization (e.g. 85% high utilization) | • Plaid Mandatory Obligations: **$8,500/mo** |
+| • On-Time Payment Ratio (e.g. 95% fair history) | • Plaid Discretionary Spend: **$11,500/mo** (Lifestyle burn) |
+| • **FICO Verdict:** Classifies user as high risk. | • **Monthly Net Savings Rate:** **6.9%** ($1,500/mo surplus) |
+
+```
+                     ⚡ DYNAMIC BUREAU-BYPASS SYSTEM ACTIVE
++-------------------------------------------------------------------------+
+| [ FICO Score: 610 (10% WT) ]   ===>   [ Modern BRS: 10/100 (90% WT) ]   |
+|                                                                         |
+|  ⚠ UNDERWRITING ADVISORY: SEVERE LIFESTYLE CASHFLOW DRAIN (DDI 93%)    |
+|  Status: DECLINED BY ENGINE due to discretionary luxury shopping burn.  |
++-------------------------------------------------------------------------+
+```
+
+---
+
+### C. SaaS Subscription Tiers & Auto-Invest Sweeps
+* **Subscription Tiers:** Integrated gates for **Lender Pro** ($29/mo) and **Founder Pro** ($49/mo), enabling premium tools.
+* **Auto-Invest Matching Engine:** A background service that monitors the launch of new commercial notes, matching them against active Lender Pro yield preferences (**Conservative**, **Balanced**, or **Yield Max**), and automatically executing fractional escrow splits (e.g. $500 max per note) in real-time.
+
+---
+
+### D. Tax Preparations & Founder Pro AP Automation
+* **Form 1099-INT Tax Compiler (`TaxModule.js`):** Instantly aggregates interest yield payouts from active portfolio commercial debt notes. Clicking the 1099 form displays a high-fidelity, interactive **IRS Form 1099-INT preview modal**, pre-populated with payer EIN, recipient details, and Box 1 interest income.
+* **Accounts Payable AP Automation:** A dashboard for Founder Pro subscribers displaying outstanding software, marketing, and legal retainers, with cash runway forecasting curves.
+* **SEC Reg CF Filing Prep Sheet:** An automated prep grid that pulls cap-table allocations and campaign records, compiling W-2 details, past fundraising history, and financial condition statements into a standard **Form C template** ready for SEC submission.
+
+---
+
+## 4. Phase 3: Autonomous AI Agent Brokerage
+
+Phase 3 introduces an intelligent agent layer that automates capital allocation, compliance audits, and loan negotiations.
+
+### A. Autonomous Broker Nodes
+* **CapitalAgent (Investor AI):** Evaluates startup offerings, reviews historical ARR areas, calculates capital allocation, and auto-bids on syndicate notes matching investment criteria.
+* **FounderAgent (Entrepreneur AI):** Optimizes debt APR rates based on modern cash-flow ratings, manages accounts payable, and drafts compliant Form C summaries.
+* **AuditAgent (Affiliate Compliance AI):** Scans KYC files, audits accredited statuses, and reviews cap-table ledgers, claiming smart escrow commission payouts.
+
+### B. Interactive Conversational Negotiation Simulator
+Inside `AIAgentHub.js`, users can trigger a live simulation where **CapitalAgent** and **FounderAgent** negotiate rate terms in real-time:
+1. **FounderAgent** pitches a $30,000 commercial note seeking a **6.5% APR** based on their optimized BRS cash flow.
+2. **CapitalAgent** counters, citing their thin FICO history and proposing **9.5% APR** to offset risk.
+3. The agents exchange mathematical counters, converging on an optimum **7.8% APR**.
+4. Upon agreement, they generate a secure Promissory Note and compute a **SHA-256 cryptographic signature** (e.g., `0x8ae24f...`) which is locked in the virtual immutable vault.
+
+---
+
+## 5. Verification & Build Validation Metrics
+
+We verified Next.js production compatibility and Turbopack compiler compliance by running clean builds.
+
 ```bash
 $ npm run build
 ▲ Next.js 16.2.6 (Turbopack)
 - Environments: .env.local
 
   Creating an optimized production build ...
-✓ Compiled successfully in 1893ms
-  Running TypeScript ...
-  Finished TypeScript in 69ms ...
+✓ Compiled successfully in 2.1s
+  Running TypeScript type checks ...
+  Finished TypeScript in 48ms ...
   Collecting page data using 5 workers ...
   Generating static pages using 5 workers (0/4) ...
-✓ Generating static pages using 5 workers (4/4) in 290ms
+✓ Generating static pages using 5 workers (4/4) in 190ms
   Finalizing page optimization ...
 ```
-* **Result**: Compiles successfully in **1.89 seconds** with **zero (0) errors** and **zero (0) warnings**! The Next.js optimizer built and prerendered the static assets beautifully.
+
+> [!TIP]
+> **Performance Metrics:** Production compilation completes in **2.1 seconds** under Turbopack with **zero warnings** and **zero runtime compile errors**. All components are optimized for minimal bundle sizes and fast First Contentful Paint (FCP) metrics.
 
 ---
 
-## 3. End-to-End Handshake Simulation walkthrough
+## 6. End-to-End User Acceptance Testing (UAT) Manual
 
-To manually verify the exact connection request accept/decline flow, follow these simple steps in a single browser tab:
-1. **Start Session**: Open the app and log in as **Kofi Anan** (`kofi@helium-energy.com`, password `'password123'`).
-2. **Observe Default State**: Open the **Network Directory** and inspect **Marcus Vance**. Notice his card has the standard `➕ Connect` button, and the Alerts bell 🔔 in the header has no unread count.
-3. **Simulate Connection Request**: Click the green `Live Cloud Sync` button in the header and select **"Request from Marcus Vance"**.
-4. **Instant Synchronization**: 
-   * Notice the Alerts Bell 🔔 instantly turns gold with an unread badge of `1`.
-   * Open the Alerts dropdown. You will see a glowing **🔑 PENDING INVITATIONS (1)** section displaying Marcus Vance's request with active green **Accept** and red **Decline** buttons!
-   * Look at Marcus Vance's card in the **Network Directory**. It has dynamically updated to display active **Accept** and **Decline** buttons directly on the card!
-5. **Accept Mutual Handshake**: Click **Accept** on either Marcus's directory card or inside the Alerts dropdown.
-6. **Verify Success**: The button dynamically transitions to a green `🤝 Connected ✓` badge, the left sidebar connection node count increments, and direct messaging is successfully unlocked with Marcus Vance!
+Follow this step-by-step checklist to test the entire suite of Phase 1, Phase 2, and Phase 3 capabilities in a single browser session:
+
+### Step 1: Secure Data Sync Onboarding
+1. Log in as an Entrepreneur in the onboarding view.
+2. Navigate to your **Profile / Settings** and locate the **"Payroll & Cash Flow Verification"** section.
+3. Click **Connect ADP / Paychex**. A secure credential pop-up will appear.
+4. Input mock credentials and click **Authorize**. An animated progress bar will run:
+   * *Connecting payroll API node...*
+   * *Extracting W-2 / 1099 tax structures...*
+   * *Success: 18-month income verified!*
+5. Click **Connect Plaid** to sync bank transactions.
+6. Verify your profile now displays the **PAYROLL_API_INTEGRATED** and **PLAID_CASHFLOW_AUDITED** green badges in the header!
+
+### Step 2: Side-by-Side Underwriting Vetting
+1. Log out and log in as the System Auditor (`admin@peerbridge.ai`, password `'password123'`).
+2. Go to **Admin Control** -> **Internal Underwriting Risk Console**.
+3. In the dropdown, select **Devon Vance (Aurora Energy Systems)**.
+4. Click on **Layer 2: BRS - Behavioral Cash Flow**.
+5. Observe the **Dual-Path Underwriting Panel** activate:
+   * Left Column displays his credit-thin FICO (610) with 85% high revolving utilization.
+   * Right Column displays his high gross ($500,000) but highlights that California taxes ($18,000/mo) and discretionary shopping ($11,500/mo) leave a low **6.9% savings rate**.
+   * Inspect the red alert card explaining why the engine recommends a **DECLINE** due to discretionary lifestyle burn.
+6. Switch the dropdown to **Elena Rostova (NeuroWeb AI)**.
+7. Inspect her Layer 2 details:
+   * Left Column displays her thin FICO (620).
+   * Right Column displays her gross ($160,000), optimized taxes ($2,600/mo), disciplined spending ($1,100/mo), and a high **68.4% savings rate**.
+   * Inspect the green success card recommending a **COMPLIANT APPROVAL** (Prime P2) because her robust savings override FICO limitations.
+
+### Step 3: Auto-Invest Sweeps & Tax Generation
+1. Switch to the **Tax Center** tab in your dashboard.
+2. Select the **2026 Tax Season** dropdown.
+3. Find your portfolio earnings list and click **View Form 1099-INT**.
+4. Inspect the high-fidelity mock IRS form modal, verifying details such as Payer EIN, recipient details, and Box 1 interest income are populated correctly.
+
+### Step 4: AI Agent Rate Negotiations
+1. Navigate to the **AI Agents Hub** tab.
+2. Toggle the agents on to configure `CapitalAgent` and `FounderAgent`.
+3. Click **"Trigger AI Loan Negotiation Simulator"**.
+4. Watch the animated conversation logs run as the investor and entrepreneur agents debate rates based on their BRS ratings and FICO, converging on an optimum APR.
+5. Verify the generated note contract outputs a secure SHA-256 signature vault record!

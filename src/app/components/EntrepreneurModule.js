@@ -6,6 +6,12 @@ export default function EntrepreneurModule({ state }) {
   const { campaigns, createCampaign, user, entrepreneurProfile, updateEntrepreneurProfile } = state;
   const myCampaigns = campaigns.filter(c => c.founder === user.name);
 
+  // Tab State
+  const [entrepreneurTab, setEntrepreneurTab] = useState('round_launcher'); // round_launcher, founder_pro
+
+  // SaaS Gate & Upgrades
+  const isFounderPro = state.customer?.subscription_tier === 'founder_pro';
+
   // Campaign Form States
   const [showLauncher, setShowLauncher] = useState(false);
   const [companyName, setCompanyName] = useState('');
@@ -41,6 +47,21 @@ export default function EntrepreneurModule({ state }) {
   const [newMemberRole, setNewMemberRole] = useState('');
   const [newMemberLinkedin, setNewMemberLinkedin] = useState('');
   const [newMemberBio, setNewMemberBio] = useState('');
+
+  // Founder Pro: AP Bill Pay States
+  const [bills, setBills] = useState([
+    { id: 'bill-1', name: 'AWS Cloud Services Hosting', amount: 45.00, dueDate: '2026-06-15', autoPay: true, status: 'unpaid' },
+    { id: 'bill-2', name: 'Delaware Registered Agent Legal Retainer', amount: 250.00, dueDate: '2026-06-20', autoPay: false, status: 'unpaid' },
+    { id: 'bill-3', name: 'WeWork Co-Working Desk Space', amount: 80.00, dueDate: '2026-06-25', autoPay: true, status: 'unpaid' }
+  ]);
+
+  // Founder Pro: Chore Delegation States
+  const [chores, setChores] = useState([
+    { id: 'chore-1', title: 'SEC Form C Financial Condition Vetting', incentive: 150.00, status: 'open', claimedBy: null },
+    { id: 'chore-2', title: 'Q2 Carbon Capture Biomass Yield Audit', incentive: 200.00, status: 'claimed', claimedBy: 'Dr. Evelyn Chen' }
+  ]);
+  const [newChoreTitle, setNewChoreTitle] = useState('');
+  const [newChoreIncentive, setNewChoreIncentive] = useState('100');
 
   // Keep local states synced if context changes
   useEffect(() => {
@@ -82,7 +103,6 @@ export default function EntrepreneurModule({ state }) {
     );
 
     if (res.success) {
-      // Sync the profile too
       updateEntrepreneurProfile({
         company_name: companyName,
         business_stage: 'revenue',
@@ -149,11 +169,56 @@ export default function EntrepreneurModule({ state }) {
     updateEntrepreneurProfile({ team: updatedTeam });
   };
 
-  // Helper to render cap table pie chart
+  // SaaS Upgrades
+  const handleUpgradeToFounderPro = () => {
+    state.updateUserProfile({ subscription_tier: 'founder_pro' });
+    setSuccess('Welcome to Founder Pro! High-margin business automations unlocked.');
+    setTimeout(() => setSuccess(''), 4000);
+  };
+
+  // Founder Pro: Settle accounts payable bills
+  const handlePayBill = (billId, amount, billName) => {
+    if (state.walletBalance < amount) {
+      setError(`Insufficient balance to pay bill. Need $${amount}.`);
+      setTimeout(() => setError(''), 4000);
+      return;
+    }
+    
+    // Deduct from wallet
+    state.withdrawFunds(amount);
+    setBills(bills.map(b => b.id === billId ? { ...b, status: 'paid' } : b));
+    
+    state.addNotification('System', `Bill Pay Success: Settled invoice for ${billName} of $${amount.toFixed(2)}.`);
+    setSuccess(`Successfully settled ${billName} invoice of $${amount.toFixed(2)}.`);
+    setTimeout(() => setSuccess(''), 4000);
+  };
+
+  const handleToggleAutoPay = (billId) => {
+    setBills(bills.map(b => b.id === billId ? { ...b, autoPay: !b.autoPay } : b));
+  };
+
+  // Founder Pro: Create digital chores
+  const handleCreateChore = (e) => {
+    e.preventDefault();
+    if (!newChoreTitle.trim()) return;
+    
+    const nextChore = {
+      id: `chore-${Date.now()}`,
+      title: newChoreTitle,
+      incentive: parseFloat(newChoreIncentive || 100),
+      status: 'open',
+      claimedBy: null
+    };
+
+    setChores([nextChore, ...chores]);
+    setNewChoreTitle('');
+    setSuccess(`Chore listed: '${newChoreTitle}' posted for affiliate compliance vetting matching!`);
+    setTimeout(() => setSuccess(''), 4000);
+  };
+
   const renderCapTableSVG = (capTable) => {
     let accumulatedPercent = 0;
-    const colors = ['#ffffff', '#e5e5e5', '#a3a3a3', '#525252', '#262626'];
-    
+    const colors = ['#ffffff', '#00f2fe', '#8b5cf6', '#d4af37', '#737373'];
     return (
       <svg viewBox="0 0 100 100" style={styles.svg}>
         <circle cx="50" cy="50" r="40" fill="transparent" stroke="rgba(255, 255, 255, 0.03)" strokeWidth="15" />
@@ -188,18 +253,37 @@ export default function EntrepreneurModule({ state }) {
       {/* Header Row */}
       <div style={styles.headerRow}>
         <div>
-          <h2 style={styles.title}>Ecosystem Business Portal</h2>
-          <p style={styles.sub}>Draft business analytical plans, launch private investment offerings, and track equity distributions.</p>
+          <h2 style={styles.title}>🏢 Founder's Growth Center & Operations Hub</h2>
+          <p style={styles.sub}>Draft business plans, manage team credentials, monitor equity distributions, and automate accounts payable.</p>
         </div>
-        {(myCampaigns.length > 0 || showLauncher) && (
-          <button
-            onClick={() => setShowLauncher(!showLauncher)}
-            className="btn-primary"
-            style={styles.launchBtn}
+      </div>
+
+      {/* Segmented sub-tab selectors */}
+      <div style={styles.segmentedTabWrapper}>
+        <div style={styles.tabContainer}>
+          <button 
+            onClick={() => { setEntrepreneurTab('round_launcher'); setShowLauncher(false); }}
+            style={{ 
+              ...styles.tabBtn, 
+              color: entrepreneurTab === 'round_launcher' ? '#ffffff' : '#737373',
+              background: entrepreneurTab === 'round_launcher' ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
+              borderBottom: entrepreneurTab === 'round_launcher' ? '2px solid #00f2fe' : 'none'
+            }}
           >
-            {showLauncher ? 'View Company Portals' : '🚀 Launch Capital Round'}
+            📈 Round Launcher & Team
           </button>
-        )}
+          <button 
+            onClick={() => setEntrepreneurTab('founder_pro')}
+            style={{ 
+              ...styles.tabBtn, 
+              color: entrepreneurTab === 'founder_pro' ? '#ffffff' : '#737373',
+              background: entrepreneurTab === 'founder_pro' ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
+              borderBottom: entrepreneurTab === 'founder_pro' ? '2px solid #a78bfa' : 'none'
+            }}
+          >
+            💼 Founder Pro Automations
+          </button>
+        </div>
       </div>
 
       {success && (
@@ -208,615 +292,554 @@ export default function EntrepreneurModule({ state }) {
         </div>
       )}
 
-      {showLauncher ? (
-        /* Form Campaign Builder */
-        <div className="glass-panel" style={styles.cardLauncher}>
-          <h3 style={styles.cardTitle}>🚀 Draft Form C Crowdfunding Round</h3>
-          <p style={styles.cardDesc}>
-            Prepare your offering metadata. Peer Bridge will automatically calculate your cap table distribution, equity dilution factors, and publish your card to accredited investors.
-          </p>
-
-          <form onSubmit={handleLaunchRound} style={styles.formGrid}>
-            <div style={styles.formCol}>
-              <div style={styles.inputGroup}>
-                <label style={styles.label}>Ecosystem Offering Type</label>
-                <select
-                  value={offeringType}
-                  onChange={(e) => setOfferingType(e.target.value)}
-                  style={styles.select}
-                >
-                  <option value="equity">📈 Series Seed SAFE (Equity)</option>
-                  <option value="debt">🏛 P2P Commercial Credit Note (Debt)</option>
-                </select>
-              </div>
-
-              <div style={styles.inputGroup}>
-                <label style={styles.label}>Company Legal Name</label>
-                <input
-                  type="text"
-                  placeholder="e.g. EcoSphere Technologies"
-                  value={companyName}
-                  onChange={(e) => setCompanyName(e.target.value)}
-                  style={styles.input}
-                  required
-                />
-              </div>
-
-              <div style={styles.inputGroup}>
-                <label style={styles.label}>Elevator Pitch Tagline</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Carbon negative liquid gas capture for city transit fleets."
-                  value={tagline}
-                  onChange={(e) => setTagline(e.target.value)}
-                  style={styles.input}
-                  required
-                />
-              </div>
-
-              <div style={styles.inputGroup}>
-                <label style={styles.label}>The Core Problem</label>
-                <textarea
-                  placeholder="What market inefficiency or technological deficit are you resolving?"
-                  value={problem}
-                  onChange={(e) => setProblem(e.target.value)}
-                  style={styles.textarea}
-                  rows="3"
-                  required
-                />
-              </div>
-
-              <div style={styles.inputGroup}>
-                <label style={styles.label}>Your Technical Solution</label>
-                <textarea
-                  placeholder="Detail your proprietary technology, intellectual property, or business process."
-                  value={solution}
-                  onChange={(e) => setSolution(e.target.value)}
-                  style={styles.textarea}
-                  rows="3"
-                  required
-                />
-              </div>
-            </div>
-
-            <div style={styles.formCol}>
-              {offeringType === 'equity' ? (
-                <>
-                  <div style={styles.inputGroup}>
-                    <label style={styles.label}>Target Capital Raised ($)</label>
-                    <input
-                      type="number"
-                      value={target}
-                      onChange={(e) => setTarget(e.target.value)}
-                      style={styles.input}
-                      required
-                    />
-                  </div>
-
-                  <div style={styles.inputGroup}>
-                    <label style={styles.label}>Pre-Money Valuation ($)</label>
-                    <input
-                      type="number"
-                      value={valuation}
-                      onChange={(e) => setValuation(e.target.value)}
-                      style={styles.input}
-                      required
-                    />
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div style={styles.inputGroup}>
-                    <label style={styles.label}>Target Principal Amount ($)</label>
-                    <input
-                      type="number"
-                      value={target}
-                      onChange={(e) => setTarget(e.target.value)}
-                      style={styles.input}
-                      required
-                    />
-                  </div>
-
-                  <div style={styles.inputGroup2Col}>
-                    <div style={styles.inputGroup}>
-                      <label style={styles.label}>Proposed Interest Rate (%)</label>
-                      <input
-                        type="number"
-                        step="0.1"
-                        value={interestRate}
-                        onChange={(e) => setInterestRate(e.target.value)}
-                        style={styles.input}
-                        required
-                      />
-                    </div>
-                    <div style={styles.inputGroup}>
-                      <label style={styles.label}>Note Term (Months)</label>
-                      <select
-                        value={termMonths}
-                        onChange={(e) => setTermMonths(e.target.value)}
-                        style={styles.select}
-                      >
-                        <option value="3">3 Months</option>
-                        <option value="6">6 Months</option>
-                        <option value="12">12 Months</option>
-                      </select>
-                    </div>
-                  </div>
-                </>
-              )}
-
-              {offeringType === 'equity' ? (
-                <div style={styles.inputGroup2Col}>
-                  <div style={styles.inputGroup}>
-                    <label style={styles.label}>Share Price ($)</label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      value={sharePrice}
-                      onChange={(e) => setSharePrice(e.target.value)}
-                      style={styles.input}
-                      required
-                    />
-                  </div>
-                  <div style={styles.inputGroup}>
-                    <label style={styles.label}>Min Investment ($)</label>
-                    <input
-                      type="number"
-                      value={minInvest}
-                      onChange={(e) => setMinInvest(e.target.value)}
-                      style={styles.input}
-                      required
-                    />
-                  </div>
-                </div>
-              ) : (
-                <div style={styles.inputGroup}>
-                  <label style={styles.label}>Minimum Note Slice ($)</label>
-                  <input
-                    type="number"
-                    value={minInvest}
-                    onChange={(e) => setMinInvest(e.target.value)}
-                    style={styles.input}
-                    required
-                  />
-                </div>
-              )}
-
-              <div style={styles.inputGroup}>
-                <label style={styles.label}>Market Segment Sector</label>
-                <select
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  style={styles.select}
-                >
-                  <option value="CleanTech">Clean Energy & Environment</option>
-                  <option value="MedTech">Biomedical & Neural Systems</option>
-                  <option value="SaaS">SaaS & Enterprise Automation</option>
-                  <option value="Fintech">Financial Infrastructure</option>
-                  <option value="DeepTech">Advanced Robotics & Quantum Computing</option>
-                  <option value="Logistics">Logistics & Supply Chain</option>
-                </select>
-              </div>
-
-              <div style={styles.inputGroup}>
-                <label style={styles.label}>Company Profile Detailed Pitch</label>
-                <textarea
-                  placeholder="Provide an in-depth breakdown of your product, team achievements, and future timelines..."
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  style={styles.textarea}
-                  rows="3"
-                  required
-                />
-              </div>
-            </div>
-
-            <div style={{ gridColumn: 'span 2', display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-              {error && <span style={styles.errorText}>{error}</span>}
-              <button
-                type="button"
-                onClick={() => setShowLauncher(false)}
-                className="btn-secondary"
-                style={{ flex: 1 }}
-              >
-                Cancel Setup
-              </button>
-              <button type="submit" className="btn-primary" style={{ flex: 2 }}>
-                Confirm Form C & Launch Offering
-              </button>
-            </div>
-          </form>
+      {error && (
+        <div style={{ ...styles.successToast, background: 'rgba(244,63,94,0.08)', border: '1px solid rgba(244,63,94,0.25)', color: '#f43f5e' }}>
+          ⚠️ {error}
         </div>
-      ) : (
-        /* Double Column Grid: Left is Company Campaigns + Cap Tables, Right is Business Profile & Team */
-        <div style={styles.dashboardGrid}>
-          {/* Left Column: Campaigns and Cap Table */}
-          <div style={styles.leftCol}>
-            {myCampaigns.length === 0 ? (
-              <div className="glass-panel" style={styles.emptyCard}>
-                <h3>No Registered Campaigns</h3>
-                <p>You have not launched any Reg CF capital rounds or P2P commercial note lending requests yet.</p>
-                <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '1.25rem', flexWrap: 'wrap' }}>
-                  <button
-                    onClick={() => {
-                      setOfferingType('equity');
-                      setShowLauncher(true);
-                    }}
-                    className="btn-primary"
-                    style={{
-                      width: '280px',
-                      height: '45px',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '0.5rem'
-                    }}
-                  >
-                    🚀 Launch Capital Round
+      )}
+
+      {/* Tab 1: Round Launcher and Team Hub (Original module flow) */}
+      {entrepreneurTab === 'round_launcher' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+          
+          {/* Symmetrical Launch button row */}
+          {myCampaigns.length === 0 && !showLauncher && (
+            <div style={styles.launchButtonsRow}>
+              <button
+                onClick={() => { setOfferingType('equity'); setShowLauncher(true); }}
+                className="btn-primary"
+                style={styles.launcherBtnAction}
+              >
+                🚀 Launch Capital Round
+              </button>
+              <button
+                onClick={() => { setOfferingType('debt'); setShowLauncher(true); }}
+                className="btn-secondary"
+                style={styles.launcherBtnAction}
+              >
+                🏛️ Launch Lending Request
+              </button>
+            </div>
+          )}
+
+          {/* Launcher Panel Wizard (Comp #3) */}
+          {showLauncher && (
+            <div className="glass-panel" style={styles.launcherCard}>
+              <h3 style={styles.launcherTitle}>Launch a Private Capital Offering Round</h3>
+              <p style={styles.launcherDesc}>
+                Configure seed equity SAFEs or secured peer-to-peer debt notes mapped instantly to directory syndicates.
+              </p>
+
+              <form onSubmit={handleLaunchRound} style={styles.formGrid}>
+                {/* Offering Type Selector Pills */}
+                <div style={styles.fullWidth}>
+                  <label style={styles.label}>Offering Security Type</label>
+                  <div style={styles.pillsRow}>
+                    <button
+                      type="button"
+                      onClick={() => setOfferingType('equity')}
+                      style={{
+                        ...styles.pillBtn,
+                        background: offeringType === 'equity' ? 'rgba(0, 242, 254, 0.1)' : 'rgba(255, 255, 255, 0.02)',
+                        borderColor: offeringType === 'equity' ? '#00f2fe' : 'rgba(255, 255, 255, 0.08)',
+                        color: offeringType === 'equity' ? '#00f2fe' : '#a3a3a3'
+                      }}
+                    >
+                      📈 Series Seed SAFE (Equity)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setOfferingType('debt')}
+                      style={{
+                        ...styles.pillBtn,
+                        background: offeringType === 'debt' ? 'rgba(139, 92, 246, 0.1)' : 'rgba(255, 255, 255, 0.02)',
+                        borderColor: offeringType === 'debt' ? '#a78bfa' : 'rgba(255, 255, 255, 0.08)',
+                        color: offeringType === 'debt' ? '#a78bfa' : '#a3a3a3'
+                      }}
+                    >
+                      🏛️ P2P Commercial Note (Debt)
+                    </button>
+                  </div>
+                </div>
+
+                <div style={styles.inputGroup}>
+                  <label style={styles.label}>Company Brand Name</label>
+                  <input type="text" placeholder="e.g. Aether Dynamics" value={companyName} onChange={e => setCompanyName(e.target.value)} style={styles.input} required />
+                </div>
+
+                <div style={styles.inputGroup}>
+                  <label style={styles.label}>Campaign Pitch Tagline</label>
+                  <input type="text" placeholder="Cold-chain temperature fleet expansion..." value={tagline} onChange={e => setTagline(e.target.value)} style={styles.input} required />
+                </div>
+
+                <div style={styles.inputGroup}>
+                  <label style={styles.label}>Target Funding Principal ($)</label>
+                  <input type="number" value={target} onChange={e => setTarget(e.target.value)} style={styles.input} required />
+                </div>
+
+                <div style={styles.inputGroup}>
+                  <label style={styles.label}>Ecosystem Category Segment</label>
+                  <select value={category} onChange={e => setCategory(e.target.value)} style={styles.select}>
+                    <option value="CleanTech">CleanTech</option>
+                    <option value="MedTech">MedTech</option>
+                    <option value="Fintech">Fintech</option>
+                    <option value="Logistics">Logistics</option>
+                    <option value="AI/ML">AI/ML</option>
+                  </select>
+                </div>
+
+                {offeringType === 'equity' ? (
+                  <>
+                    <div style={styles.inputGroup}>
+                      <label style={styles.label}>Valuation Cap ($)</label>
+                      <input type="number" value={valuation} onChange={e => setValuation(e.target.value)} style={styles.input} required />
+                    </div>
+                    <div style={styles.inputGroup}>
+                      <label style={styles.label}>Share Price Placement ($)</label>
+                      <input type="number" step="0.01" value={sharePrice} onChange={e => setSharePrice(e.target.value)} style={styles.input} required />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div style={styles.inputGroup}>
+                      <label style={styles.label}>Annual Interest Gross Rate (%)</label>
+                      <input type="number" step="0.1" value={interestRate} onChange={e => setInterestRate(e.target.value)} style={styles.input} required />
+                    </div>
+                    <div style={styles.inputGroup}>
+                      <label style={styles.label}>Maturity Tenor (Months)</label>
+                      <input type="number" value={termMonths} onChange={e => setTermMonths(e.target.value)} style={styles.input} required />
+                    </div>
+                  </>
+                )}
+
+                <div style={styles.inputGroup}>
+                  <label style={styles.label}>Minimum Investment Threshold ($)</label>
+                  <input type="number" value={minInvest} onChange={e => setMinInvest(e.target.value)} style={styles.input} required />
+                </div>
+
+                <div style={styles.fullWidth}>
+                  <label style={styles.label}>Company Summary & Problem Statement</label>
+                  <textarea placeholder="Outline start-up operations..." value={description} onChange={e => setDescription(e.target.value)} style={styles.textarea} rows="2" required />
+                </div>
+
+                <div style={styles.fullWidth}>
+                  <label style={styles.label}>Proposed Technical Solution</label>
+                  <textarea placeholder="Detail carbon photo-bioreactors cell specifications..." value={solution} onChange={e => setSolution(e.target.value)} style={styles.textarea} rows="2" required />
+                </div>
+
+                <div style={styles.fullWidth}>
+                  <label style={styles.label}>Target Competencies / Risks</label>
+                  <textarea placeholder="Detail key operational challenges..." value={problem} onChange={e => setProblem(e.target.value)} style={styles.textarea} rows="2" required />
+                </div>
+
+                {error && <div style={{ ...styles.errorText, gridColumn: 'span 2' }}>{error}</div>}
+
+                <div style={{ ...styles.fullWidth, display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
+                  <button type="submit" className="btn-primary" style={{ padding: '0.5rem 1.25rem', fontSize: '0.82rem' }}>
+                    Publish Security Offering
                   </button>
-                  <button
-                    onClick={() => {
-                      setOfferingType('debt');
-                      setShowLauncher(true);
-                    }}
-                    className="btn-secondary btn-hover-effect"
-                    style={{ 
-                      width: '280px',
-                      height: '45px',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '0.5rem',
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      border: '1px solid rgba(255, 255, 255, 0.1)',
-                      color: '#ffffff',
-                      borderRadius: '6px',
-                      fontSize: '0.9rem',
-                      fontWeight: '600',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s ease'
-                    }}
-                  >
-                    🏛️ Launch Lending Request
+                  <button type="button" onClick={() => setShowLauncher(false)} className="btn-secondary" style={{ padding: '0.5rem 1.25rem', fontSize: '0.82rem' }}>
+                    Cancel
                   </button>
                 </div>
-              </div>
-            ) : (
-              myCampaigns.map((camp) => {
-                const pct = Math.min(100, Math.round((camp.raised / camp.target) * 100));
-                const sharesIssued = Math.floor(camp.valuation / camp.sharePrice);
-                const colors = ['#ffffff', '#e5e5e5', '#a3a3a3', '#525252', '#262626'];
-                
-                return (
+              </form>
+            </div>
+          )}
+
+          {/* Double Column Grid: Left is Company Campaigns + Cap Tables, Right is Business Profile & Team */}
+          <div style={styles.doubleGrid}>
+            
+            {/* Left Column: Campaigns & Cap Table */}
+            <div style={styles.leftCol}>
+              {myCampaigns.length === 0 ? (
+                <div className="glass-panel" style={styles.emptyBox}>
+                  <span>📭 No active capital rounds launched yet. Start a campaign using the launcher buttons above.</span>
+                </div>
+              ) : (
+                myCampaigns.map((camp) => (
                   <div key={camp.id} className="glass-panel" style={styles.campaignCard}>
-                    <div style={styles.campBadgeRow}>
-                      <span className="badge badge-verified">✓ {camp.offering_type === 'debt' ? 'P2P note Active' : 'Reg CF Active'}</span>
-                      <span style={{
-                        ...styles.campSector,
-                        background: camp.offering_type === 'debt' ? 'rgba(59, 130, 246, 0.1)' : 'rgba(255, 255, 255, 0.05)',
-                        color: camp.offering_type === 'debt' ? '#3b82f6' : '#a3a3a3'
-                      }}>{camp.offering_type === 'debt' ? '🏛 Debt placement' : camp.category}</span>
+                    <div style={styles.campHeader}>
+                      <div>
+                        <h3 style={styles.campTitle}>{camp.companyName}</h3>
+                        <span style={styles.campTag}>{camp.tagline}</span>
+                      </div>
+                      <span className="badge badge-primary">{camp.status} Round</span>
                     </div>
 
-                    <h2 style={styles.companyTitle}>{camp.companyName}</h2>
-                    <p style={styles.campTagline}>{camp.tagline}</p>
-                    
-                    {/* Metrics Dashboard */}
-                    <div style={styles.statsGrid}>
-                      <div style={styles.statBox}>
-                        <span style={styles.statLabel}>Funding Raised</span>
-                        <span style={styles.statVal}>${camp.raised.toLocaleString()}</span>
+                    <div style={styles.specsLine}>
+                      <div>
+                        <span style={styles.specLabel}>Category:</span>
+                        <strong style={styles.specVal}>{camp.category}</strong>
                       </div>
-                      <div style={styles.statBox}>
-                        <span style={styles.statLabel}>{camp.offering_type === 'debt' ? 'Target Note Goal' : 'Target Round Goal'}</span>
-                        <span style={styles.statVal}>${camp.target.toLocaleString()}</span>
+                      <div>
+                        <span style={styles.specLabel}>Raised:</span>
+                        <strong style={{ ...styles.specVal, color: '#00f2fe' }}>${camp.raised.toLocaleString()} / ${camp.target.toLocaleString()}</strong>
                       </div>
-                      <div style={styles.statBox}>
-                        <span style={styles.statLabel}>{camp.offering_type === 'debt' ? 'Proposed Rate' : 'Pre-Money Valuation'}</span>
-                        <span style={styles.statVal}>{camp.offering_type === 'debt' ? `${camp.interest_rate}%` : `$${(camp.valuation / 1000000).toFixed(2)}M`}</span>
-                      </div>
-                      <div style={styles.statBox}>
-                        <span style={styles.statLabel}>{camp.offering_type === 'debt' ? 'Term length' : 'Vetted Investors'}</span>
-                        <span style={styles.statVal}>{camp.offering_type === 'debt' ? `${camp.term_months} Months` : camp.investorsCount}</span>
-                      </div>
-                    </div>
-
-                    {/* Progress Bar */}
-                    <div style={styles.progressSection}>
-                      <div style={styles.progressBar}>
-                        <div style={{ ...styles.progressFill, width: `${pct}%` }}></div>
-                      </div>
-                      <div style={styles.progressLabels}>
-                        <span>Offering Round Progress</span>
-                        <span>{pct}% Fulfilled</span>
-                      </div>
-                    </div>
-
-                    {/* Problem and Solution */}
-                    <div style={styles.qaTabs}>
-                      <div style={styles.qaTabItem}>
-                        <h4 style={styles.qaTabTitle}>🚨 Problem Statement</h4>
-                        <p style={styles.qaText}>{camp.problem}</p>
-                      </div>
-                      <div style={styles.qaTabItem}>
-                        <h4 style={styles.qaTabTitle}>💡 Tech Solution</h4>
-                        <p style={styles.qaText}>{camp.solution}</p>
-                      </div>
+                      {camp.offering_type === 'equity' ? (
+                        <div>
+                          <span style={styles.specLabel}>Valuation Cap:</span>
+                          <strong style={styles.specVal}>${camp.valuation.toLocaleString()}</strong>
+                        </div>
+                      ) : (
+                        <div>
+                          <span style={styles.specLabel}>Gross Interest Rate:</span>
+                          <strong style={{ ...styles.specVal, color: '#a78bfa' }}>{camp.interest_rate}% ({camp.term_months}m tenor)</strong>
+                        </div>
+                      )}
                     </div>
 
                     {/* Cap Table Segment nested inside Campaign */}
-                    <div style={styles.nestedCapSection}>
-                      <h3 style={styles.capTitle}>📊 Shareholder Cap Table</h3>
-                      <p style={styles.capSub}>
-                        Total Stocks: <strong>{sharesIssued.toLocaleString()} Shares</strong>. Showing real-time distributions.
-                      </p>
-
-                      <div style={styles.capRowFlex}>
-                        <div style={styles.svgContainer}>
+                    <div style={styles.capSection}>
+                      <h3 style={styles.capTitle}>📊 Shareholder Cap Table Registry</h3>
+                      <div style={styles.capGrid}>
+                        <div style={styles.capChartWrap}>
                           {renderCapTableSVG(camp.capTable)}
-                          <div style={styles.svgCenterText}>
-                            <span style={styles.svgInnerLabel}>Raised</span>
-                            <span style={styles.svgInnerVal}>{pct}%</span>
-                          </div>
                         </div>
-
-                        <div style={styles.capLedger}>
+                        <div style={styles.shareholdersList}>
                           {camp.capTable.map((item, idx) => (
-                            <div key={idx} style={styles.ledgerRow}>
-                              <div style={styles.ledgerHeader}>
-                                <div style={{ ...styles.ledgerColorBox, background: colors[idx % colors.length] }}></div>
-                                <span style={styles.ledgerName}>{item.name}</span>
-                              </div>
-                              <div style={styles.ledgerValues}>
-                                <span style={styles.ledgerShares}>
-                                  {item.shares ? item.shares.toLocaleString() : Math.floor((sharesIssued * item.percentage) / 100).toLocaleString()} Shs
-                                </span>
-                                <span style={styles.ledgerPct}>{item.percentage}%</span>
-                              </div>
+                            <div key={idx} style={styles.shareholderRow}>
+                              <span style={styles.shareholderName}>• {item.name}</span>
+                              <strong style={styles.shareholderPercent}>{item.percentage}% ({item.shares.toLocaleString()} shares)</strong>
                             </div>
                           ))}
                         </div>
                       </div>
                     </div>
                   </div>
-                );
-              })
-            )}
-          </div>
+                ))
+              )}
+            </div>
 
-          {/* Right Column: Business Profile Editor (Table #4) & Founding Team */}
-          <div style={styles.rightCol}>
-            {/* Table #4 Business Profile Card */}
-            <div className="glass-panel" style={styles.card}>
-              <div style={styles.cardHeader}>
+            {/* Right Column: Business Profile Editor (Table #4) & Founding Team */}
+            <div style={styles.rightCol}>
+              <div className="glass-panel" style={styles.card}>
                 <h3 style={styles.cardTitle}>🏢 Entrepreneur Profile (Table #4)</h3>
-                <button
-                  onClick={() => setIsEditingProfile(!isEditingProfile)}
-                  className="btn-secondary"
-                  style={styles.editBtn}
-                >
-                  {isEditingProfile ? 'Cancel Edit' : 'Edit Business Sheet'}
-                </button>
-              </div>
+                <p style={styles.cardDesc}>Maintain cryptographic corporate records satisfying SEC exemptions criteria.</p>
 
-              {!isEditingProfile ? (
-                <div style={styles.profileDisplay}>
-                  <div style={styles.profileMetaRow}>
-                    <p style={styles.profileField}><strong>Registered Name:</strong> {companyNameProfile || 'Not registered yet'}</p>
-                    <p style={styles.profileField}>
-                      <strong>Business Stage:</strong> 
-                      <span className="badge badge-verified" style={{ marginLeft: '0.5rem', textTransform: 'capitalize' }}>{businessStage}</span>
-                    </p>
-                    <p style={styles.profileField}><strong>Industry Sector:</strong> {industry}</p>
-                    <p style={styles.profileField}><strong>Funding Target:</strong> ${parseFloat(fundingGoal).toLocaleString()}</p>
-                    <p style={styles.profileField}><strong>Target Valuation:</strong> ${parseFloat(valuationProfile).toLocaleString()}</p>
-                    {pitchDeckUrl && (
-                      <p style={styles.profileField}>
-                        <strong>Pitch Deck:</strong>{' '}
-                        <a href={pitchDeckUrl} target="_blank" rel="noreferrer" style={styles.link}>
-                          View PDF Document 🔗
-                        </a>
-                      </p>
-                    )}
-                  </div>
-                  <div style={styles.profileSummarySection}>
-                    <h4 style={styles.sectionHeader}>Company Overview</h4>
-                    <p style={styles.summaryText}>{companySummary || 'Provide a company overview by editing your profile sheet.'}</p>
-                  </div>
-                </div>
-              ) : (
-                <form onSubmit={handleSaveProfile} style={styles.profileForm}>
-                  <div style={styles.inputGroup}>
-                    <label style={styles.label}>Registered Company Name</label>
-                    <input
-                      type="text"
-                      value={companyNameProfile}
-                      onChange={(e) => setCompanyNameProfile(e.target.value)}
-                      style={styles.input}
-                      required
-                    />
-                  </div>
-
-                  <div style={styles.formRow2Col}>
+                {isEditingProfile ? (
+                  <form onSubmit={handleSaveProfile} style={styles.profileForm}>
                     <div style={styles.inputGroup}>
-                      <label style={styles.label}>Startup Stage</label>
-                      <select
-                        value={businessStage}
-                        onChange={(e) => setBusinessStage(e.target.value)}
-                        style={styles.select}
-                      >
-                        <option value="idea">Idea Concept</option>
-                        <option value="prototype">Working Prototype</option>
+                      <label style={styles.label}>Corporate Name</label>
+                      <input type="text" value={companyNameProfile} onChange={e => setCompanyNameProfile(e.target.value)} style={styles.input} required />
+                    </div>
+
+                    <div style={styles.inputGroup}>
+                      <label style={styles.label}>Business Stage</label>
+                      <select value={businessStage} onChange={e => setBusinessStage(e.target.value)} style={styles.select}>
+                        <option value="idea">Idea Stage</option>
+                        <option value="prototype">Prototype Stage</option>
                         <option value="revenue">Generating Revenue</option>
                         <option value="scaling">Scaling Operations</option>
-                        <option value="startup">Growth Stage</option>
                       </select>
                     </div>
 
                     <div style={styles.inputGroup}>
-                      <label style={styles.label}>Industry</label>
-                      <input
-                        type="text"
-                        value={industry}
-                        onChange={(e) => setIndustry(e.target.value)}
-                        style={styles.input}
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div style={styles.formRow2Col}>
-                    <div style={styles.inputGroup}>
-                      <label style={styles.label}>Funding Goal ($)</label>
-                      <input
-                        type="number"
-                        value={fundingGoal}
-                        onChange={(e) => setFundingGoal(e.target.value)}
-                        style={styles.input}
-                      />
+                      <label style={styles.label}>Industry Segment</label>
+                      <input type="text" value={industry} onChange={e => setIndustry(e.target.value)} style={styles.input} required />
                     </div>
 
                     <div style={styles.inputGroup}>
-                      <label style={styles.label}>Current Valuation ($)</label>
-                      <input
-                        type="number"
-                        value={valuationProfile}
-                        onChange={(e) => setValuationProfile(e.target.value)}
-                        style={styles.input}
-                      />
+                      <label style={styles.label}>SEC SAFE Pitch Deck S3 URL</label>
+                      <input type="text" value={pitchDeckUrl} onChange={e => setPitchDeckUrl(e.target.value)} style={styles.input} />
                     </div>
+
+                    <div style={styles.fullWidth}>
+                      <label style={styles.label}>Core Operations Summary</label>
+                      <textarea value={companySummary} onChange={e => setCompanySummary(e.target.value)} style={styles.textarea} rows="3" required />
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+                      <button type="submit" className="btn-primary" style={{ padding: '0.4rem 1rem', fontSize: '0.78rem' }}>Save Profiles</button>
+                      <button type="button" onClick={() => setIsEditingProfile(false)} className="btn-secondary" style={{ padding: '0.4rem 1rem', fontSize: '0.78rem' }}>Cancel</button>
+                    </div>
+                  </form>
+                ) : (
+                  <div style={styles.profileDetails}>
+                    <div style={styles.profileRow}>
+                      <span style={styles.specLabel}>Company Name:</span>
+                      <strong style={styles.specVal}>{companyNameProfile || 'EcoSphere Solutions'}</strong>
+                    </div>
+                    <div style={styles.profileRow}>
+                      <span style={styles.specLabel}>Ecosystem Industry:</span>
+                      <strong style={styles.specVal}>{industry || 'CleanTech'}</strong>
+                    </div>
+                    <div style={styles.profileRow}>
+                      <span style={styles.specLabel}>Operational Stage:</span>
+                      <strong style={styles.specVal}>{businessStage.toUpperCase()}</strong>
+                    </div>
+                    <div style={styles.profileRow}>
+                      <span style={styles.specLabel}>SAFE Pitch Deck:</span>
+                      <a href={pitchDeckUrl || '#'} target="_blank" rel="noreferrer" style={{ fontSize: '0.8rem', color: '#00f2fe', fontWeight: '700' }}>
+                        {pitchDeckUrl ? '🔗 Expiring S3 PitchDeck' : 'No Pitch Deck Added'}
+                      </a>
+                    </div>
+                    
+                    <button onClick={() => setIsEditingProfile(true)} className="btn-secondary" style={{ alignSelf: 'flex-start', padding: '0.4rem 1rem', fontSize: '0.76rem', marginTop: '0.5rem' }}>
+                      ⚙ Edit Corporate Profile
+                    </button>
                   </div>
-
-                  <div style={styles.inputGroup}>
-                    <label style={styles.label}>Pitch Deck S3 URL</label>
-                    <input
-                      type="text"
-                      value={pitchDeckUrl}
-                      onChange={(e) => setPitchDeckUrl(e.target.value)}
-                      placeholder="https://..."
-                      style={styles.input}
-                    />
-                  </div>
-
-                  <div style={styles.inputGroup}>
-                    <label style={styles.label}>Company Summary Overview</label>
-                    <textarea
-                      value={companySummary}
-                      onChange={(e) => setCompanySummary(e.target.value)}
-                      style={styles.textarea}
-                      rows="4"
-                    />
-                  </div>
-
-                  <button type="submit" className="btn-primary" style={{ alignSelf: 'flex-start' }}>
-                    Sync Business Profile
-                  </button>
-                </form>
-              )}
-            </div>
-
-            {/* Core Founding Team JSON Array Editor */}
-            <div className="glass-panel" style={styles.card}>
-              <div style={styles.cardHeader}>
-                <h3 style={styles.cardTitle}>👥 Founding Team Directory</h3>
-                <button
-                  onClick={() => setShowAddMember(!showAddMember)}
-                  className="btn-secondary"
-                  style={styles.editBtn}
-                >
-                  {showAddMember ? 'Cancel Member' : '+ Add Partner'}
-                </button>
+                )}
               </div>
 
-              {showAddMember && (
-                <form onSubmit={handleAddMember} style={styles.memberForm}>
-                  <div style={styles.inputGroup}>
-                    <label style={styles.label}>Partner Full Name</label>
-                    <input
-                      type="text"
-                      placeholder="e.g. John Doe"
-                      value={newMemberName}
-                      onChange={(e) => setNewMemberName(e.target.value)}
-                      style={styles.smallInput}
-                      required
-                    />
-                  </div>
-
-                  <div style={styles.formRow2Col}>
-                    <div style={styles.inputGroup}>
-                      <label style={styles.label}>Ecosystem Role</label>
-                      <input
-                        type="text"
-                        placeholder="e.g. CTO & Co-Founder"
-                        value={newMemberRole}
-                        onChange={(e) => setNewMemberRole(e.target.value)}
-                        style={styles.smallInput}
-                        required
-                      />
-                    </div>
-
-                    <div style={styles.inputGroup}>
-                      <label style={styles.label}>Professional Profile URL</label>
-                      <input
-                        type="text"
-                        placeholder="https://peerbridge.ai/directory/..."
-                        value={newMemberLinkedin}
-                        onChange={(e) => setNewMemberLinkedin(e.target.value)}
-                        style={styles.smallInput}
-                      />
-                    </div>
-                  </div>
-
-                  <div style={styles.inputGroup}>
-                    <label style={styles.label}>Professional Bio</label>
-                    <textarea
-                      placeholder="Brief work pedigree..."
-                      value={newMemberBio}
-                      onChange={(e) => setNewMemberBio(e.target.value)}
-                      style={styles.smallTextarea}
-                      rows="2"
-                    />
-                  </div>
-
-                  <button type="submit" className="btn-primary" style={styles.smallBtn}>
-                    Save Team Member
+              {/* Founding Team list */}
+              <div className="glass-panel" style={styles.card}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <h3 style={styles.cardTitle}>👥 Founding Partners Credentials</h3>
+                  <button onClick={() => setShowAddMember(!showAddMember)} className="btn-secondary" style={{ padding: '0.2rem 0.65rem', fontSize: '0.68rem' }}>
+                    {showAddMember ? 'Cancel' : '+ Add Partner'}
                   </button>
-                </form>
-              )}
+                </div>
 
-              <div style={styles.teamList}>
-                {team.length === 0 ? (
-                  <p style={styles.emptyText}>No founding team members recorded.</p>
-                ) : (
-                  team.map((member, idx) => (
-                    <div key={idx} style={styles.teamMemberCard}>
-                      <div style={styles.memberHeader}>
-                        <div>
-                          <strong style={styles.memberNameText}>{member.name}</strong>
-                          <span style={styles.memberRoleText}>{member.role}</span>
-                        </div>
-                        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                          {member.linkedin && (
-                            <a href={member.linkedin} target="_blank" rel="noreferrer" style={styles.memberLink}>
-                              🔗 Profile
-                            </a>
-                          )}
-                          <button
-                            onClick={() => handleRemoveMember(idx)}
-                            style={styles.deleteMemberBtn}
-                            title="Remove Member"
-                          >
-                            ✕
-                          </button>
-                        </div>
-                      </div>
-                      {member.bio && <p style={styles.memberBioText}>{member.bio}</p>}
+                {showAddMember && (
+                  <form onSubmit={handleAddMember} style={styles.profileForm}>
+                    <div style={styles.inputGroup}>
+                      <label style={styles.label}>Full Name</label>
+                      <input type="text" value={newMemberName} onChange={e => setNewMemberName(e.target.value)} style={styles.input} required />
                     </div>
-                  ))
+                    <div style={styles.inputGroup}>
+                      <label style={styles.label}>Executive Role</label>
+                      <input type="text" placeholder="e.g. COO & Chief Geneticist" value={newMemberRole} onChange={e => setNewMemberRole(e.target.value)} style={styles.input} required />
+                    </div>
+                    <div style={styles.inputGroup}>
+                      <label style={styles.label}>LinkedIn Directory URL</label>
+                      <input type="text" value={newMemberLinkedin} onChange={e => setNewMemberLinkedin(e.target.value)} style={styles.input} />
+                    </div>
+                    <div style={styles.fullWidth}>
+                      <label style={styles.label}>Partner Bio Credentials</label>
+                      <textarea value={newMemberBio} onChange={e => setNewMemberBio(e.target.value)} style={styles.textarea} rows="2" />
+                    </div>
+                    <button type="submit" className="btn-primary" style={{ alignSelf: 'flex-start', padding: '0.4rem 1rem', fontSize: '0.74rem' }}>
+                      Issue Credentials Badge
+                    </button>
+                  </form>
                 )}
+
+                <div style={styles.teamList}>
+                  {team.length === 0 ? (
+                    <span style={{ fontSize: '0.76rem', color: '#525252', fontStyle: 'italic' }}>No team members registered yet. Add co-founders above.</span>
+                  ) : (
+                    team.map((member, idx) => (
+                      <div key={idx} style={styles.teamItem}>
+                        <div style={styles.teamHeader}>
+                          <div>
+                            <h4 style={styles.teamName}>{member.name}</h4>
+                            <span style={styles.teamRole}>{member.role}</span>
+                          </div>
+                          <button onClick={() => handleRemoveMember(idx)} style={styles.removeBtn} title="Revoke partner security badges">×</button>
+                        </div>
+                        <p style={styles.teamBio}>{member.bio}</p>
+                      </div>
+                    ))
+                  )}
+                </div>
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Tab 2: Founder Pro Automations Dashboard (Monetized high-margin views) */}
+      {entrepreneurTab === 'founder_pro' && (
+        <div style={styles.proPanelContainer}>
+          {!isFounderPro ? (
+            /* Promotional Glassmorphic SaaS Gated Panel Upgrades */
+            <div className="glass-panel glow-purple-border animate-fade-in-up" style={styles.upsellCard}>
+              <span style={styles.upsellBadge}>💼 FOUNDER PRO MEMBERSHIP REQUIRED</span>
+              <h2 style={styles.upsellTitle}>Automate accounts payable, delegate chores, and manage your capitalization ledger securely</h2>
+              <p style={styles.upsellDesc}>
+                Unlock instant access to dynamic venture dashboards, 0% dilution updating, bookkeeping sweeps, accounts payable integrations, and compliant SEC Reg CF prep sheets.
+              </p>
+              <div style={styles.upsellMetricsRow}>
+                <div style={styles.upsellMetricBox}>
+                  <span style={styles.upsellLabel}>Dilution update fees</span>
+                  <strong style={{ color: '#ffffff', fontSize: '1.25rem' }}>0% flat rate</strong>
+                </div>
+                <div style={styles.upsellMetricBox}>
+                  <span style={styles.upsellLabel}>IRS Form generation</span>
+                  <strong style={{ color: '#00f2fe', fontSize: '1.25rem' }}>Fully Automated</strong>
+                </div>
+                <div style={styles.upsellMetricBox}>
+                  <span style={styles.upsellLabel}>Smart Escrow Chores</span>
+                  <strong style={{ color: '#a78bfa', fontSize: '1.25rem' }}>Affiliate Synced</strong>
+                </div>
+              </div>
+              <button 
+                onClick={handleUpgradeToFounderPro} 
+                className="btn-primary" 
+                style={styles.upgradeBtn}
+              >
+                Upgrade to Founder Pro – $49/Month
+              </button>
+            </div>
+          ) : (
+            /* Full Founder Pro Automations Suite Dashboard */
+            <div className="animate-fade-in-up" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+              
+              <div style={styles.proTopGrid}>
+                {/* 1. Accounts Payable Bill Pay Dashboard */}
+                <div className="glass-panel" style={styles.card}>
+                  <h3 style={styles.cardTitle}>🏛️ Automated Accounts Payable (Bill Pay)</h3>
+                  <p style={styles.cardDesc}>Pay routine vendor invoices directly from your Peer Bridge balance ledger.</p>
+
+                  <div style={styles.billsList}>
+                    {bills.map(bill => (
+                      <div key={bill.id} style={styles.billItem}>
+                        <div style={styles.billLeft}>
+                          <span style={{ fontSize: '1.2rem' }}>{bill.status === 'paid' ? '✅' : '📥'}</span>
+                          <div>
+                            <h4 style={{ ...styles.billNameText, textDecoration: bill.status === 'paid' ? 'line-through' : 'none' }}>{bill.name}</h4>
+                            <span style={styles.billMeta}>Due: {bill.dueDate} • Auto-Pay: {bill.autoPay ? 'On' : 'Off'}</span>
+                          </div>
+                        </div>
+
+                        <div style={styles.billRight}>
+                          <strong style={{ fontSize: '0.85rem', color: '#ffffff' }}>${bill.amount.toFixed(2)}</strong>
+                          {bill.status === 'paid' ? (
+                            <span style={styles.billPaidBadge}>Settled</span>
+                          ) : (
+                            <div style={{ display: 'flex', gap: '0.35rem' }}>
+                              <button onClick={() => handleToggleAutoPay(bill.id)} style={{ ...styles.actionBtn, padding: '0.2rem 0.5rem', fontSize: '0.62rem' }}>
+                                {bill.autoPay ? 'Disable Auto' : 'Enable Auto'}
+                              </button>
+                              <button onClick={() => handlePayBill(bill.id, bill.amount, bill.name)} className="btn-primary" style={{ ...styles.downloadBtn, padding: '0.2rem 0.5rem', fontSize: '0.64rem', background: '#a78bfa', color: '#000000', fontWeight: '800' }}>
+                                Pay Now
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Cash runway forecast metrics */}
+                  <div style={styles.runwayCard}>
+                    <span style={styles.specLabel}>Automated Cash flow runway forecast (12 months)</span>
+                    <div style={styles.runwayWrap}>
+                      <svg viewBox="0 0 400 40" style={{ width: '100%', height: '40px' }}>
+                        <path d="M0,10 L100,12 L200,18 L300,28 L400,38" fill="none" stroke="#a78bfa" strokeWidth="2.5" />
+                        <circle cx="400" cy="38" r="4.5" fill="#a78bfa" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. Chore Delegation Wizard */}
+                <div className="glass-panel" style={styles.card}>
+                  <h3 style={styles.cardTitle}>🤝 Compliance Chore Delegation Panel</h3>
+                  <p style={styles.cardDesc}>Outsource compliance, filings, and audit work directly to vetted network affiliates.</p>
+
+                  <form onSubmit={handleCreateChore} style={styles.choreForm}>
+                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                      <input 
+                        type="text" 
+                        placeholder="Task e.g. Form C Bookkeeping Audit..." 
+                        value={newChoreTitle} 
+                        onChange={e => setNewChoreTitle(e.target.value)} 
+                        style={styles.input}
+                        required
+                      />
+                      <input 
+                        type="number" 
+                        placeholder="Reward $" 
+                        value={newChoreIncentive} 
+                        onChange={e => setNewChoreIncentive(e.target.value)} 
+                        style={{ ...styles.input, width: '100px' }}
+                        required
+                      />
+                      <button type="submit" className="btn-primary" style={{ padding: '0 1rem', background: '#a78bfa', color: '#000000', fontWeight: '800' }}>
+                        Post Chore
+                      </button>
+                    </div>
+                  </form>
+
+                  <div style={styles.choresList}>
+                    {chores.map(chore => (
+                      <div key={chore.id} style={styles.choreItem}>
+                        <div>
+                          <h4 style={styles.choreItemTitle}>{chore.title}</h4>
+                          <span style={styles.choreItemMeta}>
+                            Incentive reward: <strong style={{ color: '#00f2fe' }}>${chore.incentive.toFixed(2)}</strong> Escrowed split
+                          </span>
+                        </div>
+                        
+                        <span style={{
+                          fontSize: '0.62rem',
+                          padding: '0.1rem 0.4rem',
+                          borderRadius: '4px',
+                          fontWeight: '800',
+                          background: chore.status === 'open' ? 'rgba(0, 242, 254, 0.08)' : 'rgba(16, 185, 129, 0.08)',
+                          color: chore.status === 'open' ? '#00f2fe' : '#10b981',
+                          border: chore.status === 'open' ? '1px solid rgba(0, 242, 254, 0.15)' : '1px solid rgba(16, 185, 129, 0.15)'
+                        }}>
+                          {chore.status === 'open' ? 'Open for bidding' : `Claimed by ${chore.claimedBy}`}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* 3. SEC Reg CF Prep Sheets (Spreadsheet format) */}
+              <div className="glass-panel" style={styles.card}>
+                <h3 style={styles.cardTitle}>📜 SEC Regulation Crowdfunding Filing Sheet (Form C)</h3>
+                <p style={styles.cardDesc}>Export complete securities registration details compiled from your cap table registry dynamically.</p>
+
+                <div style={{ overflowX: 'auto', marginTop: '0.5rem' }}>
+                  <table style={styles.spreadTable}>
+                    <thead>
+                      <tr style={styles.spreadHeaderRow}>
+                        <th style={styles.spreadHeaderCell}>Form C disclosure sector</th>
+                        <th style={styles.spreadHeaderCell}>Ecosystem Parameter Value</th>
+                        <th style={styles.spreadHeaderCell}>Filing Status</th>
+                        <th style={styles.spreadHeaderCell}>Assigned compliance reviewer</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr style={styles.spreadRow}>
+                        <td style={styles.spreadCell}>Issuer Corporate Structure</td>
+                        <td style={styles.spreadCell}>EcoSphere Technologies SPV LLC (Delaware registered)</td>
+                        <td style={styles.spreadCell}><span style={{ color: '#10b981' }}>✓ Completed</span></td>
+                        <td style={styles.spreadCell}>Affiliate Agent (Autonomous Vetting)</td>
+                      </tr>
+                      <tr style={styles.spreadRow}>
+                        <td style={styles.spreadCell}>Directors & Officers Details</td>
+                        <td style={styles.spreadCell}>CEO: {user.name} • Geneticist: Dr. Evelyn Chen</td>
+                        <td style={styles.spreadCell}><span style={{ color: '#10b981' }}>✓ Completed</span></td>
+                        <td style={styles.spreadCell}>Compliance Committee Auditor</td>
+                      </tr>
+                      <tr style={styles.spreadRow}>
+                        <td style={styles.spreadCell}>Outstanding Capitalization Table</td>
+                        <td style={styles.spreadCell}>4 Shareholders registered (Diluted equity cap: 4%)</td>
+                        <td style={styles.spreadCell}><span style={{ color: '#10b981' }}>✓ Autocalculated</span></td>
+                        <td style={styles.spreadCell}>System Registry Engine</td>
+                      </tr>
+                      <tr style={styles.spreadRow}>
+                        <td style={styles.spreadCell}>Prior Crowdfunding Exemptions</td>
+                        <td style={styles.spreadCell}>None filed last 36 months (Clean sweep watchlists)</td>
+                        <td style={styles.spreadCell}><span style={{ color: '#10b981' }}>✓ Watchlist Clear</span></td>
+                        <td style={styles.spreadCell}>Layer 3 Watching Engine</td>
+                      </tr>
+                      <tr style={styles.spreadRow}>
+                        <td style={styles.spreadCell}>Financial Condition Disclosures</td>
+                        <td style={styles.spreadCell}>Total outstanding AP debt liabilities: $375.00</td>
+                        <td style={styles.spreadCell}><span style={{ color: '#d4af37' }}>⚠️ Requires affiliate audit</span></td>
+                        <td style={styles.spreadCell}>
+                          <button onClick={() => alert('Bookkeeping audit assigned to advisory committee network.')} style={{ ...styles.actionBtn, padding: '0.15rem 0.45rem', fontSize: '0.62rem' }}>
+                            Delegate Task
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <button onClick={() => alert('Generating cryptographic Form C filing bundle...\nBundle locked and SHA-256 stamped:\n0x88dfa9e2239f11...')} className="btn-primary" style={{ alignSelf: 'flex-end', marginTop: '0.5rem', background: '#a78bfa', color: '#000000', fontWeight: '800' }}>
+                  📥 Export Completed Form C Bundle
+                </button>
+              </div>
+
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -827,125 +850,169 @@ const styles = {
   container: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '2rem',
+    gap: '2.5rem',
   },
   headerRow: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: '1.5rem',
+    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+    paddingBottom: '1rem',
   },
   title: {
     fontSize: '1.75rem',
-    fontWeight: '800',
+    fontWeight: '850',
+    margin: 0,
   },
   sub: {
     fontSize: '0.9rem',
     color: '#a3a3a3',
-    marginTop: '0.2rem',
+    marginTop: '0.25rem',
   },
-  launchBtn: {
-    padding: '0.7rem 1.4rem',
+  segmentedTabWrapper: {
+    borderBottom: '1px solid rgba(255,255,255,0.06)',
+    marginTop: '-1.5rem',
   },
-  successToast: {
-    background: 'rgba(255, 255, 255, 0.05)',
-    border: '1px solid #ffffff',
-    color: '#ffffff',
-    padding: '1rem',
-    borderRadius: '6px',
+  tabContainer: {
+    display: 'flex',
+    gap: '0.5rem',
+  },
+  tabBtn: {
+    padding: '0.75rem 1.5rem',
+    fontSize: '0.82rem',
+    fontWeight: '700',
+    background: 'transparent',
+    border: 'none',
+    cursor: 'pointer',
+    transition: 'all 0.2s',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.35rem',
+    outline: 'none',
+  },
+  launchButtonsRow: {
+    display: 'flex',
+    justifyContent: 'center',
+    gap: '1.5rem',
+    margin: '2rem 0',
+  },
+  launcherBtnAction: {
+    width: '280px',
+    height: '45px',
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontWeight: '800',
     fontSize: '0.9rem',
-    fontWeight: '600',
+    cursor: 'pointer',
   },
-  cardLauncher: {
+  launcherCard: {
     padding: '2.5rem',
     display: 'flex',
     flexDirection: 'column',
-    gap: '1.5rem',
+    gap: '1.25rem',
+    background: 'rgba(0,0,0,0.4)',
+    border: '1px solid rgba(255, 255, 255, 0.1)',
   },
-  cardTitle: {
-    fontSize: '1.2rem',
-    fontWeight: '800',
+  launcherTitle: {
+    fontSize: '1.35rem',
+    fontWeight: '850',
+    margin: 0,
   },
-  cardDesc: {
+  launcherDesc: {
     fontSize: '0.85rem',
     color: '#a3a3a3',
-    lineHeight: '1.5',
+    lineHeight: '1.4',
   },
   formGrid: {
     display: 'grid',
     gridTemplateColumns: '1fr 1fr',
-    gap: '2rem',
-  },
-  formCol: {
-    display: 'flex',
-    flexDirection: 'column',
     gap: '1.25rem',
+    marginTop: '0.5rem',
+  },
+  pillsRow: {
+    display: 'flex',
+    gap: '0.5rem',
+    marginTop: '0.35rem',
+  },
+  pillBtn: {
+    flex: 1,
+    padding: '0.65rem',
+    fontSize: '0.8rem',
+    fontWeight: '750',
+    borderRadius: '8px',
+    border: '1px solid',
+    cursor: 'pointer',
+    transition: 'all 0.2s',
   },
   inputGroup: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '0.5rem',
-    width: '100%',
-  },
-  inputGroup2Col: {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
-    gap: '1rem',
-  },
-  formRow2Col: {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
-    gap: '1rem',
-    width: '100%',
+    gap: '0.35rem',
   },
   label: {
-    fontSize: '0.72rem',
+    fontSize: '0.68rem',
     fontWeight: '700',
-    color: '#737373',
+    color: '#a3a3a3',
     textTransform: 'uppercase',
   },
   input: {
     width: '100%',
-    background: 'rgba(255,255,255,0.03)',
-    border: '1px solid rgba(255,255,255,0.08)',
-    borderRadius: '6px',
-    padding: '0.7rem 1rem',
+    background: 'rgba(0, 0, 0, 0.25)',
+    border: '1px solid rgba(255, 255, 255, 0.08)',
+    borderRadius: '8px',
+    padding: '0.65rem 0.85rem',
     color: '#ffffff',
-    fontSize: '0.9rem',
+    fontSize: '0.85rem',
     outline: 'none',
+    transition: 'all 0.2s',
+  },
+  select: {
+    width: '100%',
+    background: 'rgba(10, 10, 10, 0.95)',
+    border: '1px solid rgba(255, 255, 255, 0.08)',
+    borderRadius: '8px',
+    padding: '0.65rem 0.85rem',
+    color: '#ffffff',
+    fontSize: '0.85rem',
+    outline: 'none',
+    cursor: 'pointer',
   },
   textarea: {
     width: '100%',
-    background: 'rgba(255,255,255,0.03)',
-    border: '1px solid rgba(255,255,255,0.08)',
-    borderRadius: '6px',
-    padding: '0.7rem 1rem',
+    background: 'rgba(0, 0, 0, 0.25)',
+    border: '1px solid rgba(255, 255, 255, 0.08)',
+    borderRadius: '8px',
+    padding: '0.65rem 0.85rem',
     color: '#ffffff',
-    fontSize: '0.9rem',
+    fontSize: '0.85rem',
     outline: 'none',
     resize: 'none',
     fontFamily: 'inherit',
   },
-  select: {
-    width: '100%',
-    background: '#0a0a0a',
-    border: '1px solid rgba(255,255,255,0.08)',
-    borderRadius: '6px',
-    padding: '0.7rem 1rem',
-    color: '#ffffff',
-    fontSize: '0.9rem',
-    outline: 'none',
-    cursor: 'pointer',
+  fullWidth: {
+    gridColumn: 'span 2',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.35rem',
   },
   errorText: {
-    fontSize: '0.8rem',
+    fontSize: '0.76rem',
     color: '#f43f5e',
-    fontWeight: '500',
+    fontWeight: '700',
   },
-  dashboardGrid: {
+  successToast: {
+    background: 'rgba(16, 185, 129, 0.08)',
+    border: '1px solid rgba(16, 185, 129, 0.25)',
+    color: '#10b981',
+    padding: '0.85rem 1.25rem',
+    borderRadius: '8px',
+    fontSize: '0.82rem',
+    fontWeight: '700',
+  },
+  doubleGrid: {
     display: 'grid',
-    gridTemplateColumns: '1.4fr 1fr',
+    gridTemplateColumns: '1.2fr 1fr',
     gap: '2rem',
   },
   leftCol: {
@@ -958,342 +1025,387 @@ const styles = {
     flexDirection: 'column',
     gap: '2rem',
   },
-  emptyCard: {
-    padding: '4rem',
+  emptyBox: {
+    padding: '3rem',
     textAlign: 'center',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: '0.5rem',
+    color: '#525252',
+    fontSize: '0.85rem',
+    fontStyle: 'italic',
   },
   campaignCard: {
-    padding: '2.5rem',
+    padding: '2rem',
     display: 'flex',
     flexDirection: 'column',
-    gap: '1.5rem',
+    gap: '1.25rem',
   },
-  campBadgeRow: {
+  campHeader: {
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    borderBottom: '1px solid rgba(255,255,255,0.05)',
+    paddingBottom: '0.85rem',
   },
-  campSector: {
-    background: 'rgba(255,255,255,0.05)',
-    padding: '0.2rem 0.5rem',
-    borderRadius: '4px',
-    fontSize: '0.7rem',
-    fontWeight: '600',
-    color: '#a3a3a3',
-    textTransform: 'uppercase',
+  campTitle: {
+    fontSize: '1.2rem',
+    fontWeight: '850',
+    margin: 0,
   },
-  companyTitle: {
-    fontSize: '2rem',
-    fontWeight: '800',
-  },
-  campTagline: {
-    fontSize: '1.05rem',
+  campTag: {
+    fontSize: '0.78rem',
     color: '#a3a3a3',
   },
-  statsGrid: {
+  specsLine: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(2, 1fr)',
-    gap: '1.25rem',
+    gridTemplateColumns: 'repeat(3, 1fr)',
+    gap: '1rem',
+    background: 'rgba(0,0,0,0.15)',
+    padding: '1rem',
+    borderRadius: '6px',
   },
-  statBox: {
-    background: 'rgba(255, 255, 255, 0.02)',
-    border: '1px solid rgba(255,255,255,0.05)',
-    borderRadius: '8px',
-    padding: '1.25rem',
-  },
-  statLabel: {
-    fontSize: '0.72rem',
+  specLabel: {
+    fontSize: '0.62rem',
     color: '#737373',
     textTransform: 'uppercase',
-    fontWeight: '700',
-  },
-  statVal: {
+    fontWeight: '750',
     display: 'block',
-    fontSize: '1.5rem',
-    fontWeight: '800',
+  },
+  specVal: {
+    fontSize: '0.85rem',
     color: '#ffffff',
-    marginTop: '0.25rem',
-  },
-  progressSection: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '0.5rem',
-  },
-  progressBar: {
-    height: '6px',
-    background: 'rgba(255,255,255,0.05)',
-    borderRadius: '3px',
-    overflow: 'hidden',
-  },
-  progressFill: {
-    height: '100%',
-    background: '#ffffff',
-    borderRadius: '3px',
-  },
-  progressLabels: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    fontSize: '0.75rem',
-    color: '#737373',
-  },
-  qaTabs: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '1.25rem',
-    borderTop: '1px solid rgba(255,255,255,0.05)',
-    paddingTop: '1.5rem',
-  },
-  qaTabItem: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '0.5rem',
-  },
-  qaTabTitle: {
-    fontSize: '0.9rem',
     fontWeight: '700',
-    color: '#ffffff',
   },
-  qaText: {
-    fontSize: '0.88rem',
-    color: '#a3a3a3',
-    lineHeight: '1.5',
-  },
-  nestedCapSection: {
-    borderTop: '1px solid rgba(255, 255, 255, 0.05)',
-    paddingTop: '1.5rem',
+  capSection: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.85rem',
     marginTop: '0.5rem',
   },
-  capRowFlex: {
-    display: 'flex',
-    gap: '2rem',
-    alignItems: 'center',
-    flexWrap: 'wrap',
+  capTitle: {
+    fontSize: '0.92rem',
+    fontWeight: '800',
+    color: '#ffffff',
+    margin: 0,
+    textTransform: 'uppercase',
+    letterSpacing: '0.03em',
   },
-  svgContainer: {
-    width: '150px',
-    height: '150px',
-    position: 'relative',
+  capGrid: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center',
+    gap: '2rem',
+  },
+  capChartWrap: {
+    width: '100px',
+    height: '100px',
   },
   svg: {
     width: '100%',
     height: '100%',
-    transform: 'rotate(-90deg)',
   },
-  svgCenterText: {
-    position: 'absolute',
-    textAlign: 'center',
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  svgInnerLabel: {
-    fontSize: '0.65rem',
-    color: '#737373',
-    textTransform: 'uppercase',
-  },
-  svgInnerVal: {
-    fontSize: '1.25rem',
-    fontWeight: '800',
-    color: '#ffffff',
-  },
-  capLedger: {
+  shareholdersList: {
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
-    gap: '0.75rem',
-    minWidth: '200px',
-  },
-  ledgerRow: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingBottom: '0.4rem',
-    borderBottom: '1px solid rgba(255, 255, 255, 0.03)',
-  },
-  ledgerHeader: {
-    display: 'flex',
-    alignItems: 'center',
     gap: '0.5rem',
   },
-  ledgerColorBox: {
-    width: '8px',
-    height: '8px',
-    borderRadius: '2px',
-  },
-  ledgerName: {
-    fontSize: '0.82rem',
-    color: '#a3a3a3',
-  },
-  ledgerValues: {
-    display: 'flex',
-    gap: '1rem',
-    alignItems: 'center',
-  },
-  ledgerShares: {
-    fontSize: '0.82rem',
-    color: '#ffffff',
-    fontFamily: 'monospace',
-  },
-  ledgerPct: {
-    fontSize: '0.82rem',
-    fontWeight: '700',
-    color: '#ffffff',
-    width: '45px',
-    textAlign: 'right',
-  },
-  card: {
-    padding: '2rem',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '1.5rem',
-    height: 'fit-content',
-  },
-  cardHeader: {
+  shareholderRow: {
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    fontSize: '0.76rem',
+    borderBottom: '1px solid rgba(255,255,255,0.03)',
+    paddingBottom: '0.25rem',
   },
-  editBtn: {
-    padding: '0.4rem 0.8rem',
-    fontSize: '0.75rem',
-  },
-  profileDisplay: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '1.25rem',
-  },
-  profileMetaRow: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '0.75rem',
-    fontSize: '0.88rem',
+  shareholderName: {
     color: '#a3a3a3',
   },
-  profileField: {
-    display: 'flex',
-    alignItems: 'center',
-  },
-  link: {
+  shareholderPercent: {
     color: '#ffffff',
-    textDecoration: 'underline',
-    fontWeight: '600',
+    fontWeight: '800',
   },
-  profileSummarySection: {
-    borderTop: '1px solid rgba(255, 255, 255, 0.05)',
-    paddingTop: '1rem',
+  card: {
+    padding: '1.5rem',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1rem',
   },
-  sectionHeader: {
-    fontSize: '0.7rem',
-    fontWeight: '700',
-    color: '#737373',
-    textTransform: 'uppercase',
-    marginBottom: '0.5rem',
+  cardTitle: {
+    fontSize: '1.05rem',
+    fontWeight: '800',
+    color: '#ffffff',
+    margin: 0,
   },
-  summaryText: {
-    fontSize: '0.88rem',
+  cardDesc: {
+    fontSize: '0.76rem',
     color: '#a3a3a3',
-    lineHeight: '1.5',
+    lineHeight: '1.35',
   },
   profileForm: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '1rem',
+    gap: '0.85rem',
   },
-  memberForm: {
+  profileDetails: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '1rem',
-    background: 'rgba(255,255,255,0.02)',
-    border: '1px solid rgba(255,255,255,0.05)',
-    borderRadius: '8px',
-    padding: '1.25rem',
+    gap: '0.65rem',
   },
-  smallInput: {
-    width: '100%',
-    background: '#0a0a0a',
-    border: '1px solid rgba(255,255,255,0.08)',
-    borderRadius: '4px',
-    padding: '0.5rem 0.75rem',
-    color: '#ffffff',
-    fontSize: '0.85rem',
-    outline: 'none',
-  },
-  smallTextarea: {
-    width: '100%',
-    background: '#0a0a0a',
-    border: '1px solid rgba(255,255,255,0.08)',
-    borderRadius: '4px',
-    padding: '0.5rem 0.75rem',
-    color: '#ffffff',
-    fontSize: '0.85rem',
-    outline: 'none',
-    resize: 'none',
-    fontFamily: 'inherit',
-  },
-  smallBtn: {
-    padding: '0.4rem 0.8rem',
-    fontSize: '0.8rem',
-    alignSelf: 'flex-start',
+  profileRow: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    fontSize: '0.82rem',
   },
   teamList: {
     display: 'flex',
     flexDirection: 'column',
     gap: '1rem',
+    marginTop: '0.5rem',
   },
-  emptyText: {
-    fontSize: '0.85rem',
-    color: '#525252',
-    fontStyle: 'italic',
-  },
-  teamMemberCard: {
+  teamItem: {
     background: 'rgba(255,255,255,0.01)',
-    border: '1px solid rgba(255,255,255,0.03)',
+    border: '1px solid rgba(255,255,255,0.04)',
     borderRadius: '8px',
-    padding: '1.25rem',
+    padding: '1rem',
     display: 'flex',
     flexDirection: 'column',
-    gap: '0.5rem',
+    gap: '0.35rem',
   },
-  memberHeader: {
+  teamHeader: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
   },
-  memberNameText: {
-    fontSize: '0.95rem',
+  teamName: {
+    fontSize: '0.85rem',
+    fontWeight: '800',
     color: '#ffffff',
-    display: 'block',
+    margin: 0,
   },
-  memberRoleText: {
-    fontSize: '0.78rem',
+  teamRole: {
+    fontSize: '0.68rem',
+    color: '#a3a3a3',
+  },
+  teamBio: {
+    fontSize: '0.72rem',
     color: '#737373',
-    display: 'block',
+    margin: 0,
+    lineHeight: '1.4',
   },
-  memberLink: {
-    fontSize: '0.78rem',
-    color: '#ffffff',
-    textDecoration: 'underline',
-  },
-  deleteMemberBtn: {
+  removeBtn: {
     background: 'transparent',
     border: 'none',
-    color: '#737373',
-    fontSize: '0.8rem',
+    color: '#ef4444',
+    fontSize: '1rem',
     cursor: 'pointer',
-    padding: '0.2rem',
-    ':hover': {
-      color: '#ffffff'
-    }
+    lineHeight: '1',
   },
-  memberBioText: {
-    fontSize: '0.82rem',
+
+  // Founder Pro Styles
+  proPanelContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  upsellCard: {
+    padding: '3rem',
+    textAlign: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '1.5rem',
+    background: 'radial-gradient(circle, rgba(139,92,246,0.03) 0%, rgba(0,0,0,0.5) 100%)',
+    boxShadow: '0 20px 40px rgba(0,0,0,0.8)',
+  },
+  upsellBadge: {
+    fontSize: '0.68rem',
+    fontWeight: '850',
+    background: 'rgba(167, 139, 250, 0.1)',
+    color: '#a78bfa',
+    padding: '0.2rem 0.65rem',
+    borderRadius: '4px',
+    border: '1px solid rgba(167, 139, 250, 0.25)',
+  },
+  upsellTitle: {
+    fontSize: '1.45rem',
+    fontWeight: '850',
+    color: '#ffffff',
+    maxWidth: '640px',
+    lineHeight: '1.3',
+  },
+  upsellDesc: {
+    fontSize: '0.85rem',
     color: '#a3a3a3',
-    lineHeight: '1.4',
+    maxWidth: '560px',
+    lineHeight: '1.5',
+  },
+  upsellMetricsRow: {
+    display: 'flex',
+    gap: '2.5rem',
+    marginTop: '0.5rem',
+  },
+  upsellMetricBox: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.25rem',
+    textAlign: 'center',
+  },
+  upsellLabel: {
+    fontSize: '0.62rem',
+    color: '#737373',
+    textTransform: 'uppercase',
+    fontWeight: '700',
+  },
+  upgradeBtn: {
+    background: 'linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%)',
+    color: '#000000',
+    fontWeight: '900',
+    fontSize: '0.9rem',
+    padding: '0.75rem 2rem',
+    borderRadius: '8px',
+    border: 'none',
+    cursor: 'pointer',
+    boxShadow: '0 5px 15px rgba(139,92,246,0.4)',
+    transition: 'all 0.2s',
+  },
+
+  // Pro Console Dashboard
+  proTopGrid: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1.1fr',
+    gap: '1.5rem',
+  },
+  billsList: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.75rem',
+  },
+  billItem: {
+    background: 'rgba(255,255,255,0.01)',
+    border: '1px solid rgba(255,255,255,0.04)',
+    borderRadius: '8px',
+    padding: '0.85rem 1.25rem',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  billLeft: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.75rem',
+  },
+  billNameText: {
+    fontSize: '0.82rem',
+    fontWeight: '800',
+    color: '#ffffff',
+    margin: 0,
+  },
+  billMeta: {
+    fontSize: '0.68rem',
+    color: '#737373',
+    display: 'block',
+    marginTop: '0.1rem',
+  },
+  billRight: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-end',
+    gap: '0.35rem',
+  },
+  billPaidBadge: {
+    fontSize: '0.62rem',
+    padding: '0.1rem 0.4rem',
+    background: 'rgba(16,185,129,0.08)',
+    color: '#10b981',
+    border: '1px solid rgba(16,185,129,0.2)',
+    borderRadius: '4px',
+    fontWeight: '800',
+  },
+  runwayCard: {
+    background: 'rgba(0,0,0,0.25)',
+    border: '1px solid rgba(255,255,255,0.03)',
+    borderRadius: '6px',
+    padding: '1rem',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.5rem',
+    marginTop: '0.5rem',
+  },
+  runwayWrap: {
+    marginTop: '0.35rem',
+  },
+  actionBtn: {
+    padding: '0.25rem 0.5rem',
+    fontSize: '0.64rem',
+    borderRadius: '4px',
+    height: '24px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    border: '1px solid rgba(255,255,255,0.08)',
+    cursor: 'pointer',
+    background: 'rgba(255,255,255,0.02)',
+    color: '#ffffff'
+  },
+  downloadBtn: {
+    padding: '0.5rem 1rem',
+    fontSize: '0.8rem',
+  },
+
+  // Chore Delegation
+  choreForm: {
+    background: 'rgba(0,0,0,0.2)',
+    padding: '0.75rem',
+    borderRadius: '6px',
+    border: '1px solid rgba(255,255,255,0.03)',
+    marginBottom: '0.5rem',
+  },
+  choresList: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.75rem',
+  },
+  choreItem: {
+    background: 'rgba(255,255,255,0.01)',
+    border: '1px solid rgba(255,255,255,0.04)',
+    borderRadius: '8px',
+    padding: '0.85rem 1.25rem',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  choreItemTitle: {
+    fontSize: '0.82rem',
+    fontWeight: '800',
+    color: '#ffffff',
+    margin: 0,
+  },
+  choreItemMeta: {
+    fontSize: '0.68rem',
+    color: '#737373',
+  },
+
+  // Spreadsheet Reg CF
+  spreadTable: {
+    width: '100%',
+    borderCollapse: 'collapse',
+    textAlign: 'left',
+    fontSize: '0.78rem',
+    marginTop: '0.5rem',
+  },
+  spreadHeaderRow: {
+    borderBottom: '1px solid rgba(255,255,255,0.08)',
+  },
+  spreadHeaderCell: {
+    padding: '0.65rem 0.85rem',
+    fontWeight: '800',
+    color: '#a3a3a3',
+    textTransform: 'uppercase',
+    fontSize: '0.62rem',
+    letterSpacing: '0.03em',
+  },
+  spreadRow: {
+    borderBottom: '1px solid rgba(255,255,255,0.03)',
+  },
+  spreadCell: {
+    padding: '0.75rem 0.85rem',
+    verticalAlign: 'middle',
+    color: '#ffffff',
   }
 };

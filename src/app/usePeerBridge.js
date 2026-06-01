@@ -16,6 +16,9 @@ const INITIAL_CUSTOMERS = {
   status: 'active', // active, inactive, suspended, verified
   isOnboarded: true,
   ssn: '',
+  subscription_tier: 'standard', // standard, lender_pro, founder_pro
+  auto_invest_enabled: false,
+  auto_invest_settings: { yield_profile: 'balanced', max_allocation: 500 },
   created_at: '2026-01-15T08:30:00Z',
   updated_at: '2026-05-29T08:00:00Z'
 };
@@ -349,6 +352,9 @@ const INITIAL_DIRECTORY = [
     status: 'verified',
     isOnboarded: true,
     ssn: 'XXX-XX-4819',
+    subscription_tier: 'lender_pro',
+    auto_invest_enabled: true,
+    auto_invest_settings: { yield_profile: 'balanced', max_allocation: 100 },
     basicProfile: {
       dob: '1989-10-14',
       nationality: 'United States',
@@ -386,6 +392,9 @@ const INITIAL_DIRECTORY = [
     status: 'verified',
     isOnboarded: true,
     ssn: 'XXX-XX-9022',
+    subscription_tier: 'founder_pro',
+    auto_invest_enabled: false,
+    auto_invest_settings: { yield_profile: 'balanced', max_allocation: 500 },
     basicProfile: {
       dob: '1992-05-22',
       nationality: 'United States',
@@ -1589,6 +1598,9 @@ export function usePeerBridge() {
       status: member.status || 'active',
       isOnboarded: member.isOnboarded !== undefined ? member.isOnboarded : true,
       ssn: member.ssn || '',
+      subscription_tier: member.subscription_tier || 'standard',
+      auto_invest_enabled: member.auto_invest_enabled || false,
+      auto_invest_settings: member.auto_invest_settings || { yield_profile: 'balanced', max_allocation: 500 },
       created_at: member.created_at || new Date().toISOString(),
       updated_at: new Date().toISOString()
     };
@@ -1997,9 +2009,79 @@ export function usePeerBridge() {
       ]
     };
 
+    let campRaised = 0;
+    let campInvestors = 0;
+    let activeUserAdditions = [];
+
+    // Algorithmic Auto-Matching & Auto-Invest (Phase 2 Pro feature)
+    if (offeringType === 'debt') {
+      const rateVal = parseFloat(interestRate);
+      const matchingLenders = directory.filter(m => 
+        m.role_flags.includes('Investor') && 
+        m.subscription_tier === 'lender_pro' && 
+        m.auto_invest_enabled === true
+      );
+
+      matchingLenders.forEach(lender => {
+        const settings = lender.auto_invest_settings || { yield_profile: 'balanced', max_allocation: 100 };
+        const profile = settings.yield_profile || 'balanced';
+        const allocation = parseFloat(settings.max_allocation || 100);
+
+        let isMatched = false;
+        if (profile === 'conservative' && rateVal <= 10) isMatched = true;
+        if (profile === 'balanced' && rateVal > 10 && rateVal <= 20) isMatched = true;
+        if (profile === 'yield_max' && rateVal > 20) isMatched = true;
+
+        if (isMatched && campRaised + allocation <= targetVal) {
+          campRaised += allocation;
+          campInvestors += 1;
+
+          const portEntry = {
+            portfolio_id: generateRandomId('port'),
+            customer_id: lender.customer_id,
+            investment_id: newCamp.id,
+            companyName: newCamp.companyName,
+            category: newCamp.category,
+            sharePrice: 1.0,
+            shares: 0,
+            investment_type: 'debt',
+            amount_invested: allocation,
+            date_invested: new Date().toISOString(),
+            current_value: allocation,
+            interest_rate: rateVal,
+            term_months: parseInt(termMonths || 6),
+            status: 'active'
+          };
+
+          if (customer && customer.customer_id === lender.customer_id) {
+            activeUserAdditions.push(portEntry);
+          } else {
+            // Deduct simulated balance in directory
+            const prevBal = lender.wallet_balance !== undefined ? lender.wallet_balance : 250000;
+            updateDirectoryMember(lender.customer_id, { wallet_balance: Math.max(0, prevBal - allocation) });
+          }
+        }
+      });
+
+      if (campRaised > 0) {
+        newCamp.raised = campRaised;
+        newCamp.investorsCount = campInvestors;
+      }
+    }
+
     sync('pb_campaigns', [newCamp, ...campaigns], setCampaigns);
     addTransaction('Campaign Launch', 0, `Launched fundraising offering - ${companyName}`);
     addNotification('Investment', `Offering round Form C registered with SEC for ${companyName}.`);
+
+    // If active user had auto-invest allocations, update active state balance and portfolio
+    if (activeUserAdditions.length > 0) {
+      const totalAllocated = activeUserAdditions.reduce((sum, e) => sum + e.amount_invested, 0);
+      const nextWalletBal = Math.max(0, walletBalance - totalAllocated);
+      sync('pb_balance', nextWalletBal, setWalletBalance);
+      sync('pb_portfolio', [...portfolio, ...activeUserAdditions], setPortfolio);
+      updateDirectoryMember(customer.customer_id, { wallet_balance: nextWalletBal });
+      addNotification('Investment', `Auto-Invest: Automatically placed $${totalAllocated} in ${companyName} Commercial Note based on Balanced Yield matching.`);
+    }
 
     // Write pitch deck to documentation table
     const newPitchDoc = {
@@ -2011,6 +2093,11 @@ export function usePeerBridge() {
       verified: true
     };
     sync('pb_docs', [newPitchDoc, ...documentation], setDocumentation);
+
+    // Notify ecosystem of Auto-Match matching volume
+    if (campRaised > 0) {
+      addNotification('System', `Ecosystem Auto-Match: ${campInvestors} Pro Lenders collectively funded $${campRaised.toLocaleString()} matching target criteria.`);
+    }
 
     return { success: true, campaign: newCamp };
   };
@@ -2469,16 +2556,39 @@ export function usePeerBridge() {
   };
 
   const updateUserProfile = (updates) => {
+    let nextCustomer = { ...customer };
     if (updates.role) {
       const otherRoles = (customer.role_flags || []).filter(r => r !== updates.role);
-      sync('pb_cust', { ...customer, role_flags: [updates.role, ...otherRoles] }, setCustomer);
+      nextCustomer.role_flags = [updates.role, ...otherRoles];
     }
     if (updates.name) {
       const nameParts = updates.name.trim().split(' ');
       const firstName = nameParts[0] || '';
       const lastName = nameParts.slice(1).join(' ') || '';
-      sync('pb_cust', { ...customer, first_name: firstName, last_name: lastName }, setCustomer);
+      nextCustomer.first_name = firstName;
+      nextCustomer.last_name = lastName;
     }
+    if (updates.subscription_tier !== undefined) {
+      nextCustomer.subscription_tier = updates.subscription_tier;
+    }
+    if (updates.auto_invest_enabled !== undefined) {
+      nextCustomer.auto_invest_enabled = updates.auto_invest_enabled;
+    }
+    if (updates.auto_invest_settings !== undefined) {
+      nextCustomer.auto_invest_settings = {
+        ...(customer.auto_invest_settings || {}),
+        ...updates.auto_invest_settings
+      };
+    }
+    sync('pb_cust', nextCustomer, setCustomer);
+    updateDirectoryMember(customer.customer_id, {
+      role_flags: nextCustomer.role_flags,
+      first_name: nextCustomer.first_name,
+      last_name: nextCustomer.last_name,
+      subscription_tier: nextCustomer.subscription_tier,
+      auto_invest_enabled: nextCustomer.auto_invest_enabled,
+      auto_invest_settings: nextCustomer.auto_invest_settings
+    });
   };
 
   return {
