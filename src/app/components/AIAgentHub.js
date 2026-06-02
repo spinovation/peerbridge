@@ -164,6 +164,24 @@ export default function AIAgentHub({ state }) {
 
   // Selected startup candidate in simulator
   const [selectedCandidate, setSelectedCandidate] = useState('kristi');
+  
+  // Search filter query state for simulator options
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Dynamic filter lookup keys mapping candidate properties
+  const filteredKeys = Object.keys(candidateDatabase).filter((key) => {
+    const cand = candidateDatabase[key];
+    return cand.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+           cand.grade.toLowerCase().includes(searchTerm.toLowerCase()) ||
+           cand.industry.toLowerCase().includes(searchTerm.toLowerCase());
+  });
+
+  // Adjust selected candidate index automatically if filter deletes it from scope
+  useEffect(() => {
+    if (filteredKeys.length > 0 && !filteredKeys.includes(selectedCandidate)) {
+      setSelectedCandidate(filteredKeys[0]);
+    }
+  }, [searchTerm]);
 
   // Agent activation states
   const [agents, setAgents] = useState({
@@ -411,7 +429,43 @@ export default function AIAgentHub({ state }) {
               </p>
 
               <div style={styles.inputGroup}>
-                <label style={styles.label}>Select Target Borrower & Startup Campaign</label>
+                <label style={styles.label}>Search & Select Startup Campaign</label>
+                <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                  <input
+                    type="text"
+                    placeholder="🔍 Filter startups (e.g. Elena, BRS: 94, Logistics...)"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    style={{
+                      flex: 1,
+                      background: 'rgba(10, 10, 10, 0.95)',
+                      border: '1px solid rgba(255, 255, 255, 0.08)',
+                      borderRadius: '8px',
+                      padding: '0.65rem 0.85rem',
+                      color: '#ffffff',
+                      fontSize: '0.85rem',
+                      outline: 'none',
+                    }}
+                    disabled={simActive}
+                  />
+                  {searchTerm && (
+                    <button
+                      onClick={() => setSearchTerm('')}
+                      style={{
+                        background: 'rgba(255,255,255,0.05)',
+                        border: '1px solid rgba(255, 255, 255, 0.08)',
+                        borderRadius: '8px',
+                        color: '#a3a3a3',
+                        padding: '0 0.85rem',
+                        cursor: 'pointer',
+                        fontSize: '0.85rem'
+                      }}
+                      disabled={simActive}
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
                 <select
                   value={selectedCandidate}
                   onChange={(e) => {
@@ -424,10 +478,14 @@ export default function AIAgentHub({ state }) {
                   style={styles.select}
                   disabled={simActive}
                 >
-                  <option value="kristi">Kristi Tonin - Tonin Logistics (Logistics, BRS: 86/100)</option>
-                  <option value="elena">Elena Rostova - NeuroWeb AI (Generative AI, BRS: 94/100)</option>
-                  <option value="kofi">Kofi Anan - Helium Energy (CleanTech Idea, BRS: 68/100)</option>
-                  <option value="devon">Devon Lane - Aurora Energy Systems (CleanTech Hardware, BRS: 52/100)</option>
+                  {filteredKeys.map(key => (
+                    <option key={key} value={key}>
+                      {candidateDatabase[key].name} ({candidateDatabase[key].industry}, BRS: {candidateDatabase[key].grade.split(' • ')[1]})
+                    </option>
+                  ))}
+                  {filteredKeys.length === 0 && (
+                    <option disabled>No campaigns match your search query</option>
+                  )}
                 </select>
               </div>
 
