@@ -210,50 +210,110 @@ export default function AIAgentHub({ state }) {
     });
   };
 
-  // Negotiation Simulator Steps mapped dynamically based on selected candidate
-  const simulationSteps = candidateDatabase[selectedCandidate].steps;
-
-  // Simulates step-by-step negotiation
-  useEffect(() => {
-    let timer;
-    if (simActive && simStep < simulationSteps.length) {
-      timer = setTimeout(() => {
-        setSimLogs(prev => [...prev, simulationSteps[simStep]]);
-        setSimStep(prev => prev + 1);
-      }, 2500); // Conversational timing delay
-    } else if (simStep === simulationSteps.length) {
-      setSimActive(false);
-      const cand = candidateDatabase[selectedCandidate];
-      if (cand.hash !== 'DECLINED') {
-        setAgreedTerms({
-          principal: cand.principal,
-          rate: cand.rate,
-          tenor: cand.tenor,
-          netYield: cand.netYield,
-          spread: cand.spread,
-          hash: cand.hash
-        });
-        state.addNotification('Lending', `Autonomous AI Negotiation complete: $${cand.principal.toLocaleString()} note signed at ${cand.rate}% APR.`);
+  // Simulates step-by-step dialogue printing for both live and fallback flows
+  const playDialogue = (steps, onComplete) => {
+    let currentStep = 0;
+    const interval = setInterval(() => {
+      if (currentStep < steps.length) {
+        setSimLogs(prev => [...prev, steps[currentStep]]);
+        currentStep++;
       } else {
-        setAgreedTerms({
-          principal: cand.principal,
-          rate: 'DECLINED',
-          tenor: 12,
-          netYield: 0,
-          spread: 0,
-          hash: 'DECLINED - Underwriting criteria not met'
-        });
-        state.addNotification('Lending', `Autonomous AI Negotiation complete: Application for ${cand.name} was DECLINED.`);
+        clearInterval(interval);
+        onComplete();
       }
-    }
-    return () => clearTimeout(timer);
-  }, [simActive, simStep]);
+    }, 2200); // Conversational timing pacing
+  };
 
-  const handleStartSimulation = () => {
+  const handleStartSimulation = async () => {
     setSimLogs([]);
     setSimStep(0);
     setAgreedTerms(null);
     setSimActive(true);
+
+    const cand = candidateDatabase[selectedCandidate];
+
+    try {
+      const response = await fetch('/api/negotiate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          borrowerName: cand.name,
+          BRS: cand.grade.includes('BRS:') ? cand.grade.split('BRS:')[1].split('/')[0].trim() : 70,
+          FICO: selectedCandidate === 'elena' ? 620 : (selectedCandidate === 'devon' ? 610 : 720),
+          industry: cand.industry,
+          principal: cand.principal
+        })
+      });
+
+      const resData = await response.json();
+
+      if (resData.success) {
+        // Play the live AI-generated dialogue steps
+        playDialogue(resData.dialogue, () => {
+          setSimActive(false);
+          if (resData.decision !== 'DECLINED') {
+            setAgreedTerms({
+              principal: resData.agreedTerms.principal,
+              rate: resData.agreedTerms.rate,
+              tenor: resData.agreedTerms.tenor,
+              netYield: resData.agreedTerms.netYield,
+              spread: resData.agreedTerms.spread,
+              hash: resData.agreedTerms.hash || '0x' + Math.random().toString(16).slice(2, 10).padEnd(64, '0')
+            });
+            state.addNotification('Lending', `Live AI Audit complete: $${resData.agreedTerms.principal.toLocaleString()} note signed at ${resData.agreedTerms.rate}% APR.`);
+          } else {
+            setAgreedTerms({
+              principal: resData.agreedTerms.principal,
+              rate: 'DECLINED',
+              tenor: 12,
+              netYield: 0,
+              spread: 0,
+              hash: 'DECLINED - Underwriting criteria not met'
+            });
+            state.addNotification('Lending', `Live AI Audit complete: Application for ${cand.name} was DECLINED.`);
+          }
+        });
+        return;
+      } else {
+        throw new Error(resData.error || 'Server error');
+      }
+    } catch (err) {
+      console.warn("Live LLM API unavailable or key missing. Falling back to local simulation sandbox. Details:", err.message);
+      
+      const fallbackNotice = {
+        sender: 'RiskOps System Core',
+        message: '⚡ Gemini Live LLM Key missing or offline. Booting local simulation sandbox...',
+        color: '#737373'
+      };
+      
+      setSimLogs([fallbackNotice]);
+      
+      // Play the local pre-scripted steps as fallback
+      playDialogue(cand.steps, () => {
+        setSimActive(false);
+        if (cand.hash !== 'DECLINED') {
+          setAgreedTerms({
+            principal: cand.principal,
+            rate: cand.rate,
+            tenor: cand.tenor,
+            netYield: cand.netYield,
+            spread: cand.spread,
+            hash: cand.hash
+          });
+          state.addNotification('Lending', `Autonomous AI Negotiation complete: $${cand.principal.toLocaleString()} note signed at ${cand.rate}% APR.`);
+        } else {
+          setAgreedTerms({
+            principal: cand.principal,
+            rate: 'DECLINED',
+            tenor: 12,
+            netYield: 0,
+            spread: 0,
+            hash: 'DECLINED - Underwriting criteria not met'
+          });
+          state.addNotification('Lending', `Autonomous AI Negotiation complete: Application for ${cand.name} was DECLINED.`);
+        }
+      });
+    }
   };
 
   return (
