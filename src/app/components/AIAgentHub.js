@@ -2,9 +2,168 @@
 
 import { useState, useEffect } from 'react';
 
+// Database of startups and borrowers for the AI Broker agents to evaluate
+const candidateDatabase = {
+  kristi: {
+    name: 'Kristi Tonin (Tonin Logistics)',
+    grade: 'P3 Near-Prime • BRS: 86/100',
+    industry: 'Logistics',
+    principal: 5000,
+    rate: 13.5,
+    tenor: 12,
+    netYield: 12.0,
+    spread: 1.5,
+    hash: '0x8dfa9e2239f110c9b0e77d2427a123f8b89e83120194bc028a3f81e8c9d09c2a',
+    steps: [
+      {
+        sender: 'FounderAgent (Entrepreneur Agent)',
+        message: 'Initial request: Sourcing $5,000 principal debt note for cold-storage shipping fleet expansion. Proposed terms: 10.0% APR gross borrowing rate, 12 months tenor.',
+        color: '#a78bfa'
+      },
+      {
+        sender: 'CapitalAgent (Investor Agent)',
+        message: 'Analyzing candidate credit profile... Borrower customer ID dir-cust-kristi mapped. PRI Score: 742 (Grade P3 Near-Prime, PD 12m: 3.2%). Revolving utilization at 68%. Counter offer: 16.0% APR gross to price risk appropriately.',
+        color: '#00f2fe'
+      },
+      {
+        sender: 'FounderAgent (Entrepreneur Agent)',
+        message: 'Reviewing counter... Cash runway forecast maps 12 months with active burn rate of -$12,000/mo. Layer 2 Behavioral BRS is strong (86/100, zero overdraft events). Proposing split compromise rate: 13.5% APR gross borrower rate.',
+        color: '#a78bfa'
+      },
+      {
+        sender: 'CapitalAgent (Investor Agent)',
+        message: 'Audit approved. BRS cash regularity at 96% and on-time payback ratio at 99% offsets thin bureau files. Proposal accepted: $5,000 principal at 13.5% gross borrower rate (12.0% net investor yield, 1.5% platform servicing spread) for 12 months. Compiling SEC Reg D contract promissory note...',
+        color: '#00f2fe'
+      },
+      {
+        sender: 'RiskOps Ledger Vetting',
+        message: 'SEC Promissory Note successfully compiled. Signed Electronically by autonomous broker agents. SHA-256 Hash committed: 0x8dfa9e2239f110c9b0e77d2427a123f8b89e83120194bc028a3f81e8c9d09c2a. Symmetrical copies deployed to Lender and Borrower vaults.',
+        color: '#10b981'
+      }
+    ]
+  },
+  elena: {
+    name: 'Elena Rostova (NeuroWeb AI)',
+    grade: 'P1 Super-Prime • BRS: 94/100',
+    industry: 'Generative AI',
+    principal: 20000,
+    rate: 7.8,
+    tenor: 12,
+    netYield: 6.5,
+    spread: 1.3,
+    hash: '0x7ae12b553e1a0b3f8e75c8d2a1b9bc917d23a410b953ea28bf030a218fcf58aa',
+    steps: [
+      {
+        sender: 'FounderAgent (Entrepreneur Agent)',
+        message: 'Initial request: Sourcing $20,000 principal debt note for GPU cloud compute scaling. Proposed terms: 6.0% APR gross borrowing rate, 12 months tenor.',
+        color: '#a78bfa'
+      },
+      {
+        sender: 'CapitalAgent (Investor Agent)',
+        message: 'Analyzing candidate profile... Borrower customer ID dir-cust-elena mapped. PRI Score: 820 (Grade P1 Super-Prime, PD 12m: 0.4%). Thin credit file but extremely high gross cash surplus. Counter offer: 9.0% APR gross to match balanced portfolio targets.',
+        color: '#00f2fe'
+      },
+      {
+        sender: 'FounderAgent (Entrepreneur Agent)',
+        message: 'Reviewing counter... BRS score is 94/100. Net take-home cash flow of $6,300/mo and zero credit card utilization. Proposing a prime rate: 7.8% APR gross borrower rate.',
+        color: '#a78bfa'
+      },
+      {
+        sender: 'CapitalAgent (Investor Agent)',
+        message: 'Audit approved. Exceptional 68% true net savings rate overrides thin FICO. Proposal accepted: $20,000 principal at 7.8% gross borrower rate (6.5% net investor yield, 1.3% servicing spread) for 12 months. Compiling SEC Reg D contract promissory note...',
+        color: '#00f2fe'
+      },
+      {
+        sender: 'RiskOps Ledger Vetting',
+        message: 'SEC Promissory Note successfully compiled. Signed Electronically by autonomous broker agents. SHA-256 Hash committed: 0x7ae12b553e1a0b3f8e75c8d2a1b9bc917d23a410b953ea28bf030a218fcf58aa. Symmetrical copies deployed to Lender and Borrower vaults.',
+        color: '#10b981'
+      }
+    ]
+  },
+  kofi: {
+    name: 'Kofi Anan (Helium Energy)',
+    grade: 'P4 Near-Subprime • BRS: 68/100',
+    industry: 'CleanTech (Idea)',
+    principal: 8000,
+    rate: 16.5,
+    tenor: 12,
+    netYield: 14.5,
+    spread: 2.0,
+    hash: '0x3bf92c448de02188fa9e5b8d9c223a410a8b943d2c88f01b97de2c016e789fcc',
+    steps: [
+      {
+        sender: 'FounderAgent (Entrepreneur Agent)',
+        message: 'Initial request: Sourcing $8,000 principal debt note for hydrogen storage container prototype. Proposed terms: 11.0% APR gross borrowing rate, 12 months tenor.',
+        color: '#a78bfa'
+      },
+      {
+        sender: 'CapitalAgent (Investor Agent)',
+        message: 'Analyzing candidate profile... Borrower customer ID dir-cust-kofi mapped. PRI Score: 618 (Grade P4 Near-Subprime, PD 12m: 8.5%). Idea stage venture with thin files. Counter offer: 19.5% APR gross to price early-stage venture default risk.',
+        color: '#00f2fe'
+      },
+      {
+        sender: 'FounderAgent (Entrepreneur Agent)',
+        message: 'Reviewing counter... Fresh graduate with low income but zero active debt obligations. Proposing a middle rate: 16.5% APR gross borrower rate.',
+        color: '#a78bfa'
+      },
+      {
+        sender: 'CapitalAgent (Investor Agent)',
+        message: 'Audit check. Low debt load offsets thin operating history. Proposal accepted: $8,000 principal at 16.5% gross borrower rate (14.5% net investor yield, 2.0% platform servicing spread) for 12 months. Compiling SEC Reg D contract promissory note...',
+        color: '#00f2fe'
+      },
+      {
+        sender: 'RiskOps Ledger Vetting',
+        message: 'SEC Promissory Note successfully compiled. Signed Electronically by autonomous broker agents. SHA-256 Hash committed: 0x3bf92c448de02188fa9e5b8d9c223a410a8b943d2c88f01b97de2c016e789fcc. Symmetrical copies deployed to Lender and Borrower vaults.',
+        color: '#10b981'
+      }
+    ]
+  },
+  devon: {
+    name: 'Devon Lane (Aurora Energy Systems)',
+    grade: 'P5 Deep Subprime • BRS: 52/100',
+    industry: 'CleanTech Hardware',
+    principal: 15000,
+    rate: 0,
+    tenor: 12,
+    netYield: 0,
+    spread: 0,
+    hash: 'DECLINED',
+    steps: [
+      {
+        sender: 'FounderAgent (Entrepreneur Agent)',
+        message: 'Initial request: Sourcing $15,000 principal debt note for residential battery components. Proposed terms: 12.0% APR gross borrowing rate, 12 months tenor.',
+        color: '#a78bfa'
+      },
+      {
+        sender: 'CapitalAgent (Investor Agent)',
+        message: 'Analyzing candidate profile... Borrower customer ID dir-cust-devon mapped. PRI Score: 520 (Grade P5 Deep Subprime, PD 12m: 14.8%). High FICO debt history coupled with severe lifestyle spend burn. Checking discretionary transaction velocity...',
+        color: '#00f2fe'
+      },
+      {
+        sender: 'FounderAgent (Entrepreneur Agent)',
+        message: 'Reviewing metrics... Earning $500,000 gross. However, discretionary luxury card velocity is $11,500/mo. Savings rate is only 6.9%. Requesting rate compromise: 18.0% APR gross borrower rate to offset default risks.',
+        color: '#a78bfa'
+      },
+      {
+        sender: 'CapitalAgent (Investor Agent)',
+        message: 'Audit check: True net savings rate is too low ($1,500/mo surplus on $500k income) and credit cards are maxed out. Underwriting threshold not met. Proposal DECLINED: High risk of payment default. Session closed.',
+        color: '#ef4444'
+      },
+      {
+        sender: 'RiskOps Ledger Vetting',
+        message: 'Negotiation Session Terminated. Status: Declined due to excessive discretionary cash burn (DDI 93%). No Promissory Note generated.',
+        color: '#ef4444'
+      }
+    ]
+  }
+};
+
 export default function AIAgentHub({ state }) {
   const { user } = state;
   const [activeTab, setActiveTab] = useState('agents_console'); // agents_console, simulator
+
+  // Selected startup candidate in simulator
+  const [selectedCandidate, setSelectedCandidate] = useState('kristi');
 
   // Agent activation states
   const [agents, setAgents] = useState({
@@ -33,34 +192,8 @@ export default function AIAgentHub({ state }) {
     });
   };
 
-  // Negotiation Simulator Steps
-  const simulationSteps = [
-    {
-      sender: 'FounderAgent (Entrepreneur Agent)',
-      message: 'Initial request: Sourcing $5,000 principal debt note for cold-storage shipping expansion. Proposed terms: 10.0% APR gross borrowing rate, 12 months tenor.',
-      color: '#a78bfa'
-    },
-    {
-      sender: 'CapitalAgent (Investor Agent)',
-      message: 'Analyzing candidate credit profile... Borrower customer ID dir-cust-kristi mapped. PRI Score: 742 (Grade P3 Near-Prime, PD 12m: 3.2%). Revolving utilization at 68%. Counter offer: 16.0% APR gross to price risk appropriately.',
-      color: '#00f2fe'
-    },
-    {
-      sender: 'FounderAgent (Entrepreneur Agent)',
-      message: 'Reviewing counter... Cash runway forecast maps 12 months with active burn rate of -$12,000/mo. Layer 2 Behavioral BRS is strong (86/100, zero overdraft events). Proposing split compromise rate: 13.5% APR gross borrower rate.',
-      color: '#a78bfa'
-    },
-    {
-      sender: 'CapitalAgent (Investor Agent)',
-      message: 'Audit approved. BRS cash regularity at 96% and on-time payback ratio at 99% offsets thin bureau files. Proposal accepted: $5,000 principal at 13.5% gross borrower rate (12.0% net investor yield, 1.5% platform servicing spread) for 12 months. Compiling SEC Reg D contract promissory note...',
-      color: '#00f2fe'
-    },
-    {
-      sender: 'RiskOps Ledger Vetting',
-      message: 'SEC Promissory Note successfully compiled. Signed Electronically by autonomous broker agents. SHA-256 Hash committed: 0x8dfa9e2239f110c9b0e77d2427a123f8b89e83120194bc028a3f81e8c9d09c2a. Symmetrical copies deployed to Lender and Borrower vaults.',
-      color: '#10b981'
-    }
-  ];
+  // Negotiation Simulator Steps mapped dynamically based on selected candidate
+  const simulationSteps = candidateDatabase[selectedCandidate].steps;
 
   // Simulates step-by-step negotiation
   useEffect(() => {
@@ -69,18 +202,31 @@ export default function AIAgentHub({ state }) {
       timer = setTimeout(() => {
         setSimLogs(prev => [...prev, simulationSteps[simStep]]);
         setSimStep(prev => prev + 1);
-      }, 2500); // Delay between conversational loops for micro-animation realism
+      }, 2500); // Conversational timing delay
     } else if (simStep === simulationSteps.length) {
       setSimActive(false);
-      setAgreedTerms({
-        principal: 5000,
-        rate: 13.5,
-        tenor: 12,
-        netYield: 12.0,
-        spread: 1.5,
-        hash: '0x8dfa9e2239f110c9b0e77d2427a123f8b89e83120194bc028a3f81e8c9d09c2a'
-      });
-      state.addNotification('Lending', 'Autonomous AI Negotiation complete: $5,000 note signed at 13.5% APR.');
+      const cand = candidateDatabase[selectedCandidate];
+      if (cand.hash !== 'DECLINED') {
+        setAgreedTerms({
+          principal: cand.principal,
+          rate: cand.rate,
+          tenor: cand.tenor,
+          netYield: cand.netYield,
+          spread: cand.spread,
+          hash: cand.hash
+        });
+        state.addNotification('Lending', `Autonomous AI Negotiation complete: $${cand.principal.toLocaleString()} note signed at ${cand.rate}% APR.`);
+      } else {
+        setAgreedTerms({
+          principal: cand.principal,
+          rate: 'DECLINED',
+          tenor: 12,
+          netYield: 0,
+          spread: 0,
+          hash: 'DECLINED - Underwriting criteria not met'
+        });
+        state.addNotification('Lending', `Autonomous AI Negotiation complete: Application for ${cand.name} was DECLINED.`);
+      }
     }
     return () => clearTimeout(timer);
   }, [simActive, simStep]);
@@ -264,16 +410,39 @@ export default function AIAgentHub({ state }) {
                 Trigger a mock negotiation loop where `FounderAgent` and `CapitalAgent` autonomously negotiate loan yields based on BRS credit indexing.
               </p>
 
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>Select Target Borrower & Startup Campaign</label>
+                <select
+                  value={selectedCandidate}
+                  onChange={(e) => {
+                    setSelectedCandidate(e.target.value);
+                    setSimLogs([]);
+                    setSimStep(0);
+                    setAgreedTerms(null);
+                    setSimActive(false);
+                  }}
+                  style={styles.select}
+                  disabled={simActive}
+                >
+                  <option value="kristi">Kristi Tonin - Tonin Logistics (Logistics, BRS: 86/100)</option>
+                  <option value="elena">Elena Rostova - NeuroWeb AI (Generative AI, BRS: 94/100)</option>
+                  <option value="kofi">Kofi Anan - Helium Energy (CleanTech Idea, BRS: 68/100)</option>
+                  <option value="devon">Devon Lane - Aurora Energy Systems (CleanTech Hardware, BRS: 52/100)</option>
+                </select>
+              </div>
+
               <div style={styles.setupInfoBox}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                  <span style={styles.specLabel}>Borrower Candidate Profile</span>
-                  <strong style={{ color: '#ffffff', fontSize: '0.85rem' }}>Kristi Tonin (Tonin Logistics)</strong>
-                  <span style={{ color: '#d4af37', fontSize: '0.7rem' }}>Index Grade: P3 Near-Prime • BRS: 86/100</span>
+                  <span style={styles.specLabel}>Selected Borrower Profile</span>
+                  <strong style={{ color: '#ffffff', fontSize: '0.85rem' }}>{candidateDatabase[selectedCandidate].name}</strong>
+                  <span style={{ color: selectedCandidate === 'devon' ? '#f43f5e' : '#d4af37', fontSize: '0.7rem', fontWeight: '700' }}>
+                    Index Grade: {candidateDatabase[selectedCandidate].grade}
+                  </span>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
                   <span style={styles.specLabel}>Lender Underwriter Profile</span>
                   <strong style={{ color: '#ffffff', fontSize: '0.85rem' }}>Mohit Mehra (Mehra Ventures)</strong>
-                  <span style={{ color: '#00f2fe', fontSize: '0.7rem' }}>Index Strategy: Balanced Yield Matcher</span>
+                  <span style={{ color: '#00f2fe', fontSize: '0.7rem', fontWeight: '700' }}>Index Strategy: Balanced Yield Matcher</span>
                 </div>
               </div>
 
@@ -297,9 +466,15 @@ export default function AIAgentHub({ state }) {
             {/* Agreed Terms display once completed */}
             {agreedTerms && (
               <div className="glass-panel glow-accent-border animate-fade-in-up" style={styles.termsCard}>
-                <span style={{ fontSize: '0.68rem', fontWeight: '850', color: '#10b981', textTransform: 'uppercase', background: 'rgba(16,185,129,0.08)', padding: '0.15rem 0.5rem', borderRadius: '4px', border: '1px solid rgba(16,185,129,0.25)' }}>
-                  ✓ SEC Reg D Note Executed Successfully
-                </span>
+                {agreedTerms.rate === 'DECLINED' ? (
+                  <span style={{ fontSize: '0.68rem', fontWeight: '850', color: '#ef4444', textTransform: 'uppercase', background: 'rgba(239,68,68,0.08)', padding: '0.15rem 0.5rem', borderRadius: '4px', border: '1px solid rgba(239,68,68,0.25)' }}>
+                    ✗ Underwriting Request Declined
+                  </span>
+                ) : (
+                  <span style={{ fontSize: '0.68rem', fontWeight: '850', color: '#10b981', textTransform: 'uppercase', background: 'rgba(16,185,129,0.08)', padding: '0.15rem 0.5rem', borderRadius: '4px', border: '1px solid rgba(16,185,129,0.25)' }}>
+                    ✓ SEC Reg D Note Executed Successfully
+                  </span>
+                )}
                 
                 <div style={styles.termsGrid}>
                   <div style={styles.termsBox}>
@@ -308,7 +483,9 @@ export default function AIAgentHub({ state }) {
                   </div>
                   <div style={styles.termsBox}>
                     <span style={styles.specLabel}>Gross Borrow Rate</span>
-                    <strong style={{ fontSize: '1.1rem', color: '#a78bfa' }}>{agreedTerms.rate}% APR</strong>
+                    <strong style={{ fontSize: '1.1rem', color: agreedTerms.rate === 'DECLINED' ? '#ef4444' : '#a78bfa' }}>
+                      {agreedTerms.rate === 'DECLINED' ? 'DECLINED' : `${agreedTerms.rate}% APR`}
+                    </strong>
                   </div>
                   <div style={styles.termsBox}>
                     <span style={styles.specLabel}>Maturity Tenor</span>
@@ -317,8 +494,8 @@ export default function AIAgentHub({ state }) {
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', background: 'rgba(0,0,0,0.2)', padding: '0.75rem', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.03)' }}>
-                  <span style={styles.specLabel}>SHA-256 Agreement Hash</span>
-                  <code style={{ fontSize: '0.74rem', color: '#00f2fe', fontFamily: 'monospace', overflowX: 'auto', whiteSpace: 'nowrap' }}>
+                  <span style={styles.specLabel}>Session Result Hash</span>
+                  <code style={{ fontSize: '0.74rem', color: agreedTerms.rate === 'DECLINED' ? '#ef4444' : '#00f2fe', fontFamily: 'monospace', overflowX: 'auto', whiteSpace: 'nowrap' }}>
                     {agreedTerms.hash}
                   </code>
                 </div>
