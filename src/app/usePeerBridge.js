@@ -1087,7 +1087,7 @@ export function usePeerBridge() {
       const collectionName = collectionMap[key];
       if (collectionName) {
         const docRef = doc(db, collectionName, customer.customer_id);
-        const dataToSave = typeof val === 'object' && val !== null ? val : { value: val };
+        const dataToSave = (Array.isArray(val) || typeof val !== 'object' || val === null) ? { value: val } : val;
         await setDoc(docRef, dataToSave);
       }
     } catch (err) {
@@ -2786,6 +2786,7 @@ export function usePeerBridge() {
     deleteUserFromDirectory,
     vetUserCredentials,
     simulateIncomingRequest,
+    addNotification,
     clearAllNotifications,
     removeNotification
   };
