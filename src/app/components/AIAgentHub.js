@@ -261,7 +261,7 @@ export default function AIAgentHub({ state }) {
       {/* Header Row */}
       <div style={styles.headerTitleRow}>
         <div>
-          <h2 style={styles.mainTitle}>🤖 Phase 3: Autonomous AI Agent Brokerage Hub</h2>
+          <h2 style={styles.mainTitle}>🤖 Autonomous AI Agent Brokerage Hub</h2>
           <p style={styles.subTitle}>
             Boot and supervise autonomous agents acting on behalf of lenders, entrepreneurs, and compliance affiliates. Run negotiations using credit telemetry.
           </p>
