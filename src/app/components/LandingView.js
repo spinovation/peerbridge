@@ -36,19 +36,19 @@ const howItWorksSteps = {
     ]
   },
   affiliate: {
-    title: "Vetted Affiliate (CPA/Lawyer) Journey",
-    desc: "Earn advisory fees by auditing offerings, structuring compliance frameworks, and reviewing filings.",
+    title: "Vetted Partner & Affiliate Journey",
+    desc: "Offer advisory services, compliance auditing, consulting, or corporate lending to ecosystem members.",
     debt: [
-      { step: "01", title: "Verify Directory Node", text: "Register your legal or accounting firm credentials to establish your profile node in the public directory." },
-      { step: "02", title: "Underwrite Due Diligence", text: "Inspect Plaid transaction history, operational cash flows, and credit risk factors for borrowing founders." },
-      { step: "03", title: "Attest Debt Integrity", text: "Sign and submit formal compliance attestations validating note parameters before campaigns go live." },
-      { step: "04", title: "Receive Incentive Fees", text: "Earn direct consulting payouts or collect a split of the platform's note origination and servicing fees." }
+      { step: "01", title: "Register as Partner", text: "Register your advisory, business consulting, or banking credentials to establish your partner node in our directory." },
+      { step: "02", title: "Evaluate Telemetry", text: "Inspect Plaid transaction streams, cash flow coverage, and BRS credit risk parameters for borrowing founders." },
+      { step: "03", title: "Provide Capital / Attestation", text: "Offer direct note capital lines as a bank partner or sign off on underwriting checks before syndication starts." },
+      { step: "04", title: "Collect Yield & Fees", text: "Earn direct interest yields from note tranches or collect advisory service revenue from note origination pools." }
     ],
     equity: [
-      { step: "01", title: "Establish Firm Profile", text: "Highlight securities placement or corporate tax expertise to founders looking for advisory support." },
-      { step: "02", title: "Structure Crowd SPVs", text: "Advise and bundle retail participants into compliant co-issuer Special Purpose Vehicles to keep startup cap tables clean." },
-      { step: "03", title: "Form C Pre-Filing Review", text: "Audit and verify financial disclosures, past funding rounds, and executive records before SEC submission." },
-      { step: "04", title: "Capital Placement Settlement", text: "Unlock escrowed compliance fee milestones automatically when venture rounds reach their funding targets." }
+      { step: "01", title: "Publish Advisory Profile", text: "Showcase legal, financial, or strategic business consulting solutions to founders prepping equity campaigns." },
+      { step: "02", title: "Structure SPV / Warrants", text: "Advise on joint co-issuer Special Purpose Vehicles or structure equity warrants to maintain cap table hygiene." },
+      { step: "03", title: "Compliance Vetting", text: "Audit financial conditions, past fundraising history, and SEC Regulation CF/D Form C filing drafts." },
+      { step: "04", title: "Unlock Escrow Milestones", text: "Release locked campaign advisory fees automatically upon successful fundraising round settlement." }
     ]
   }
 };
@@ -704,7 +704,6 @@ export default function LandingView({ state }) {
                 <div style={styles.legalText}>
                   <p><strong>Peer Bridge</strong> is an invitation-only capital gateway designed to modernize commercial debt syndication and equity crowdfunding.</p>
                   <p>Our platform introduces a <strong>Proprietary Risk Index (PRI)</strong> scoring engine that bypasses archaic credit bureau weights by integrating real-time gross-to-net payroll synchronization (ADP & Paychex) with transaction categories auditing (Plaid). This allows us to establish capital lines based on actual, live savings rates and debt-to-disposable income parameters rather than lagging historical summaries.</p>
-                  <p>In Phase 3, Peer Bridge incorporates autonomous AI brokerage nodes (CapitalAgent, FounderAgent, AuditAgent) to negotiate borrowing rates and execute legally compliant SEC Regulation CF filings programmatically on the ledger.</p>
                 </div>
               )}
 
