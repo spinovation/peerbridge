@@ -247,35 +247,39 @@ export default function AIAgentHub({ state }) {
 
       const resData = await response.json();
 
-      if (resData.success) {
+      if (resData.success && resData.dialogue && Array.isArray(resData.dialogue)) {
+        const dialogue = resData.dialogue;
+        const decision = resData.decision || 'DECLINED';
+        const terms = resData.agreedTerms || {};
+
         // Play the live AI-generated dialogue steps
-        playDialogue(resData.dialogue, () => {
+        playDialogue(dialogue, () => {
           setSimActive(false);
-          if (resData.decision !== 'DECLINED') {
+          if (decision !== 'DECLINED' && terms.principal) {
             setAgreedTerms({
-              principal: resData.agreedTerms.principal,
-              rate: resData.agreedTerms.rate,
-              tenor: resData.agreedTerms.tenor,
-              netYield: resData.agreedTerms.netYield,
-              spread: resData.agreedTerms.spread,
-              hash: resData.agreedTerms.hash || '0x' + Math.random().toString(16).slice(2, 10).padEnd(64, '0')
+              principal: terms.principal || cand.principal,
+              rate: terms.rate !== undefined ? terms.rate : (cand.rate || 0),
+              tenor: terms.tenor || cand.tenor || 12,
+              netYield: terms.netYield !== undefined ? terms.netYield : (cand.netYield || 0),
+              spread: terms.spread !== undefined ? terms.spread : (cand.spread || 1.5),
+              hash: terms.hash || '0x' + Math.random().toString(16).slice(2, 10).padEnd(64, '0')
             });
-            state.addNotification('Lending', `Live AI Audit complete: $${resData.agreedTerms.principal.toLocaleString()} note signed at ${resData.agreedTerms.rate}% APR.`);
+            state.addNotification('Lending', `Live AI Audit complete: $${(terms.principal || cand.principal).toLocaleString()} note signed at ${terms.rate || 0}% APR.`);
           } else {
             setAgreedTerms({
-              principal: resData.agreedTerms.principal,
+              principal: terms.principal || cand.principal,
               rate: 'DECLINED',
-              tenor: 12,
+              tenor: terms.tenor || 12,
               netYield: 0,
               spread: 0,
-              hash: 'DECLINED - Underwriting criteria not met'
+              hash: terms.hash || 'DECLINED - Underwriting criteria not met'
             });
             state.addNotification('Lending', `Live AI Audit complete: Application for ${cand.name} was DECLINED.`);
           }
         });
         return;
       } else {
-        throw new Error(resData.error || 'Server error');
+        throw new Error(resData.error || 'Invalid or malformed LLM response data');
       }
     } catch (err) {
       console.warn("Live LLM API unavailable or key missing. Falling back to local simulation sandbox. Details:", err.message);
