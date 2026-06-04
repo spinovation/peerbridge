@@ -12,6 +12,13 @@ export default function LandingView({ state }) {
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('password123'); // Default mock password pre-filled
 
+  // Footer Modals state
+  const [footerModalType, setFooterModalType] = useState(null); // 'support', 'legal_tos', 'legal_privacy', 'legal_disclaimers', 'about', 'contact'
+  const [supportCategory, setSupportCategory] = useState(''); // 'Investor Support', 'Raise Capital', 'Press Inquiries', 'Technical Support'
+  const [supportEmail, setSupportEmail] = useState('');
+  const [supportMessage, setSupportMessage] = useState('');
+  const [supportSuccess, setSupportSuccess] = useState(false);
+
   // Registration form inputs
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -411,13 +418,206 @@ export default function LandingView({ state }) {
         </div>
       </section>
 
-      {/* Landing Footer */}
-      <footer style={styles.footer}>
-        <p>© 2026 Peer Bridge SEC Regulation D / Reg CF Network Gateway. All rights reserved.</p>
-        <p style={{ fontSize: '0.8rem', marginTop: '0.5rem', opacity: 0.5 }}>
-          Alternative investing is high-risk. SEC verified network nodes represent private placements.
-        </p>
+      {/* Expanded Landing Footer */}
+      <footer style={styles.footerContainer}>
+        <div style={styles.footerGrid}>
+          {/* Column 1: About */}
+          <div style={styles.footerColumn}>
+            <h4 style={styles.footerColTitle}>🏛️ PEER BRIDGE</h4>
+            <p style={styles.footerColText}>
+              An invitation-only private capital ecosystem decoupling private debt & equity warrants via payroll-bypass underwriting and autonomous AI brokerage nodes.
+            </p>
+            <span style={{ ...styles.footerListItem, textDecoration: 'underline', marginTop: '0.5rem', display: 'inline-block' }} onClick={() => setFooterModalType('about')}>
+              Read our mission →
+            </span>
+          </div>
+
+          {/* Column 2: Help & Support */}
+          <div style={styles.footerColumn}>
+            <h4 style={styles.footerColTitle}>Help & Support</h4>
+            <ul style={styles.footerList}>
+              <li style={styles.footerListItem} onClick={() => { setFooterModalType('support'); setSupportCategory('Investor Support'); }}>Investor Support Ticket</li>
+              <li style={styles.footerListItem} onClick={() => { setFooterModalType('support'); setSupportCategory('Raise Capital'); }}>Raise Capital Ticket</li>
+              <li style={styles.footerListItem} onClick={() => { setFooterModalType('support'); setSupportCategory('Press Inquiries'); }}>Press Inquiries Ticket</li>
+              <li style={styles.footerListItem} onClick={() => { setFooterModalType('support'); setSupportCategory('Technical Support'); }}>Technical Chores Ticket</li>
+            </ul>
+          </div>
+
+          {/* Column 3: Legal */}
+          <div style={styles.footerColumn}>
+            <h4 style={styles.footerColTitle}>Legal & Compliance</h4>
+            <ul style={styles.footerList}>
+              <li style={styles.footerListItem} onClick={() => setFooterModalType('legal_tos')}>Terms of Service</li>
+              <li style={styles.footerListItem} onClick={() => setFooterModalType('legal_privacy')}>Privacy Policy</li>
+              <li style={styles.footerListItem} onClick={() => setFooterModalType('legal_disclaimers')}>Regulatory Disclaimers</li>
+            </ul>
+          </div>
+
+          {/* Column 4: Contact Us */}
+          <div style={styles.footerColumn}>
+            <h4 style={styles.footerColTitle}>Contact Us</h4>
+            <p style={styles.footerColText}>
+              Global Inquiries:<br/>
+              <span style={{ color: '#00f2fe', cursor: 'pointer' }} onClick={() => setFooterModalType('contact')}>contact@peerbridge.ai</span>
+            </p>
+            <p style={styles.footerColText}>
+              Support desk:<br/>
+              <a href="mailto:support@peerbridge.ai" style={styles.footerLink}>support@peerbridge.ai</a>
+            </p>
+          </div>
+        </div>
+
+        <div style={styles.footerBottom}>
+          <p>© 2026 Peer Bridge Networks Inc. SEC Regulation D / Reg CF Network Gateway. All rights reserved.</p>
+          <p style={{ fontSize: '0.76rem', marginTop: '0.5rem', opacity: 0.5 }}>
+            Alternative investing is high-risk. SEC verified network nodes represent private placements. Securities are offered under Reg CF or Reg D exclusions. Past performance does not guarantee future results.
+          </p>
+        </div>
       </footer>
+
+      {/* Footer Modal Overlay */}
+      {footerModalType && (
+        <div style={styles.modalOverlay} onClick={() => setFooterModalType(null)}>
+          <div style={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <div style={styles.modalHeader}>
+              <h3 style={styles.modalTitle}>
+                {footerModalType === 'support' && `Raise Support: ${supportCategory}`}
+                {footerModalType === 'about' && 'About Peer Bridge'}
+                {footerModalType === 'contact' && 'Contact Us'}
+                {footerModalType === 'legal_tos' && 'Terms of Service'}
+                {footerModalType === 'legal_privacy' && 'Privacy Policy'}
+                {footerModalType === 'legal_disclaimers' && 'Regulatory Disclaimers & Disclosures'}
+              </h3>
+              <button style={styles.modalCloseBtn} onClick={() => setFooterModalType(null)}>×</button>
+            </div>
+
+            <div style={styles.modalBody}>
+              {footerModalType === 'support' && (
+                supportSuccess ? (
+                  <div style={styles.successMessage}>
+                    <h4 style={{ color: '#10b981', margin: '0 0 0.5rem 0' }}>✨ Ticket Created Successfully!</h4>
+                    <p>Your support request for <strong>{supportCategory}</strong> has been logged. A notification was sent to <strong>support@peerbridge.ai</strong>.</p>
+                    <p style={{ fontSize: '0.75rem', opacity: 0.7, marginTop: '1rem' }}>Closing in a few seconds...</p>
+                  </div>
+                ) : (
+                  <form 
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      if (state.customer && state.submitHelpTicket) {
+                        state.submitHelpTicket(supportCategory.toLowerCase().replace(' ', '_'), `[Footer Public Ticket: ${supportEmail}] ${supportMessage}`);
+                      } else {
+                        console.log(`Public support ticket logged: [Category: ${supportCategory}] [Email: ${supportEmail}] Msg: ${supportMessage}`);
+                        // Trigger simulated notification in global system context if possible
+                        if (state.addNotification) {
+                          state.addNotification('System', `Support ticket created for ${supportEmail} (Category: ${supportCategory})`);
+                        }
+                      }
+                      setSupportSuccess(true);
+                      setTimeout(() => {
+                        setFooterModalType(null);
+                        setSupportCategory('');
+                        setSupportEmail('');
+                        setSupportMessage('');
+                        setSupportSuccess(false);
+                      }, 3500);
+                    }} 
+                    style={styles.modalForm}
+                  >
+                    <div style={styles.modalInputGroup}>
+                      <label style={styles.modalLabel}>Your Email Address</label>
+                      <input 
+                        type="email" 
+                        placeholder="name@company.com" 
+                        value={supportEmail}
+                        onChange={(e) => setSupportEmail(e.target.value)}
+                        style={styles.modalInput}
+                        required
+                      />
+                    </div>
+                    <div style={styles.modalInputGroup}>
+                      <label style={styles.modalLabel}>Details for your Support Ticket</label>
+                      <textarea 
+                        placeholder={`Explain your ${supportCategory} inquiry in detail...`}
+                        value={supportMessage}
+                        onChange={(e) => setSupportMessage(e.target.value)}
+                        style={styles.modalTextarea}
+                        rows={5}
+                        required
+                      />
+                    </div>
+                    <button type="submit" className="btn-primary" style={styles.modalSubmitBtn}>
+                      Submit Ticket to support@peerbridge.ai
+                    </button>
+                  </form>
+                )
+              )}
+
+              {footerModalType === 'about' && (
+                <div style={styles.legalText}>
+                  <p><strong>Peer Bridge</strong> is an invitation-only capital gateway designed to modernize commercial debt syndication and equity crowdfunding.</p>
+                  <p>Our platform introduces a <strong>Proprietary Risk Index (PRI)</strong> scoring engine that bypasses archaic credit bureau weights by integrating real-time gross-to-net payroll synchronization (ADP & Paychex) with transaction categories auditing (Plaid). This allows us to establish capital lines based on actual, live savings rates and debt-to-disposable income parameters rather than lagging historical summaries.</p>
+                  <p>In Phase 3, Peer Bridge incorporates autonomous AI brokerage nodes (CapitalAgent, FounderAgent, AuditAgent) to negotiate borrowing rates and execute legally compliant SEC Regulation CF filings programmatically on the ledger.</p>
+                </div>
+              )}
+
+              {footerModalType === 'contact' && (
+                <div style={styles.legalText}>
+                  <p><strong>Global Operations & Inquiries:</strong></p>
+                  <p>Email: <a href="mailto:contact@peerbridge.ai" style={styles.legalLink}>contact@peerbridge.ai</a></p>
+                  <p><strong>Support & System Audits:</strong></p>
+                  <p>Email: <a href="mailto:support@peerbridge.ai" style={styles.legalLink}>support@peerbridge.ai</a></p>
+                  <p><strong>San Francisco Headquarters:</strong></p>
+                  <p>Peer Bridge Networks Inc.<br />100 Pine Street, 21st Floor<br />San Francisco, CA 94111</p>
+                  <p><strong>New York Office:</strong></p>
+                  <p>One World Trade Center, Suite 85<br />New York, NY 10007</p>
+                </div>
+              )}
+
+              {footerModalType === 'legal_tos' && (
+                <div style={styles.legalText}>
+                  <h4 style={{ color: '#ffffff', margin: '1rem 0 0.5rem 0', fontSize: '1rem' }}>1. Acceptance of Terms</h4>
+                  <p>By accessing or using the Peer Bridge Private Gateway (peerbridge.ai), you agree to be bound by these Terms of Service. If you do not agree, you are legally restricted from viewing or participating in private note syndicates or crowdfunding placements.</p>
+                  
+                  <h4 style={{ color: '#ffffff', margin: '1rem 0 0.5rem 0', fontSize: '1rem' }}>2. Regulation Crowdfunding (Reg CF) & Reg D Limitations</h4>
+                  <p>All fundraising offerings listed on the Peer Bridge gateway represent private placements under SEC Regulation D (Rule 506(c)) or Regulation Crowdfunding (Reg CF). Participating investors must satisfy specific accreditation standards, verify financial credentials, and acknowledge secondary-market transfer restrictions.</p>
+                  
+                  <h4 style={{ color: '#ffffff', margin: '1rem 0 0.5rem 0', fontSize: '1rem' }}>3. Direct API Vetting Authorization</h4>
+                  <p>When you sync your payroll credentials (ADP, Paychex) or banking connections (Plaid), you authorize Peer Bridge to run real-time automated gross-to-net salary verification and category discretionary burn auditing. This information is utilized strictly to compute the BRS (Behavioral Risk Score) and Proprietary Risk Index (PRI), which bypass traditional credit bureau weights.</p>
+                  
+                  <h4 style={{ color: '#ffffff', margin: '1rem 0 0.5rem 0', fontSize: '1rem' }}>4. Platform Servicing & Origination Fees</h4>
+                  <p>Lenders acknowledge that Peer Bridge extracts a 1.5% origination fee from disbursed principal notes and a 1.5% servicing fee from note repayment distributions. Equity campaign placements carry a 3.5% transaction success fee upon closing.</p>
+                </div>
+              )}
+
+              {footerModalType === 'legal_privacy' && (
+                <div style={styles.legalText}>
+                  <h4 style={{ color: '#ffffff', margin: '1rem 0 0.5rem 0', fontSize: '1rem' }}>1. Information We Collect</h4>
+                  <p>We collect personal information directly from your credential inputs, passport identity files (KYC), linked ADP/Paychex W-2 payroll telemetry, and Plaid transactional records. We do not inspect or store password credentials; payroll and bank synchronizations are executed securely via sandboxed OAuth redirects.</p>
+                  
+                  <h4 style={{ color: '#ffffff', margin: '1rem 0 0.5rem 0', fontSize: '1rem' }}>2. Use of Telemetry Data</h4>
+                  <p>Telemetry data is parsed locally by the PRI risk engine to evaluate probability of default (PD) and savings buffers. We do not sell, rent, or distribute transactional details to marketing affiliates. Data is stored in secure Firebase Firestore instances using military-grade AES-256 field-level encryption.</p>
+                  
+                  <h4 style={{ color: '#ffffff', margin: '1rem 0 0.5rem 0', fontSize: '1rem' }}>3. SEC Audit Trails & Compliance</h4>
+                  <p>Pursuant to FINRA and SEC funding portal guidelines, we are legally required to maintain secure audit trails of all transactions, SAFE warrants, promissory agreements, and identity verifications for a minimum of 6 years. Cryptographic SHA-256 agreement signatures are recorded on the public ledger.</p>
+                </div>
+              )}
+
+              {footerModalType === 'legal_disclaimers' && (
+                <div style={styles.legalText}>
+                  <h4 style={{ color: '#f43f5e', margin: '1rem 0 0.5rem 0', fontSize: '1rem' }}>⚠️ PRIVATE PLACEMENT RISK DISCLOSURE</h4>
+                  <p>Investments in private debt notes and early-stage startup SAFEs are highly speculative and carry extreme volatility. Lenders can lose their entire principal balance in default events. Debt note interest payments are not guaranteed by Peer Bridge, and holdings are not FDIC insured.</p>
+                  
+                  <h4 style={{ color: '#ffffff', margin: '1rem 0 0.5rem 0', fontSize: '1rem' }}>⚠️ NO RECOMMENDATION OR INVESTMENT ADVICE</h4>
+                  <p>Peer Bridge is a technology gateway platform and does not offer financial advisory services. Listing campaigns on the credit registry does not constitute a platform recommendation. Investors must perform independent due diligence before placing fractional note balances.</p>
+                  
+                  <h4 style={{ color: '#ffffff', margin: '1rem 0 0.5rem 0', fontSize: '1rem' }}>⚠️ RESTRICTIONS ON TRANSFERS (DOMESTIC USA EXCLUSIONS)</h4>
+                  <p>Securities issued under SEC Reg CF and Reg D are restricted and cannot be sold, transferred, or reassigned for a period of 12 months, except in limited cases (e.g. transfers to family members or trust estates). Retail debt syndicates are strictly restricted to domestic USA-to-USA routing channels.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -762,15 +962,178 @@ const styles = {
     color: '#ffffff',
     boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
   },
-  footer: {
-    height: '100px',
+  footerContainer: {
+    borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+    padding: '4rem 2rem 2rem 2rem',
+    marginTop: '6rem',
+    background: 'rgba(5, 5, 5, 0.4)',
+    backdropFilter: 'blur(16px)',
+  },
+  footerGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+    gap: '2.5rem',
+    maxWidth: '1200px',
+    margin: '0 auto 3rem auto',
+  },
+  footerColumn: {
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
+    gap: '0.85rem',
+  },
+  footerColTitle: {
+    fontSize: '0.88rem',
+    fontWeight: '800',
+    color: '#ffffff',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em',
+    margin: 0,
+    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+    paddingBottom: '0.5rem',
+  },
+  footerColText: {
+    fontSize: '0.82rem',
+    color: '#94a3b8',
+    lineHeight: '1.55',
+    margin: 0,
+  },
+  footerList: {
+    listStyle: 'none',
+    padding: 0,
+    margin: 0,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.6rem',
+  },
+  footerListItem: {
+    fontSize: '0.82rem',
+    color: '#94a3b8',
+    cursor: 'pointer',
+    transition: 'color 0.2s ease',
+  },
+  footerLink: {
+    color: '#00f2fe',
+    textDecoration: 'none',
+    fontSize: '0.82rem',
+    transition: 'opacity 0.2s ease',
+  },
+  footerBottom: {
     borderTop: '1px solid rgba(255, 255, 255, 0.05)',
-    padding: '2rem 0',
-    marginTop: 'auto',
+    paddingTop: '2rem',
     textAlign: 'center',
+    maxWidth: '1200px',
+    margin: '0 auto',
+    fontSize: '0.82rem',
+    color: '#64748b',
+  },
+  modalOverlay: {
+    position: 'fixed',
+    inset: 0,
+    background: 'rgba(0, 0, 0, 0.75)',
+    backdropFilter: 'blur(8px)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 9999,
+    padding: '1.5rem',
+  },
+  modalContent: {
+    background: '#0b0f1a',
+    border: '1px solid rgba(255, 255, 255, 0.08)',
+    borderRadius: '16px',
+    width: '100%',
+    maxWidth: '600px',
+    maxHeight: '85vh',
+    overflowY: 'auto',
+    display: 'flex',
+    flexDirection: 'column',
+    boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5)',
+  },
+  modalHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '1.5rem',
+    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+  },
+  modalTitle: {
+    fontSize: '1.15rem',
+    fontWeight: '800',
+    color: '#ffffff',
+    margin: 0,
+  },
+  modalCloseBtn: {
+    background: 'none',
+    border: 'none',
+    fontSize: '1.75rem',
+    color: '#737373',
+    cursor: 'pointer',
+    outline: 'none',
+    transition: 'color 0.2s ease',
+  },
+  modalBody: {
+    padding: '1.5rem',
+    overflowY: 'auto',
+  },
+  modalForm: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1.25rem',
+  },
+  modalInputGroup: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.5rem',
+  },
+  modalLabel: {
+    fontSize: '0.72rem',
+    fontWeight: '700',
+    color: '#737373',
+    textTransform: 'uppercase',
+  },
+  modalInput: {
+    width: '100%',
+    background: 'rgba(255, 255, 255, 0.02)',
+    border: '1px solid rgba(255, 255, 255, 0.08)',
+    borderRadius: '8px',
+    padding: '0.75rem 1rem',
+    color: '#ffffff',
+    fontSize: '0.95rem',
+    outline: 'none',
+  },
+  modalTextarea: {
+    width: '100%',
+    background: 'rgba(255, 255, 255, 0.02)',
+    border: '1px solid rgba(255, 255, 255, 0.08)',
+    borderRadius: '8px',
+    padding: '0.75rem 1rem',
+    color: '#ffffff',
+    fontSize: '0.95rem',
+    outline: 'none',
+    resize: 'none',
+    fontFamily: 'inherit',
+  },
+  modalSubmitBtn: {
+    alignSelf: 'flex-start',
+    padding: '0.75rem 1.5rem',
+    fontSize: '0.85rem',
+    marginTop: '0.5rem',
+  },
+  successMessage: {
+    textAlign: 'center',
+    padding: '2rem 1rem',
+    color: '#94a3b8',
+  },
+  legalText: {
+    color: '#94a3b8',
+    fontSize: '0.88rem',
+    lineHeight: '1.65',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1rem',
+  },
+  legalLink: {
+    color: '#00f2fe',
+    textDecoration: 'underline',
   }
 };
