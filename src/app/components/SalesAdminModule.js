@@ -303,12 +303,12 @@ export default function SalesAdminModule({ state }) {
 
   const getSimulatedAuditInfo = (memberId) => {
     switch (memberId) {
-      case 'dir-cust-marcus': return { joined: '2026-01-18', lastLogin: 'Active now', inviteCode: 'SYSTEM-VIP' };
-      case 'dir-cust-mohit': return { joined: '2026-03-12', lastLogin: 'Active now', inviteCode: 'PEER-BRIDGE-2026' };
-      case 'dir-cust-kristi': return { joined: '2026-04-01', lastLogin: '5 mins ago', inviteCode: 'SYSTEM-VIP' };
-      case 'db-cust-evelyn': return { joined: '2026-01-15', lastLogin: 'Active now', inviteCode: 'SYSTEM-VIP' };
-      case 'db-cust-jenkins': return { joined: '2026-02-01', lastLogin: '4 hours ago', inviteCode: 'SYSTEM-VIP' };
-      default: return { joined: '2026-05-30', lastLogin: 'Offline', inviteCode: 'PEER-BRIDGE-2026' };
+      case 'dir-cust-marcus': return { joined: '2026-01-18', lastLogin: '2026-06-04 11:35 AM', inviteCode: 'SYSTEM-VIP' };
+      case 'dir-cust-mohit': return { joined: '2026-03-12', lastLogin: '2026-06-04 11:28 AM', inviteCode: 'PEER-BRIDGE-2026' };
+      case 'dir-cust-kristi': return { joined: '2026-04-01', lastLogin: '2026-06-04 11:31 AM', inviteCode: 'SYSTEM-VIP' };
+      case 'db-cust-evelyn': return { joined: '2026-01-15', lastLogin: '2026-06-04 11:33 AM', inviteCode: 'SYSTEM-VIP' };
+      case 'db-cust-jenkins': return { joined: '2026-02-01', lastLogin: '2026-06-04 07:12 AM', inviteCode: 'SYSTEM-VIP' };
+      default: return { joined: '2026-05-30', lastLogin: '2026-06-03 04:15 PM', inviteCode: 'PEER-BRIDGE-2026' };
     }
   };
 
@@ -636,6 +636,7 @@ export default function SalesAdminModule({ state }) {
                     <th style={styles.tableHeaderCell}>SaaS Subscription</th>
                     <th style={styles.tableHeaderCell}>Verification Status</th>
                     <th style={styles.tableHeaderCell}>Joined Date</th>
+                    <th style={styles.tableHeaderCell}>Last Login</th>
                     <th style={{ ...styles.tableHeaderCell, textAlign: 'right' }}>Security Override Actions</th>
                   </tr>
                 </thead>
@@ -668,7 +669,7 @@ export default function SalesAdminModule({ state }) {
                         <td style={styles.tableCell}>
                           <div style={{ display: 'flex', gap: '0.25rem', flexWrap: 'wrap' }}>
                             {member.role_flags?.map(r => (
-                              <span key={r} className="badge badge-admin" style={{ fontSize: '0.58rem', padding: '0.08rem 0.35rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                              <span key={r} className="badge" style={{ fontSize: '0.58rem', padding: '0.08rem 0.35rem', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)', color: '#ffffff', fontWeight: '700' }}>
                                 {r}
                               </span>
                             ))}
@@ -701,6 +702,10 @@ export default function SalesAdminModule({ state }) {
 
                         <td style={styles.tableCell}>
                           <span style={{ fontSize: '0.76rem', color: '#a3a3a3' }}>{audit.joined}</span>
+                        </td>
+
+                        <td style={styles.tableCell}>
+                          <span style={{ fontSize: '0.76rem', color: '#00f2fe', fontFamily: 'monospace' }}>{audit.lastLogin}</span>
                         </td>
 
                         <td style={{ ...styles.tableCell, textAlign: 'right' }}>
