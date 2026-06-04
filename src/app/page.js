@@ -2354,7 +2354,7 @@ export default function Home() {
         <div style={styles.headerLeftGroup}>
           <div 
             style={{ 
-              ...styles.logoRow, 
+               ...styles.logoRow, 
               cursor: state.customer?.email === 'salesadmin@peerbridge.ai' ? 'default' : 'pointer' 
             }} 
             onClick={() => {
@@ -2364,10 +2364,7 @@ export default function Home() {
             }} 
             title={state.customer?.email === 'salesadmin@peerbridge.ai' ? undefined : "Return to Ecosystem Home"}
           >
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <h1 className="logo-text-responsive" style={styles.logoText}>PEER BRIDGE</h1>
-              <span className="logo-slogan-responsive" style={styles.logoSlogan}>Fund Smarter, Build Together</span>
-            </div>
+            <img src="/logo.png" alt="PeerBridge" style={{ height: '36px', objectFit: 'contain' }} />
           </div>
 
           {/* Quick Home Access adjacent to Logo */}

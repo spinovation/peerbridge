@@ -2,6 +2,57 @@
 
 import { useState } from 'react';
 
+const howItWorksSteps = {
+  entrepreneur: {
+    title: "Entrepreneur / Founder Journey",
+    desc: "Raise growth capital without diluting unnecessarily or bypass standard banking delays using verified payroll flows.",
+    debt: [
+      { step: "01", title: "Sync Data Sources", text: "Securely link your enterprise payroll platform (ADP/Paychex) and cash accounts (Plaid). This aggregates real-time savings margins and debt coverage metrics." },
+      { step: "02", title: "Configure Debt Terms", text: "Customize your P2P Promissory note parameters: set the requested principal, term (e.g. 6 months), and target yield profile based on verified cash buffers." },
+      { step: "03", title: "Fractional Syndicate Matching", text: "The platform's matching engine splits your requested note into fractional tranches, auto-allocating them to active Lender Pro accounts." },
+      { step: "04", title: "Payroll-Deducted Repayment", text: "Note repayments are automatically debited directly from subsequent payroll proceeds, bypassing standard collection processes." }
+    ],
+    equity: [
+      { step: "01", title: "AI Prospectus Generation", text: "Compile regulatory compliance disclosures (Form C for Reg CF or Form D for Reg D) automatically using our integrated AI regulatory agent." },
+      { step: "02", title: "Launch SAFE Campaign", text: "Open your venture offering to verified angel networks and retail crowds. Set custom valuation caps and share prices." },
+      { step: "03", title: "e-Sign & Ledger Stamps", text: "Investors execute standard Y-Combinator SAFEs using our e-signature interface. Each contract is stamped with a SHA-256 validation hash." },
+      { step: "04", title: "Capital Disbursal & Warrants", text: "Upon campaign close, funds are released. Peer Bridge registers a 1.5% equity warrant and collects a 4.0% success fee." }
+    ]
+  },
+  investor: {
+    title: "Accredited Investor / Lender Journey",
+    desc: "Access institutional-grade private placements, high-yield debt notes, and startup equity warrants on a verified ledger.",
+    debt: [
+      { step: "01", title: "KYC & Bank Sync", text: "Perform automatic identity verification checks and securely link your bank account to sync your active wallet balance." },
+      { step: "02", title: "Set Auto-Invest Rules", text: "Define your yield targets and risk thresholds (e.g. Balanced 7.5% APY, targeting Prime P2 grades) to matching syndicates." },
+      { step: "03", title: "Acquire Note Tranches", text: "Acquire fractional tranches of verified business debt starting at $500, backed by real-time payroll synchronizations." },
+      { step: "04", title: "Harvest Monthly Yield", text: "Receive interest and principal repayments monthly. Capital is credited directly to your Peer Bridge digital wallet." }
+    ],
+    equity: [
+      { step: "01", title: "Browse Active Deals", text: "Filter through active SAFE campaigns. Audit startup revenue reports, cap tables, and founder backgrounds." },
+      { step: "02", title: "Commit Funds & Sign", text: "Deploy capital into rounds and draw your legal signature on the digital agreement pad to finalize your investment." },
+      { step: "03", title: "Mint Vault Certificates", text: "Receive a high-premium, gold-bordered digital Stock Acquisition Certificate representing your holding, securely stored in your Vault." },
+      { step: "04", title: "Monitor Dilution", text: "Track cap table distributions, ARR growth charts, runway metrics, and warrant valuations on your active dashboard." }
+    ]
+  },
+  affiliate: {
+    title: "Vetted Affiliate (CPA/Lawyer) Journey",
+    desc: "Earn advisory fees by auditing offerings, structuring compliance frameworks, and reviewing filings.",
+    debt: [
+      { step: "01", title: "Verify Directory Node", text: "Register your legal or accounting firm credentials to establish your profile node in the public directory." },
+      { step: "02", title: "Underwrite Due Diligence", text: "Inspect Plaid transaction history, operational cash flows, and credit risk factors for borrowing founders." },
+      { step: "03", title: "Attest Debt Integrity", text: "Sign and submit formal compliance attestations validating note parameters before campaigns go live." },
+      { step: "04", title: "Receive Incentive Fees", text: "Earn direct consulting payouts or collect a split of the platform's note origination and servicing fees." }
+    ],
+    equity: [
+      { step: "01", title: "Establish Firm Profile", text: "Highlight securities placement or corporate tax expertise to founders looking for advisory support." },
+      { step: "02", title: "Structure Crowd SPVs", text: "Advise and bundle retail participants into compliant co-issuer Special Purpose Vehicles to keep startup cap tables clean." },
+      { step: "03", title: "Form C Pre-Filing Review", text: "Audit and verify financial disclosures, past funding rounds, and executive records before SEC submission." },
+      { step: "04", title: "Capital Placement Settlement", text: "Unlock escrowed compliance fee milestones automatically when venture rounds reach their funding targets." }
+    ]
+  }
+};
+
 export default function LandingView({ state }) {
   const [inviteCode, setInviteCode] = useState('');
   const [showRegisterForm, setShowRegisterForm] = useState(false);
@@ -14,10 +65,14 @@ export default function LandingView({ state }) {
 
   // Footer Modals state
   const [footerModalType, setFooterModalType] = useState(null); // 'support', 'legal_tos', 'legal_privacy', 'legal_disclaimers', 'about', 'contact'
-  const [supportCategory, setSupportCategory] = useState(''); // 'Investor Support', 'Raise Capital', 'Press Inquiries', 'Technical Support'
+  const [supportCategory, setSupportCategory] = useState(''); // 'General Support Request', 'Investor Support', 'Raise Capital', 'Press Inquiries', 'Technical'
   const [supportEmail, setSupportEmail] = useState('');
   const [supportMessage, setSupportMessage] = useState('');
   const [supportSuccess, setSupportSuccess] = useState(false);
+
+  // How it works section state
+  const [howRole, setHowRole] = useState('entrepreneur'); // 'entrepreneur', 'investor', 'affiliate'
+  const [howType, setHowType] = useState('debt'); // 'debt', 'equity'
 
   // Registration form inputs
   const [name, setName] = useState('');
@@ -78,10 +133,7 @@ export default function LandingView({ state }) {
       {/* Hero Header */}
       <header style={styles.header}>
         <div style={styles.logoContainer}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
-            <span style={styles.logoText}>PEER BRIDGE</span>
-            <span style={styles.logoSlogan}>Fund Smarter, Build Together</span>
-          </div>
+          <img src="/logo.png" alt="PeerBridge" style={{ height: '36px', objectFit: 'contain' }} />
         </div>
         <div style={styles.inviteBadge}>🔒 MEMBERS ONLY</div>
       </header>
@@ -89,12 +141,15 @@ export default function LandingView({ state }) {
       {/* Main Section */}
       <main style={styles.main}>
         <section style={styles.heroSection}>
+          <div style={styles.participantBadge}>
+            🤝 Marketplace for Entrepreneurs • Investors • Affiliates
+          </div>
           <h1 style={styles.heroTitle}>
             The Private Debt, Equity & <br/>
             <span style={styles.gradientText}>AI Brokerage Ecosystem</span>
           </h1>
           <p style={styles.heroSub}>
-            A comprehensive capital market combining SEC-compliant Reg CF/D Equity campaigns, P2P Commercial Debt syndicates with ADP & Plaid underwriting bypass, and autonomous AI-agent brokerages securing real-time contract negotiations.
+            The private capital marketplace connecting Entrepreneurs, Investors, and Professional Affiliates. We combine SEC-compliant Reg CF/D Equity campaigns, P2P Commercial Debt syndicates with ADP & Plaid underwriting bypass, and autonomous AI-agent brokerages securing real-time contract negotiations.
           </p>
 
           {/* Quick Metrics */}
@@ -418,12 +473,87 @@ export default function LandingView({ state }) {
         </div>
       </section>
 
+      {/* How It Works Section */}
+      <section style={styles.howItWorksSection}>
+        <div style={styles.sectionHeader}>
+          <h2 style={styles.sectionTitle}>How It Works</h2>
+          <p style={styles.sectionSub}>Explore step-by-step capital flows designed for your specific role in our ecosystem.</p>
+        </div>
+
+        {/* Role Tabs */}
+        <div style={styles.howTabsContainer}>
+          <button 
+            type="button"
+            onClick={() => setHowRole('entrepreneur')}
+            style={howRole === 'entrepreneur' ? styles.howTabActive : styles.howTab}
+          >
+            💼 Entrepreneur
+          </button>
+          <button 
+            type="button"
+            onClick={() => setHowRole('investor')}
+            style={howRole === 'investor' ? styles.howTabActive : styles.howTab}
+          >
+            📈 Investor
+          </button>
+          <button 
+            type="button"
+            onClick={() => setHowRole('affiliate')}
+            style={howRole === 'affiliate' ? styles.howTabActive : styles.howTab}
+          >
+            🤝 Vetted Affiliate
+          </button>
+        </div>
+
+        {/* Dynamic Card Container */}
+        <div className="glass-panel" style={styles.howCard}>
+          <div style={styles.howCardHeader}>
+            <div>
+              <h3 style={styles.howCardTitle}>{howItWorksSteps[howRole].title}</h3>
+              <p style={styles.howCardSub}>{howItWorksSteps[howRole].desc}</p>
+            </div>
+            
+            {/* Debt vs Equity Toggle */}
+            <div style={styles.howTypeToggle}>
+              <button
+                type="button"
+                onClick={() => setHowType('debt')}
+                style={howType === 'debt' ? styles.howTypeBtnActive : styles.howTypeBtn}
+              >
+                🏛️ Private Debt Notes
+              </button>
+              <button
+                type="button"
+                onClick={() => setHowType('equity')}
+                style={howType === 'equity' ? styles.howTypeBtnActive : styles.howTypeBtn}
+              >
+                🚀 Venture Equity (SAFEs)
+              </button>
+            </div>
+          </div>
+
+          {/* Timeline Grid */}
+          <div style={styles.howTimelineGrid}>
+            {howItWorksSteps[howRole][howType].map((step, idx) => (
+              <div key={idx} style={styles.howStepCard}>
+                <div style={styles.howStepHeader}>
+                  <span style={styles.howStepNumber}>{step.step}</span>
+                  <div style={styles.howStepLine} />
+                </div>
+                <h4 style={styles.howStepTitle}>{step.title}</h4>
+                <p style={styles.howStepText}>{step.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Expanded Landing Footer */}
       <footer style={styles.footerContainer}>
         <div style={styles.footerGrid}>
           {/* Column 1: About */}
           <div style={styles.footerColumn}>
-            <h4 style={styles.footerColTitle}>🏛️ PEER BRIDGE</h4>
+            <h4 style={styles.footerColTitle}>About US</h4>
             <p style={styles.footerColText}>
               An invitation-only private capital ecosystem decoupling private debt & equity warrants via payroll-bypass underwriting and autonomous AI brokerage nodes.
             </p>
@@ -432,36 +562,37 @@ export default function LandingView({ state }) {
             </span>
           </div>
 
-          {/* Column 2: Help & Support */}
+          {/* Column 2: Support */}
           <div style={styles.footerColumn}>
-            <h4 style={styles.footerColTitle}>Help & Support</h4>
+            <h4 style={styles.footerColTitle}>Support</h4>
             <ul style={styles.footerList}>
-              <li style={styles.footerListItem} onClick={() => { setFooterModalType('support'); setSupportCategory('Investor Support'); }}>Investor Support Ticket</li>
-              <li style={styles.footerListItem} onClick={() => { setFooterModalType('support'); setSupportCategory('Raise Capital'); }}>Raise Capital Ticket</li>
-              <li style={styles.footerListItem} onClick={() => { setFooterModalType('support'); setSupportCategory('Press Inquiries'); }}>Press Inquiries Ticket</li>
-              <li style={styles.footerListItem} onClick={() => { setFooterModalType('support'); setSupportCategory('Technical Support'); }}>Technical Chores Ticket</li>
+              <li style={styles.footerListItem} onClick={() => { setFooterModalType('support'); setSupportCategory('General Support Request'); }}>💬 Raise a Support Request</li>
+              <li style={styles.footerListItem} onClick={() => { setFooterModalType('support'); setSupportCategory('Investor Support'); }}>📈 Investor Support</li>
+              <li style={styles.footerListItem} onClick={() => { setFooterModalType('support'); setSupportCategory('Raise Capital'); }}>💰 Raise Capital</li>
+              <li style={styles.footerListItem} onClick={() => { setFooterModalType('support'); setSupportCategory('Press Inquiries'); }}>📰 Press Inquiries</li>
+              <li style={styles.footerListItem} onClick={() => { setFooterModalType('support'); setSupportCategory('Technical'); }}>💻 Technical</li>
             </ul>
           </div>
 
           {/* Column 3: Legal */}
           <div style={styles.footerColumn}>
-            <h4 style={styles.footerColTitle}>Legal & Compliance</h4>
+            <h4 style={styles.footerColTitle}>Legal</h4>
             <ul style={styles.footerList}>
               <li style={styles.footerListItem} onClick={() => setFooterModalType('legal_tos')}>Terms of Service</li>
               <li style={styles.footerListItem} onClick={() => setFooterModalType('legal_privacy')}>Privacy Policy</li>
-              <li style={styles.footerListItem} onClick={() => setFooterModalType('legal_disclaimers')}>Regulatory Disclaimers</li>
+              <li style={styles.footerListItem} onClick={() => setFooterModalType('legal_disclaimers')}>Disclaimers</li>
             </ul>
           </div>
 
           {/* Column 4: Contact Us */}
           <div style={styles.footerColumn}>
-            <h4 style={styles.footerColTitle}>Contact Us</h4>
+            <h4 style={styles.footerColTitle}>Contact US</h4>
             <p style={styles.footerColText}>
               Global Inquiries:<br/>
               <span style={{ color: '#00f2fe', cursor: 'pointer' }} onClick={() => setFooterModalType('contact')}>contact@peerbridge.ai</span>
             </p>
             <p style={styles.footerColText}>
-              Support desk:<br/>
+              Support Desk:<br/>
               <a href="mailto:support@peerbridge.ai" style={styles.footerLink}>support@peerbridge.ai</a>
             </p>
           </div>
@@ -486,7 +617,7 @@ export default function LandingView({ state }) {
                 {footerModalType === 'contact' && 'Contact Us'}
                 {footerModalType === 'legal_tos' && 'Terms of Service'}
                 {footerModalType === 'legal_privacy' && 'Privacy Policy'}
-                {footerModalType === 'legal_disclaimers' && 'Regulatory Disclaimers & Disclosures'}
+                {footerModalType === 'legal_disclaimers' && 'Disclaimers'}
               </h3>
               <button style={styles.modalCloseBtn} onClick={() => setFooterModalType(null)}>×</button>
             </div>
@@ -503,11 +634,14 @@ export default function LandingView({ state }) {
                   <form 
                     onSubmit={(e) => {
                       e.preventDefault();
-                      if (state.customer && state.submitHelpTicket) {
-                        state.submitHelpTicket(supportCategory.toLowerCase().replace(' ', '_'), `[Footer Public Ticket: ${supportEmail}] ${supportMessage}`);
+                      if (state.submitHelpTicket) {
+                        state.submitHelpTicket(
+                          supportCategory.toLowerCase().replace(/ /g, '_'), 
+                          `[Public Support Request] ${supportMessage}`, 
+                          supportEmail
+                        );
                       } else {
                         console.log(`Public support ticket logged: [Category: ${supportCategory}] [Email: ${supportEmail}] Msg: ${supportMessage}`);
-                        // Trigger simulated notification in global system context if possible
                         if (state.addNotification) {
                           state.addNotification('System', `Support ticket created for ${supportEmail} (Category: ${supportCategory})`);
                         }
@@ -533,6 +667,20 @@ export default function LandingView({ state }) {
                         style={styles.modalInput}
                         required
                       />
+                    </div>
+                    <div style={styles.modalInputGroup}>
+                      <label style={styles.modalLabel}>Ticket Category</label>
+                      <select
+                        value={supportCategory}
+                        onChange={(e) => setSupportCategory(e.target.value)}
+                        style={styles.modalSelect}
+                      >
+                        <option value="General Support Request">General Support Request</option>
+                        <option value="Investor Support">Investor Support</option>
+                        <option value="Raise Capital">Raise Capital</option>
+                        <option value="Press Inquiries">Press Inquiries</option>
+                        <option value="Technical">Technical</option>
+                      </select>
                     </div>
                     <div style={styles.modalInputGroup}>
                       <label style={styles.modalLabel}>Details for your Support Ticket</label>
@@ -682,6 +830,22 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     gap: '1.5rem',
+  },
+  participantBadge: {
+    alignSelf: 'flex-start',
+    background: 'rgba(0, 242, 254, 0.05)',
+    border: '1px solid rgba(0, 242, 254, 0.15)',
+    borderRadius: '30px',
+    padding: '0.4rem 1rem',
+    fontSize: '0.78rem',
+    fontWeight: '700',
+    color: '#00f2fe',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em',
+    marginBottom: '0.5rem',
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '0.5rem',
   },
   heroTitle: {
     fontSize: '3.5rem',
@@ -1135,5 +1299,159 @@ const styles = {
   legalLink: {
     color: '#00f2fe',
     textDecoration: 'underline',
+  },
+  modalSelect: {
+    width: '100%',
+    background: '#121212',
+    border: '1px solid rgba(255,255,255,0.08)',
+    borderRadius: '8px',
+    padding: '0.75rem 1rem',
+    color: '#ffffff',
+    fontSize: '0.95rem',
+    outline: 'none',
+    cursor: 'pointer',
+  },
+  howItWorksSection: {
+    maxWidth: '1200px',
+    margin: '0 auto',
+    width: '100%',
+    padding: '4rem 0 6rem 0',
+    borderTop: '1px solid rgba(255,255,255,0.05)',
+  },
+  howTabsContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    gap: '1rem',
+    marginBottom: '2rem',
+  },
+  howTab: {
+    padding: '0.8rem 1.75rem',
+    borderRadius: '30px',
+    background: 'rgba(255, 255, 255, 0.02)',
+    border: '1px solid rgba(255, 255, 255, 0.08)',
+    color: 'rgba(255,255,255,0.6)',
+    fontWeight: '700',
+    cursor: 'pointer',
+    fontSize: '0.92rem',
+    transition: 'all 0.3s ease',
+  },
+  howTabActive: {
+    padding: '0.8rem 1.75rem',
+    borderRadius: '30px',
+    background: 'linear-gradient(135deg, rgba(0, 242, 254, 0.15) 0%, rgba(79, 172, 254, 0.15) 100%)',
+    border: '1px solid #00f2fe',
+    color: '#ffffff',
+    fontWeight: '700',
+    cursor: 'pointer',
+    fontSize: '0.92rem',
+    boxShadow: '0 0 15px rgba(0, 242, 254, 0.25)',
+    transition: 'all 0.3s ease',
+  },
+  howCard: {
+    padding: '2.5rem',
+    background: 'rgba(7, 9, 14, 0.4)',
+    border: '1px solid rgba(255,255,255,0.06)',
+    borderRadius: '16px',
+    backdropFilter: 'blur(16px)',
+  },
+  howCardHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    gap: '2rem',
+    borderBottom: '1px solid rgba(255,255,255,0.05)',
+    paddingBottom: '2rem',
+    marginBottom: '2.5rem',
+    flexWrap: 'wrap',
+  },
+  howCardTitle: {
+    fontSize: '1.5rem',
+    fontWeight: '800',
+    color: '#ffffff',
+    margin: 0,
+  },
+  howCardSub: {
+    fontSize: '0.92rem',
+    color: '#94a3b8',
+    marginTop: '0.35rem',
+    maxWidth: '600px',
+  },
+  howTypeToggle: {
+    display: 'flex',
+    background: 'rgba(0, 0, 0, 0.3)',
+    border: '1px solid rgba(255,255,255,0.06)',
+    borderRadius: '10px',
+    padding: '0.25rem',
+    gap: '0.25rem',
+  },
+  howTypeBtn: {
+    padding: '0.6rem 1.25rem',
+    background: 'none',
+    border: 'none',
+    borderRadius: '8px',
+    color: 'rgba(255,255,255,0.5)',
+    fontWeight: '600',
+    fontSize: '0.85rem',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+  },
+  howTypeBtnActive: {
+    padding: '0.6rem 1.25rem',
+    background: 'rgba(255,255,255,0.06)',
+    border: 'none',
+    borderRadius: '8px',
+    color: '#ffffff',
+    fontWeight: '600',
+    fontSize: '0.85rem',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+  },
+  howTimelineGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+    gap: '2rem',
+  },
+  howStepCard: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.75rem',
+  },
+  howStepHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '1rem',
+    marginBottom: '0.25rem',
+  },
+  howStepNumber: {
+    fontSize: '1.25rem',
+    fontWeight: '850',
+    color: '#00f2fe',
+    fontFamily: 'monospace',
+    background: 'rgba(0, 242, 254, 0.05)',
+    border: '1px solid rgba(0, 242, 254, 0.15)',
+    width: '40px',
+    height: '40px',
+    borderRadius: '50%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: '0 0 10px rgba(0, 242, 254, 0.1)',
+  },
+  howStepLine: {
+    flex: 1,
+    height: '1px',
+    background: 'linear-gradient(90deg, rgba(0, 242, 254, 0.2) 0%, rgba(255, 255, 255, 0.02) 100%)',
+  },
+  howStepTitle: {
+    fontSize: '1.05rem',
+    fontWeight: '750',
+    color: '#ffffff',
+    margin: 0,
+  },
+  howStepText: {
+    fontSize: '0.82rem',
+    color: '#94a3b8',
+    lineHeight: '1.5',
+    margin: 0,
   }
 };

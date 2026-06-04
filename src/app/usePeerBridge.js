@@ -2420,11 +2420,12 @@ export function usePeerBridge() {
   };
 
   // Help tickets database write (Table #11 in Schema)
-  const submitHelpTicket = (category, message) => {
+  const submitHelpTicket = (category, message, guestEmail = null) => {
     const newTicket = {
       ticket_id: generateRandomLargeId('tkt'),
-      customer_id: customer.customer_id,
-      category, // technical, billing, account, general
+      customer_id: customer ? customer.customer_id : 'guest',
+      guest_email: guestEmail || (customer ? customer.email : null),
+      category, // technical, billing, account, general, investor_support, raise_capital, press_inquiries
       message,
       status: 'open', // open, in_progress, resolved, closed
       created_at: new Date().toISOString(),
@@ -2432,6 +2433,10 @@ export function usePeerBridge() {
     };
     const updated = [newTicket, ...helpTickets];
     sync('pb_tickets', updated, setHelpTickets);
+
+    // Simulate sending email to support@peerbridge.ai
+    console.log(`Email dispatched to support@peerbridge.ai: Ticket ${newTicket.ticket_id} [Category: ${category}] [From: ${guestEmail || (customer ? customer.email : 'guest')}]`);
+
     addNotification('System', `Support ticket ${newTicket.ticket_id} opened. Vetted admin queue will respond shortly.`);
     return { success: true, ticket: newTicket };
   };

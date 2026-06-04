@@ -66,6 +66,12 @@ export default function SupportModule({ state }) {
         return '💳 Billing / Funds Transfer';
       case 'account':
         return '🔑 Cognito Credentials';
+      case 'investor_support':
+        return '📈 Investor Support';
+      case 'raise_capital':
+        return '💰 Raise Capital';
+      case 'press_inquiries':
+        return '📰 Press Inquiries';
       default:
         return '❓ General Query';
     }
@@ -152,6 +158,7 @@ export default function SupportModule({ state }) {
                   <p style={styles.tktMsg}>&quot;{tkt.message}&quot;</p>
                   <div style={styles.tktFooter}>
                     <span>Submitted: {new Date(tkt.created_at).toLocaleString()}</span>
+                    {tkt.guest_email && <span style={{ marginLeft: '1rem', color: '#00f2fe' }}>✉ {tkt.guest_email}</span>}
                   </div>
                 </div>
               ))
