@@ -339,6 +339,36 @@ export default function DocumentModule({ state }) {
           <h3 style={styles.cardTitle}>📂 Secure Document Vault (Table #7)</h3>
           <p style={styles.cardDesc}>Compliance files and assets compiled under SEC Reg CF placement directives.</p>
 
+          <div style={{
+            background: 'rgba(0, 242, 254, 0.03)',
+            border: '1px dashed rgba(0, 242, 254, 0.2)',
+            borderRadius: '8px',
+            padding: '1rem',
+            marginBottom: '0.75rem',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: '1rem'
+          }}>
+            <div style={{ flex: 1 }}>
+              <h4 style={{ fontSize: '0.82rem', fontWeight: '700', color: '#ffffff', margin: 0, display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                <span>📜</span> SEC Form C Disclosure Template
+              </h4>
+              <p style={{ fontSize: '0.74rem', color: '#a3a3a3', margin: '0.2rem 0 0 0', lineHeight: '1.3' }}>
+                Review a sample of our SEC Form C filing disclosure outlining the Crowd SPV structure.
+              </p>
+            </div>
+            <a 
+              href="https://www.sec.gov/files/formc.pdf" 
+              target="_blank" 
+              rel="noreferrer" 
+              className="btn-secondary" 
+              style={{ fontSize: '0.7rem', padding: '0.35rem 0.75rem', whiteSpace: 'nowrap', textDecoration: 'none' }}
+            >
+              Open Sample Form C ↗
+            </a>
+          </div>
+
           <div style={styles.vaultList}>
             {documentation.length === 0 ? (
               <p style={styles.emptyText}>No documents uploaded in vault.</p>
