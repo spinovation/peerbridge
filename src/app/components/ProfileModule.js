@@ -67,11 +67,45 @@ export default function ProfileModule({ state }) {
   const [jobCurrent, setJobCurrent] = useState(true);
   const [jobDesc, setJobDesc] = useState('');
 
+  // Collapsible card expand/collapse states
+  const [showProfessionalProf, setShowProfessionalProf] = useState(true);
+  const [showFounderProf, setShowFounderProf] = useState(false);
+  const [showInvestorProf, setShowInvestorProf] = useState(false);
+  const [showAffiliateProf, setShowAffiliateProf] = useState(false);
+  const [showNodeSettings, setShowNodeSettings] = useState(false);
+  const [showCognitoSecurity, setShowCognitoSecurity] = useState(false);
+
+  // Entrepreneur role edit states
+  const [companyName, setCompanyName] = useState(state.entrepreneurProfile?.company_name || '');
+  const [businessStage, setBusinessStage] = useState(state.entrepreneurProfile?.business_stage || 'revenue');
+  const [entIndustry, setEntIndustry] = useState(state.entrepreneurProfile?.industry || '');
+  const [fundingGoal, setFundingGoal] = useState(state.entrepreneurProfile?.funding_goal || 0);
+  const [valuation, setValuation] = useState(state.entrepreneurProfile?.valuation || 0);
+  const [companySummary, setCompanySummary] = useState(state.entrepreneurProfile?.company_summary || '');
+
+  // Investor role edit states
+  const [investorType, setInvestorType] = useState(state.investorProfile?.investor_type || 'angel');
+  const [minInvest, setMinInvest] = useState(state.investorProfile?.investment_range?.min || 1000);
+  const [maxInvest, setMaxInvest] = useState(state.investorProfile?.investment_range?.max || 50000);
+  const [prefIndustries, setPrefIndustries] = useState(state.investorProfile?.preferred_industries || []);
+  const [newPrefIndustry, setNewPrefIndustry] = useState('');
+  const [riskAppetite, setRiskAppetite] = useState(state.investorProfile?.risk_appetite || 'medium');
+  const [portfolioSize, setPortfolioSize] = useState(state.investorProfile?.portfolio_size || 0);
+
+  // Affiliate role edit states
+  const [entityType, setEntityType] = useState(state.affiliateProfile?.entity_type || 'individual');
+  const [specialty, setSpecialty] = useState(state.affiliateProfile?.specialty || '');
+  const [firmName, setFirmName] = useState(state.affiliateProfile?.firm || '');
+  const [affiliateBio, setAffiliateBio] = useState(state.affiliateProfile?.bio || '');
+
   // 2FA state variables
   const [show2FAWizard, setShow2FAWizard] = useState(false);
   const [totpToken, setTotpToken] = useState('');
   const [twoFaError, setTwoFaError] = useState('');
   const [isEditing, setIsEditing] = useState(false);
+  const [isEditingFounder, setIsEditingFounder] = useState(false);
+  const [isEditingInvestor, setIsEditingInvestor] = useState(false);
+  const [isEditingAffiliate, setIsEditingAffiliate] = useState(false);
   const [showExpForm, setShowExpForm] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
 
@@ -95,10 +129,98 @@ export default function ProfileModule({ state }) {
       { dob, nationality, address: addressCred, bio },
       { headline, summary, skills, experience, education }
     );
+
+    // Save Entrepreneur Profile if they are an Entrepreneur
+    if (customer.role_flags?.includes('Entrepreneur')) {
+      state.updateEntrepreneurProfile({
+        company_name: companyName,
+        business_stage: businessStage,
+        industry: entIndustry,
+        funding_goal: parseFloat(fundingGoal) || 0,
+        valuation: parseFloat(valuation) || 0,
+        company_summary: companySummary
+      });
+    }
+
+    // Save Investor Profile if they are an Investor
+    if (customer.role_flags?.includes('Investor')) {
+      state.updateInvestorProfile({
+        investor_type: investorType,
+        investment_range: { min: parseFloat(minInvest) || 0, max: parseFloat(maxInvest) || 0, currency: 'USD' },
+        preferred_industries: prefIndustries,
+        risk_appetite: riskAppetite,
+        portfolio_size: parseFloat(portfolioSize) || 0
+      });
+    }
+
+    // Save Affiliate Profile if they are an Affiliate
+    if (customer.role_flags?.includes('Affiliate')) {
+      state.updateAffiliateProfile({
+        entity_type: entityType,
+        specialty: specialty,
+        firm: firmName,
+        bio: affiliateBio
+      });
+    }
     
     setIsEditing(false);
     setSuccessMsg('Vetted professional credentials synced successfully to the Database!');
     setTimeout(() => setSuccessMsg(''), 3000);
+  };
+
+  const handleSaveFounderProfile = (e) => {
+    e.preventDefault();
+    state.updateEntrepreneurProfile({
+      company_name: companyName,
+      business_stage: businessStage,
+      industry: entIndustry,
+      funding_goal: parseFloat(fundingGoal) || 0,
+      valuation: parseFloat(valuation) || 0,
+      company_summary: companySummary
+    });
+    setIsEditingFounder(false);
+    setSuccessMsg('Startup Founder credentials updated successfully!');
+    setTimeout(() => setSuccessMsg(''), 3000);
+  };
+
+  const handleSaveInvestorProfile = (e) => {
+    e.preventDefault();
+    state.updateInvestorProfile({
+      investor_type: investorType,
+      investment_range: { min: parseFloat(minInvest) || 0, max: parseFloat(maxInvest) || 0, currency: 'USD' },
+      preferred_industries: prefIndustries,
+      risk_appetite: riskAppetite,
+      portfolio_size: parseFloat(portfolioSize) || 0
+    });
+    setIsEditingInvestor(false);
+    setSuccessMsg('Accredited Investor credentials updated successfully!');
+    setTimeout(() => setSuccessMsg(''), 3000);
+  };
+
+  const handleSaveAffiliateProfile = (e) => {
+    e.preventDefault();
+    state.updateAffiliateProfile({
+      entity_type: entityType,
+      specialty: specialty,
+      firm: firmName,
+      bio: affiliateBio
+    });
+    setIsEditingAffiliate(false);
+    setSuccessMsg('Vetted Advisor credentials updated successfully!');
+    setTimeout(() => setSuccessMsg(''), 3000);
+  };
+
+  const handleAddPrefIndustry = (e) => {
+    e.preventDefault();
+    if (!newPrefIndustry.trim() || prefIndustries.includes(newPrefIndustry.trim())) return;
+    const updated = [...prefIndustries, newPrefIndustry.trim()];
+    setPrefIndustries(updated);
+    setNewPrefIndustry('');
+  };
+
+  const handleRemovePrefIndustry = (indToRemove) => {
+    const updated = prefIndustries.filter(i => i !== indToRemove);
+    setPrefIndustries(updated);
   };
 
   const handleAddSkill = (e) => {
@@ -304,20 +426,34 @@ export default function ProfileModule({ state }) {
 
           {/* Main Column Framework */}
           <div style={styles.grid}>
-            {/* Profile Details & Form Resume */}
-            <div className="glass-panel" style={styles.card}>
-              <div style={styles.cardHeader}>
-                <h3 style={styles.cardTitle}>💼 Professional Profile (Table #3)</h3>
-                <button
-                  onClick={() => setIsEditing(!isEditing)}
-                  className="btn-secondary"
-                  style={styles.editBtn}
+            {/* Left Column containing Profile Cards */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+              {/* Profile Details & Form Resume */}
+              <div className="glass-panel" style={styles.card}>
+                <div 
+                  style={{ ...styles.cardHeader, cursor: 'pointer', userSelect: 'none' }} 
+                  onClick={() => setShowProfessionalProf(!showProfessionalProf)}
                 >
-                  {isEditing ? 'Cancel Edit' : 'Edit Resume'}
-                </button>
-              </div>
+                  <h3 style={styles.cardTitle}>
+                    {showProfessionalProf ? '− ' : '＋ '}💼 Professional Profile
+                  </h3>
+                  {showProfessionalProf && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsEditing(!isEditing);
+                      }}
+                      className="btn-secondary"
+                      style={styles.editBtn}
+                    >
+                      {isEditing ? 'Cancel Edit' : 'Edit Resume'}
+                    </button>
+                  )}
+                </div>
 
-              {!isEditing ? (
+                {showProfessionalProf && (
+                  <>
+                    {!isEditing ? (
                 <div style={styles.resumeDisplay}>
                   {/* Headline */}
                   <div style={styles.resumeSection}>
@@ -630,141 +766,539 @@ export default function ProfileModule({ state }) {
                   </button>
                 </form>
               )}
+            </>
+          )}
+        </div>
+
+        {/* 🚀 Startup Founder Profile Card */}
+        {customer.role_flags?.includes('Entrepreneur') && (
+          <div className="glass-panel" style={styles.card}>
+            <div style={{ ...styles.cardHeader, cursor: 'pointer', userSelect: 'none' }} onClick={() => setShowFounderProf(!showFounderProf)}>
+              <h3 style={styles.cardTitle}>
+                {showFounderProf ? '− ' : '＋ '}🚀 Startup Founder Profile
+              </h3>
+              {showFounderProf && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsEditingFounder(!isEditingFounder);
+                  }}
+                  className="btn-secondary"
+                  style={styles.editBtn}
+                >
+                  {isEditingFounder ? 'Cancel Edit' : 'Edit Founder'}
+                </button>
+              )}
             </div>
+
+            {showFounderProf && (
+              <>
+                {!isEditingFounder ? (
+                  <div style={styles.resumeDisplay}>
+                    <div style={styles.resumeSection}>
+                      <h4 style={styles.sectionHeader}>Company Profile</h4>
+                      <div style={styles.demographicsGrid}>
+                        <p><strong>Company Name:</strong> {companyName || 'Not set'}</p>
+                        <p><strong>Business Stage:</strong> <span style={{ textTransform: 'capitalize' }}>{businessStage}</span></p>
+                        <p><strong>Industry/Sector:</strong> {entIndustry || 'Not set'}</p>
+                        <p><strong>Funding Goal:</strong> ${parseFloat(fundingGoal).toLocaleString()}</p>
+                        <p><strong>Valuation Target:</strong> ${parseFloat(valuation).toLocaleString()}</p>
+                      </div>
+                    </div>
+
+                    <div style={styles.resumeSection}>
+                      <h4 style={styles.sectionHeader}>Company Summary</h4>
+                      <p style={styles.resumeText}>{companySummary || 'No summary recorded.'}</p>
+                    </div>
+                  </div>
+                ) : (
+                  <form onSubmit={handleSaveFounderProfile} style={styles.form}>
+                    <div style={styles.formRow2Col}>
+                      <div style={styles.inputGroup}>
+                        <label style={styles.label}>Company Name</label>
+                        <input
+                          type="text"
+                          value={companyName}
+                          onChange={(e) => setCompanyName(e.target.value)}
+                          style={styles.input}
+                          required
+                        />
+                      </div>
+                      <div style={styles.inputGroup}>
+                        <label style={styles.label}>Business Stage</label>
+                        <select
+                          value={businessStage}
+                          onChange={(e) => setBusinessStage(e.target.value)}
+                          style={styles.input}
+                        >
+                          <option value="idea">Idea Stage</option>
+                          <option value="prototype">Prototype Stage</option>
+                          <option value="revenue">Generating Revenue</option>
+                          <option value="scaling">Scaling Operations</option>
+                          <option value="startup">Established Startup</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div style={styles.formRow2Col}>
+                      <div style={styles.inputGroup}>
+                        <label style={styles.label}>Industry / Sector</label>
+                        <input
+                          type="text"
+                          value={entIndustry}
+                          onChange={(e) => setEntIndustry(e.target.value)}
+                          style={styles.input}
+                          placeholder="e.g. CleanTech, SaaS, MedTech"
+                        />
+                      </div>
+                      <div style={styles.inputGroup}>
+                        <label style={styles.label}>Funding Goal ($)</label>
+                        <input
+                          type="number"
+                          value={fundingGoal}
+                          onChange={(e) => setFundingGoal(e.target.value)}
+                          style={styles.input}
+                        />
+                      </div>
+                    </div>
+
+                    <div style={styles.formRow2Col}>
+                      <div style={styles.inputGroup}>
+                        <label style={styles.label}>Valuation Target ($)</label>
+                        <input
+                          type="number"
+                          value={valuation}
+                          onChange={(e) => setValuation(e.target.value)}
+                          style={styles.input}
+                        />
+                      </div>
+                    </div>
+
+                    <div style={styles.inputGroup}>
+                      <label style={styles.label}>Company Summary</label>
+                      <textarea
+                        value={companySummary}
+                        onChange={(e) => setCompanySummary(e.target.value)}
+                        style={styles.textarea}
+                        rows="3"
+                        placeholder="Provide a detailed description of your startup..."
+                      />
+                    </div>
+
+                    <button type="submit" className="btn-primary" style={{ alignSelf: 'flex-start' }}>
+                      Save Founder Profile
+                    </button>
+                  </form>
+                )}
+              </>
+            )}
+          </div>
+        )}
+
+        {/* 📈 Accredited Investor Profile Card */}
+        {customer.role_flags?.includes('Investor') && (
+          <div className="glass-panel" style={styles.card}>
+            <div style={{ ...styles.cardHeader, cursor: 'pointer', userSelect: 'none' }} onClick={() => setShowInvestorProf(!showInvestorProf)}>
+              <h3 style={styles.cardTitle}>
+                {showInvestorProf ? '− ' : '＋ '}📈 Accredited Investor Profile
+              </h3>
+              {showInvestorProf && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsEditingInvestor(!isEditingInvestor);
+                  }}
+                  className="btn-secondary"
+                  style={styles.editBtn}
+                >
+                  {isEditingInvestor ? 'Cancel Edit' : 'Edit Investor'}
+                </button>
+              )}
+            </div>
+
+            {showInvestorProf && (
+              <>
+                {!isEditingInvestor ? (
+                  <div style={styles.resumeDisplay}>
+                    <div style={styles.resumeSection}>
+                      <h4 style={styles.sectionHeader}>Investor Type & Parameters</h4>
+                      <div style={styles.demographicsGrid}>
+                        <p><strong>Investor Type:</strong> <span style={{ textTransform: 'capitalize' }}>{investorType}</span></p>
+                        <p><strong>Accreditation Status:</strong> {investorProfile.accreditation_status ? '✅ Vetted & Verified Accredited' : '⚠️ Pending Verification'}</p>
+                        <p><strong>Min Investment:</strong> ${parseFloat(minInvest).toLocaleString()}</p>
+                        <p><strong>Max Investment:</strong> ${parseFloat(maxInvest).toLocaleString()}</p>
+                        <p><strong>Risk Appetite:</strong> <span style={{ textTransform: 'capitalize' }}>{riskAppetite}</span></p>
+                        <p><strong>Portfolio Assets:</strong> ${parseFloat(portfolioSize).toLocaleString()}</p>
+                      </div>
+                    </div>
+
+                    <div style={styles.resumeSection}>
+                      <h4 style={styles.sectionHeader}>Preferred Industries</h4>
+                      <div style={styles.skillsTagRow}>
+                        {prefIndustries.length === 0 ? (
+                          <p style={styles.emptyText}>No preferred industries selected.</p>
+                        ) : (
+                          prefIndustries.map((ind, i) => (
+                            <span key={i} style={styles.skillTag}>
+                              {ind}
+                            </span>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <form onSubmit={handleSaveInvestorProfile} style={styles.form}>
+                    <div style={styles.formRow2Col}>
+                      <div style={styles.inputGroup}>
+                        <label style={styles.label}>Investor Type</label>
+                        <select
+                          value={investorType}
+                          onChange={(e) => setInvestorType(e.target.value)}
+                          style={styles.input}
+                        >
+                          <option value="angel">Angel Investor</option>
+                          <option value="vc">Venture Capitalist</option>
+                          <option value="institutional">Institutional Investor</option>
+                          <option value="group">Investor Syndicate / Group</option>
+                        </select>
+                      </div>
+                      <div style={styles.inputGroup}>
+                        <label style={styles.label}>Risk Appetite</label>
+                        <select
+                          value={riskAppetite}
+                          onChange={(e) => setRiskAppetite(e.target.value)}
+                          style={styles.input}
+                        >
+                          <option value="low">Low Risk Profile</option>
+                          <option value="medium">Balanced (Medium) Profile</option>
+                          <option value="high">High Yield / Speculative Profile</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div style={styles.formRow2Col}>
+                      <div style={styles.inputGroup}>
+                        <label style={styles.label}>Min Investment Allocation ($)</label>
+                        <input
+                          type="number"
+                          value={minInvest}
+                          onChange={(e) => setMinInvest(e.target.value)}
+                          style={styles.input}
+                        />
+                      </div>
+                      <div style={styles.inputGroup}>
+                        <label style={styles.label}>Max Investment Allocation ($)</label>
+                        <input
+                          type="number"
+                          value={maxInvest}
+                          onChange={(e) => setMaxInvest(e.target.value)}
+                          style={styles.input}
+                        />
+                      </div>
+                    </div>
+
+                    <div style={styles.formRow2Col}>
+                      <div style={styles.inputGroup}>
+                        <label style={styles.label}>Ecosystem Portfolio Size ($)</label>
+                        <input
+                          type="number"
+                          value={portfolioSize}
+                          onChange={(e) => setPortfolioSize(e.target.value)}
+                          style={styles.input}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Preferred Industries Edit Tags */}
+                    <div style={styles.skillsEditSection}>
+                      <label style={styles.label}>Edit Preferred Sectors</label>
+                      <div style={styles.skillsTagRow}>
+                        {prefIndustries.map((ind, i) => (
+                          <span key={i} style={styles.skillTagEditable} onClick={() => handleRemovePrefIndustry(ind)}>
+                            {ind} ✕
+                          </span>
+                        ))}
+                      </div>
+                      <div style={styles.addSkillRow}>
+                        <input
+                          type="text"
+                          placeholder="Add sector..."
+                          value={newPrefIndustry}
+                          onChange={(e) => setNewPrefIndustry(e.target.value)}
+                          style={styles.smallInput}
+                        />
+                        <button type="button" onClick={handleAddPrefIndustry} className="btn-secondary" style={styles.smallBtn}>
+                          Add
+                        </button>
+                      </div>
+                    </div>
+
+                    <button type="submit" className="btn-primary" style={{ alignSelf: 'flex-start' }}>
+                      Save Investor Profile
+                    </button>
+                  </form>
+                )}
+              </>
+            )}
+          </div>
+        )}
+
+        {/* 👥 Vetted Advisor Profile Card */}
+        {customer.role_flags?.includes('Affiliate') && (
+          <div className="glass-panel" style={styles.card}>
+            <div style={{ ...styles.cardHeader, cursor: 'pointer', userSelect: 'none' }} onClick={() => setShowAffiliateProf(!showAffiliateProf)}>
+              <h3 style={styles.cardTitle}>
+                {showAffiliateProf ? '− ' : '＋ '}👥 Vetted Advisor Profile
+              </h3>
+              {showAffiliateProf && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsEditingAffiliate(!isEditingAffiliate);
+                  }}
+                  className="btn-secondary"
+                  style={styles.editBtn}
+                >
+                  {isEditingAffiliate ? 'Cancel Edit' : 'Edit Advisor'}
+                </button>
+              )}
+            </div>
+
+            {showAffiliateProf && (
+              <>
+                {!isEditingAffiliate ? (
+                  <div style={styles.resumeDisplay}>
+                    <div style={styles.resumeSection}>
+                      <h4 style={styles.sectionHeader}>Advisory Credentials</h4>
+                      <div style={styles.demographicsGrid}>
+                        <p><strong>Entity Type:</strong> <span style={{ textTransform: 'capitalize' }}>{entityType}</span></p>
+                        <p><strong>Advisory Firm:</strong> {firmName || 'Independent'}</p>
+                        <p><strong>Professional Specialty:</strong> {specialty || 'General Business Consulting'}</p>
+                        <p><strong>Vetted Advisory Rating:</strong> {state.affiliateProfile?.rating || '5.0'} ⭐</p>
+                      </div>
+                    </div>
+
+                    <div style={styles.resumeSection}>
+                      <h4 style={styles.sectionHeader}>Advisor Bio & Mission</h4>
+                      <p style={styles.resumeText}>{affiliateBio || 'No advisory bio recorded.'}</p>
+                    </div>
+                  </div>
+                ) : (
+                  <form onSubmit={handleSaveAffiliateProfile} style={styles.form}>
+                    <div style={styles.formRow2Col}>
+                      <div style={styles.inputGroup}>
+                        <label style={styles.label}>Entity Type</label>
+                        <select
+                          value={entityType}
+                          onChange={(e) => setEntityType(e.target.value)}
+                          style={styles.input}
+                        >
+                          <option value="individual">Individual Consultant</option>
+                          <option value="company">Consulting Firm / Corporate Agency</option>
+                        </select>
+                      </div>
+                      <div style={styles.inputGroup}>
+                        <label style={styles.label}>Advisory Firm Name</label>
+                        <input
+                          type="text"
+                          value={firmName}
+                          onChange={(e) => setFirmName(e.target.value)}
+                          style={styles.input}
+                          placeholder="e.g. Vance & Partners LLC"
+                        />
+                      </div>
+                    </div>
+
+                    <div style={styles.inputGroup}>
+                      <label style={styles.label}>Professional Specialty</label>
+                      <input
+                        type="text"
+                        value={specialty}
+                        onChange={(e) => setSpecialty(e.target.value)}
+                        style={styles.input}
+                        placeholder="e.g. SEC Reg CF Filings, Startup Cap Tables"
+                        required
+                      />
+                    </div>
+
+                    <div style={styles.inputGroup}>
+                      <label style={styles.label}>Advisor Bio & Services Statement</label>
+                      <textarea
+                        value={affiliateBio}
+                        onChange={(e) => setAffiliateBio(e.target.value)}
+                        style={styles.textarea}
+                        rows="3"
+                        placeholder="Provide details about the advisory services you offer..."
+                      />
+                    </div>
+
+                    <button type="submit" className="btn-primary" style={{ alignSelf: 'flex-start' }}>
+                      Save Advisor Profile
+                    </button>
+                  </form>
+                )}
+              </>
+            )}
+          </div>
+        )}
+      </div>
 
             {/* Settings & Security Columns */}
             <div style={styles.settingsCol}>
               {/* Table #10: Preferences Settings */}
               <div className="glass-panel" style={styles.card}>
-                <h3 style={styles.cardTitle}>⚙ Node Settings (Table #10)</h3>
-                <p style={styles.cardDesc}>Maintain user configurations, visible security levels, and notification triggers.</p>
-
-                <div style={styles.preferencesList}>
-                  <div style={styles.prefItem}>
-                    <div>
-                      <h4 style={styles.prefTitle}>Email Notification Alerts</h4>
-                      <p style={styles.prefSub}>Receive deal offerings, bank compliance slips, and ticket replies.</p>
-                    </div>
-                    <input
-                      type="checkbox"
-                      checked={settings.notification_preferences.email}
-                      onChange={() => handleTogglePreference('email')}
-                      style={styles.checkbox}
-                    />
-                  </div>
-
-                  <div style={styles.prefItem}>
-                    <div>
-                      <h4 style={styles.prefTitle}>SMS Compliance Warnings</h4>
-                      <p style={styles.prefSub}>Fast alert overrides for high-value wallet transactions.</p>
-                    </div>
-                    <input
-                      type="checkbox"
-                      checked={settings.notification_preferences.sms}
-                      onChange={() => handleTogglePreference('sms')}
-                      style={styles.checkbox}
-                    />
-                  </div>
-
-                  <div style={styles.prefItem}>
-                    <div>
-                      <h4 style={styles.prefTitle}>Investment Bulletins</h4>
-                      <p style={styles.prefSub}>Get alerts when new verified campaigns are launched.</p>
-                    </div>
-                    <input
-                      type="checkbox"
-                      checked={settings.notification_preferences.investment_alerts}
-                      onChange={() => handleTogglePreference('investment_alerts')}
-                      style={styles.checkbox}
-                    />
-                  </div>
-
-                  <div style={styles.prefRow}>
-                    <span style={styles.prefLabel}>Ecosystem Interface Theme</span>
-                    <span style={styles.prefVal}>Dark Mode Only</span>
-                  </div>
-
-                  <div style={styles.prefRow}>
-                    <span style={styles.prefLabel}>Privacy Security Level</span>
-                    <select
-                      value={settings.privacy_level}
-                      onChange={(e) => updateSettings({ privacy_level: e.target.value })}
-                      style={styles.miniSelect}
-                    >
-                      <option value="public">Public (Open Directory Feed)</option>
-                      <option value="restricted">Restricted (Connections Only)</option>
-                      <option value="private">Private (Matches Only)</option>
-                    </select>
-                  </div>
+                <div 
+                  style={{ ...styles.cardHeader, cursor: 'pointer', userSelect: 'none' }} 
+                  onClick={() => setShowNodeSettings(!showNodeSettings)}
+                >
+                  <h3 style={styles.cardTitle}>
+                    {showNodeSettings ? '− ' : '＋ '}⚙ Node Settings
+                  </h3>
                 </div>
+                {showNodeSettings && (
+                  <>
+                    <p style={styles.cardDesc}>Maintain user configurations, visible security levels, and notification triggers.</p>
+
+                    <div style={styles.preferencesList}>
+                      <div style={styles.prefItem}>
+                        <div>
+                          <h4 style={styles.prefTitle}>Email Notification Alerts</h4>
+                          <p style={styles.prefSub}>Receive deal offerings, bank compliance slips, and ticket replies.</p>
+                        </div>
+                        <input
+                          type="checkbox"
+                          checked={settings.notification_preferences.email}
+                          onChange={() => handleTogglePreference('email')}
+                          style={styles.checkbox}
+                        />
+                      </div>
+
+                      <div style={styles.prefItem}>
+                        <div>
+                          <h4 style={styles.prefTitle}>SMS Compliance Warnings</h4>
+                          <p style={styles.prefSub}>Fast alert overrides for high-value wallet transactions.</p>
+                        </div>
+                        <input
+                          type="checkbox"
+                          checked={settings.notification_preferences.sms}
+                          onChange={() => handleTogglePreference('sms')}
+                          style={styles.checkbox}
+                        />
+                      </div>
+
+                      <div style={styles.prefItem}>
+                        <div>
+                          <h4 style={styles.prefTitle}>Investment Bulletins</h4>
+                          <p style={styles.prefSub}>Get alerts when new verified campaigns are launched.</p>
+                        </div>
+                        <input
+                          type="checkbox"
+                          checked={settings.notification_preferences.investment_alerts}
+                          onChange={() => handleTogglePreference('investment_alerts')}
+                          style={styles.checkbox}
+                        />
+                      </div>
+
+                      <div style={styles.prefRow}>
+                        <span style={styles.prefLabel}>Ecosystem Interface Theme</span>
+                        <span style={styles.prefVal}>Dark Mode Only</span>
+                      </div>
+
+                      <div style={styles.prefRow}>
+                        <span style={styles.prefLabel}>Privacy Security Level</span>
+                        <select
+                          value={settings.privacy_level}
+                          onChange={(e) => updateSettings({ privacy_level: e.target.value })}
+                          style={styles.miniSelect}
+                        >
+                          <option value="public">Public (Open Directory Feed)</option>
+                          <option value="restricted">Restricted (Connections Only)</option>
+                          <option value="private">Private (Matches Only)</option>
+                        </select>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
 
               {/* Security & 2FA */}
               <div className="glass-panel" style={styles.card}>
-                <h3 style={styles.cardTitle}>🛡 Cognito Node Security</h3>
-                <p style={styles.cardDesc}>Link 2-Factor Authentication keys to protect investment payouts and bank transfers.</p>
-
-                <div style={styles.securityBox}>
-                  <div>
-                    <h4 style={styles.securityTitle}>Cognito 2FA Verification</h4>
-                    <p style={styles.securitySub}>
-                      {customer.status === 'verified'
-                        ? '🔒 Verified: Secured with time-based TOTP encryption tokens.'
-                        : '🔓 Unverified: Please configure SMS or TOTP keys.'}
-                    </p>
-                  </div>
-                  <button
-                    onClick={handleToggle2FA}
-                    className={customer.status === 'verified' ? 'btn-secondary' : 'btn-primary'}
-                    style={styles.securityBtn}
-                  >
-                    {customer.status === 'verified' ? 'Reset Keys' : 'Configure 2FA'}
-                  </button>
+                <div 
+                  style={{ ...styles.cardHeader, cursor: 'pointer', userSelect: 'none' }} 
+                  onClick={() => setShowCognitoSecurity(!showCognitoSecurity)}
+                >
+                  <h3 style={styles.cardTitle}>
+                    {showCognitoSecurity ? '− ' : '＋ '}🛡 Cognito Node Security
+                  </h3>
                 </div>
+                {showCognitoSecurity && (
+                  <>
+                    <p style={styles.cardDesc}>Link 2-Factor Authentication keys to protect investment payouts and bank transfers.</p>
 
-                {twoFaError && <span style={styles.errorText}>{twoFaError}</span>}
-
-                {show2FAWizard && (
-                  <div style={styles.wizard}>
-                    <h4 style={styles.wizardTitle}>🔑 Authenticator Setup</h4>
-                    
-                    <div style={styles.qrContainer}>
-                      <div style={styles.qrCode}>
-                        <div style={styles.qrInner}>
-                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '4px', width: '80px', height: '80px' }}>
-                            {Array.from({ length: 25 }).map((_, i) => (
-                              <div key={i} style={{ 
-                                background: (i % 2 === 0 && i % 3 !== 0) || i === 0 || i === 4 || i === 20 || i === 24 ? '#ffffff' : 'transparent',
-                                borderRadius: '2px'
-                              }}></div>
-                            ))}
-                          </div>
-                        </div>
+                    <div style={styles.securityBox}>
+                      <div>
+                        <h4 style={styles.securityTitle}>Cognito 2FA Verification</h4>
+                        <p style={styles.securitySub}>
+                          {customer.status === 'verified'
+                            ? '🔒 Verified: Secured with time-based TOTP encryption tokens.'
+                            : '🔓 Unverified: Please configure SMS or TOTP keys.'}
+                        </p>
                       </div>
-                      <div style={styles.qrDetails}>
-                        <span style={styles.secretLabel}>Manual Secret Key</span>
-                        <code style={styles.secretCode}>PEERBRIDGE-COGNITO-7718</code>
-                      </div>
+                      <button
+                        onClick={handleToggle2FA}
+                        className={customer.status === 'verified' ? 'btn-secondary' : 'btn-primary'}
+                        style={styles.securityBtn}
+                      >
+                        {customer.status === 'verified' ? 'Reset Keys' : 'Configure 2FA'}
+                      </button>
                     </div>
 
-                    <form onSubmit={handleConfirm2FA} style={styles.wizardForm}>
-                      <div style={styles.inputGroup}>
-                        <label style={styles.label}>Enter Code (Use simulation default: 123456)</label>
-                        <input
-                          type="text"
-                          placeholder="123456"
-                          value={totpToken}
-                          onChange={(e) => setTotpToken(e.target.value)}
-                          style={styles.totpInput}
-                          maxLength={6}
-                          required
-                        />
+                    {twoFaError && <span style={styles.errorText}>{twoFaError}</span>}
+
+                    {show2FAWizard && (
+                      <div style={styles.wizard}>
+                        <h4 style={styles.wizardTitle}>🔑 Authenticator Setup</h4>
+                        
+                        <div style={styles.qrContainer}>
+                          <div style={styles.qrCode}>
+                            <div style={styles.qrInner}>
+                              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '4px', width: '80px', height: '80px' }}>
+                                {Array.from({ length: 25 }).map((_, i) => (
+                                  <div key={i} style={{ 
+                                    background: (i % 2 === 0 && i % 3 !== 0) || i === 0 || i === 4 || i === 20 || i === 24 ? '#ffffff' : 'transparent',
+                                    borderRadius: '2px'
+                                  }}></div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                          <div style={styles.qrDetails}>
+                            <span style={styles.secretLabel}>Manual Secret Key</span>
+                            <code style={styles.secretCode}>PEERBRIDGE-COGNITO-7718</code>
+                          </div>
+                        </div>
+
+                        <form onSubmit={handleConfirm2FA} style={styles.wizardForm}>
+                          <div style={styles.inputGroup}>
+                            <label style={styles.label}>Enter Code (Use simulation default: 123456)</label>
+                            <input
+                              type="text"
+                              placeholder="123456"
+                              value={totpToken}
+                              onChange={(e) => setTotpToken(e.target.value)}
+                              style={styles.totpInput}
+                              maxLength={6}
+                              required
+                            />
+                          </div>
+                          <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
+                            Verify & Configure
+                          </button>
+                        </form>
                       </div>
-                      <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
-                        Verify & Configure
-                      </button>
-                    </form>
-                  </div>
+                    )}
+                  </>
                 )}
               </div>
             </div>

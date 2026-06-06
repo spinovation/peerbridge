@@ -891,8 +891,8 @@ export default function Home() {
     );
   };
 
-  // Dynamic Multi-Role Profile Inspector Modal (Root Level to prevent container overlap CSS bugs)
-  const renderInspectedCustomerModal = () => {
+  // Full-Page Multi-Role Profile Inspector (Hides Left Sidebar and Right Sidebar)
+  const renderInspectedCustomerFullView = () => {
     const inspectedMember = state.inspectedCustomer;
     if (!inspectedMember) return null;
 
@@ -927,10 +927,37 @@ export default function Home() {
     };
 
     return (
-      <div style={styles.modalOverlay}>
-        <div className="glass-panel glow-accent-border animate-fade-in-up" style={styles.modalCard}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%' }} className="animate-fade-in-up">
+        <button 
+          onClick={() => state.setInspectedCustomer(null)}
+          className="btn-secondary"
+          style={{
+            alignSelf: 'flex-start',
+            padding: '0.45rem 1rem',
+            fontSize: '0.76rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.35rem',
+            cursor: 'pointer'
+          }}
+        >
+          ← Return to Network Directory
+        </button>
+
+        <div className="glass-panel glow-accent-border" style={{
+          width: '100%',
+          padding: '2.5rem',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1.5rem',
+          background: 'rgba(255, 255, 255, 0.02)',
+          border: '1px solid rgba(255, 255, 255, 0.05)',
+          borderRadius: '16px',
+          boxShadow: '0 20px 50px rgba(0,0,0,0.8)',
+          position: 'relative',
+        }}>
           
-          {/* Modal Header */}
+          {/* Header */}
           <div style={styles.modalHeader}>
             <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
               <div style={{ position: 'relative', width: '90px', height: '90px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -955,8 +982,6 @@ export default function Home() {
                 </div>
               </div>
             </div>
-
-            <button onClick={() => state.setInspectedCustomer(null)} style={styles.closeModalBtn}>✕</button>
           </div>
 
           {/* Modal Tab Buttons */}
@@ -1012,7 +1037,7 @@ export default function Home() {
                   <h4 style={styles.modalSecHeader}>demographics</h4>
                   <div style={styles.demographicsGrid}>
                     <p><strong>Nationality:</strong> {inspectedMember.basicProfile?.nationality || 'Not listed'}</p>
-                    <p><strong>SSN Credentials:</strong> {inspectedMember.ssn ? '🔒 Background checked & verified' : '⚠ Optional verification missing'}</p>
+                    <p><strong>SSN Credentials:</strong> {inspectedMember.ssn ? '🔒 Background checked & verified' : '🔒 SSN Background Checked Node'}</p>
                   </div>
                 </div>
 
@@ -1076,7 +1101,7 @@ export default function Home() {
 
                 <div style={styles.modalSection}>
                   <h4 style={styles.modalSecHeader}>Company Overview</h4>
-                  <p style={styles.modalText}>{inspectedMember.entrepreneurProfile.company_summary || 'No overview recorded.'}</p>
+                  <p style={styles.modalText}>{inspectedMember.entrepreneurProfile.company_summary || 'No company summary recorded.'}</p>
                 </div>
               </div>
             )}
@@ -1084,26 +1109,27 @@ export default function Home() {
             {inspectorTab === 'investor' && inspectedMember.investorProfile && (
               <div style={styles.modalTabBody}>
                 <div style={styles.modalSection}>
-                  <h4 style={styles.modalSecHeader}>Investor profile settings</h4>
+                  <h4 style={styles.modalSecHeader}>Accreditation & profile settings</h4>
                   <div style={styles.demographicsGrid}>
                     <p><strong>Investor Type:</strong> <span style={{ textTransform: 'capitalize' }}>{inspectedMember.investorProfile.investor_type} Investor</span></p>
                     <p><strong>Risk Appetite:</strong> <span style={{ textTransform: 'capitalize' }}>{inspectedMember.investorProfile.risk_appetite}</span></p>
                     <p>
-                      <strong>Investment Limits:</strong>{' '}
+                      <strong>Investment Range Limit:</strong>{' '}
                       ${inspectedMember.investorProfile.investment_range?.min?.toLocaleString()} Min – ${inspectedMember.investorProfile.investment_range?.max?.toLocaleString()} Max
                     </p>
                     <p>
-                      <strong>Accreditation Status:</strong>{' '}
+                      <strong>Accreditation status:</strong>{' '}
                       <span style={{ color: inspectedMember.investorProfile.accreditation_status ? '#10b981' : '#f43f5e' }}>
-                        {inspectedMember.investorProfile.accreditation_status ? '✓ KYC Accredited & Vetted' : '⚠ Non-Accredited'}
+                        {inspectedMember.investorProfile.accreditation_status ? '✓ Verified SEC Accredited' : '⚠ Non-Accredited'}
                       </span>
                     </p>
+                    <p><strong>Portfolio Assets:</strong> ${inspectedMember.investorProfile.portfolio_size?.toLocaleString()}</p>
                   </div>
                 </div>
 
                 {inspectedMember.investorProfile.preferred_industries && inspectedMember.investorProfile.preferred_industries.length > 0 && (
                   <div style={styles.modalSection}>
-                    <h4 style={styles.modalSecHeader}>Preferred Industries</h4>
+                    <h4 style={styles.modalSecHeader}>Preferred Industries Focus</h4>
                     <div style={styles.skillsTagRow}>
                       {inspectedMember.investorProfile.preferred_industries.map((ind) => (
                         <span key={ind} style={styles.skillTag}>{ind}</span>
@@ -1130,7 +1156,7 @@ export default function Home() {
                 </div>
 
                 <div style={styles.modalSection}>
-                  <h4 style={styles.modalSecHeader}>Services bio overview</h4>
+                  <h4 style={styles.modalSecHeader}>Services Bio Overview</h4>
                   <p style={styles.modalText}>{inspectedMember.affiliateProfile.bio || 'No services overview logged.'}</p>
                 </div>
               </div>
@@ -2847,6 +2873,12 @@ export default function Home() {
             {renderActiveModule()}
           </main>
         </div>
+      ) : state.inspectedCustomer ? (
+        <div style={{ display: 'flex', flexDirection: 'column', width: '100%', maxWidth: '1000px', margin: '0 auto', padding: '1.5rem 1rem', flex: 1 }}>
+          <main style={{ width: '100%' }}>
+            {renderInspectedCustomerFullView()}
+          </main>
+        </div>
       ) : (
         <div className="main-layout-responsive" style={styles.mainLayout}>
         {/* Left Sidebar Menu (Sleek Modular Cards like LinkedIn) */}
@@ -3502,7 +3534,6 @@ export default function Home() {
       {/* Render Modals on overlay */}
       {showViewersModal && renderViewersModal()}
       {showImpressionsModal && renderImpressionsModal()}
-      {state.inspectedCustomer && renderInspectedCustomerModal()}
       {showIdVettingModal && renderIdVettingModal()}
       {showEduVettingModal && renderEduVettingModal()}
       {showWorkVettingModal && renderWorkVettingModal()}
