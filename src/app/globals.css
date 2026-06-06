@@ -403,3 +403,40 @@ a:hover {
   cursor: pointer;
   z-index: 10;
 }
+
+/* ==========================================
+   Responsive Footer Grid & Hover Effects
+   ========================================== */
+.footer-grid-responsive {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2.5rem;
+  max-width: 1050px;
+  margin: 0 auto 3rem auto;
+  width: 100%;
+}
+
+.footer-list-item-hover {
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+.footer-list-item-hover:hover {
+  color: #ffffff !important;
+  opacity: 1;
+}
+
+@media (max-width: 992px) {
+  .footer-grid-responsive {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 2rem !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .footer-grid-responsive {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+    text-align: center;
+  }
+}
+

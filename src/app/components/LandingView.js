@@ -550,14 +550,18 @@ export default function LandingView({ state }) {
 
       {/* Expanded Landing Footer */}
       <footer style={styles.footerContainer}>
-        <div style={styles.footerGrid}>
+        <div className="footer-grid-responsive">
           {/* Column 1: About */}
           <div style={styles.footerColumn}>
             <h4 style={styles.footerColTitle}>About US</h4>
             <p style={styles.footerColText}>
               An invitation-only private capital ecosystem decoupling private debt & equity warrants via payroll-bypass underwriting and autonomous AI brokerage nodes.
             </p>
-            <span style={{ ...styles.footerListItem, textDecoration: 'underline', marginTop: '0.5rem', display: 'inline-block' }} onClick={() => setFooterModalType('about')}>
+            <span 
+              className="footer-list-item-hover"
+              style={{ ...styles.footerListItem, textDecoration: 'underline', marginTop: '0.5rem', display: 'inline-block' }} 
+              onClick={() => setFooterModalType('about')}
+            >
               Read our mission →
             </span>
           </div>
@@ -566,11 +570,11 @@ export default function LandingView({ state }) {
           <div style={styles.footerColumn}>
             <h4 style={styles.footerColTitle}>Support</h4>
             <ul style={styles.footerList}>
-              <li style={styles.footerListItem} onClick={() => { setFooterModalType('support'); setSupportCategory('General Support Request'); }}>💬 Raise a Support Request</li>
-              <li style={styles.footerListItem} onClick={() => { setFooterModalType('support'); setSupportCategory('Investor Support'); }}>📈 Investor Support</li>
-              <li style={styles.footerListItem} onClick={() => { setFooterModalType('support'); setSupportCategory('Raise Capital'); }}>💰 Raise Capital</li>
-              <li style={styles.footerListItem} onClick={() => { setFooterModalType('support'); setSupportCategory('Press Inquiries'); }}>📰 Press Inquiries</li>
-              <li style={styles.footerListItem} onClick={() => { setFooterModalType('support'); setSupportCategory('Technical'); }}>💻 Technical</li>
+              <li className="footer-list-item-hover" style={styles.footerListItem} onClick={() => { setFooterModalType('support'); setSupportCategory('General Support Request'); }}>💬 Raise a Support Request</li>
+              <li className="footer-list-item-hover" style={styles.footerListItem} onClick={() => { setFooterModalType('support'); setSupportCategory('Investor Support'); }}>📈 Investor Support</li>
+              <li className="footer-list-item-hover" style={styles.footerListItem} onClick={() => { setFooterModalType('support'); setSupportCategory('Raise Capital'); }}>💰 Raise Capital</li>
+              <li className="footer-list-item-hover" style={styles.footerListItem} onClick={() => { setFooterModalType('support'); setSupportCategory('Press Inquiries'); }}>📰 Press Inquiries</li>
+              <li className="footer-list-item-hover" style={styles.footerListItem} onClick={() => { setFooterModalType('support'); setSupportCategory('Technical'); }}>💻 Technical</li>
             </ul>
           </div>
 
@@ -578,9 +582,9 @@ export default function LandingView({ state }) {
           <div style={styles.footerColumn}>
             <h4 style={styles.footerColTitle}>Legal</h4>
             <ul style={styles.footerList}>
-              <li style={styles.footerListItem} onClick={() => setFooterModalType('legal_tos')}>Terms of Service</li>
-              <li style={styles.footerListItem} onClick={() => setFooterModalType('legal_privacy')}>Privacy Policy</li>
-              <li style={styles.footerListItem} onClick={() => setFooterModalType('legal_disclaimers')}>Disclaimers</li>
+              <li className="footer-list-item-hover" style={styles.footerListItem} onClick={() => setFooterModalType('legal_tos')}>Terms of Service</li>
+              <li className="footer-list-item-hover" style={styles.footerListItem} onClick={() => setFooterModalType('legal_privacy')}>Privacy Policy</li>
+              <li className="footer-list-item-hover" style={styles.footerListItem} onClick={() => setFooterModalType('legal_disclaimers')}>Disclaimers</li>
             </ul>
           </div>
 
@@ -589,11 +593,11 @@ export default function LandingView({ state }) {
             <h4 style={styles.footerColTitle}>Contact US</h4>
             <p style={styles.footerColText}>
               Global Inquiries:<br/>
-              <span style={{ color: '#00f2fe', cursor: 'pointer' }} onClick={() => setFooterModalType('contact')}>contact@peerbridge.ai</span>
+              <span className="footer-list-item-hover" style={{ color: '#00f2fe', cursor: 'pointer' }} onClick={() => setFooterModalType('contact')}>contact@peerbridge.ai</span>
             </p>
             <p style={styles.footerColText}>
               Support Desk:<br/>
-              <a href="mailto:support@peerbridge.ai" style={styles.footerLink}>support@peerbridge.ai</a>
+              <a href="mailto:support@peerbridge.ai" className="footer-list-item-hover" style={styles.footerLink}>support@peerbridge.ai</a>
             </p>
           </div>
         </div>

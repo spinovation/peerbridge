@@ -36,6 +36,7 @@ export default function Home() {
   const [showWorkVettingModal, setShowWorkVettingModal] = useState(false);
   const [showNetWorthVettingModal, setShowNetWorthVettingModal] = useState(false);
   const [showVettingCenter, setShowVettingCenter] = useState(false);
+  const [showAllResources, setShowAllResources] = useState(false);
 
   // Auto-collapse right sidebar Vetting Center card when navigating away from Documents module
   useEffect(() => {
@@ -2427,16 +2428,6 @@ export default function Home() {
             </button>
 
             <button
-              onClick={() => state.setActiveModule('banking')}
-              className="header-nav-btn-responsive"
-              style={state.activeModule === 'banking' ? styles.headerNavBtnActive : styles.headerNavBtn}
-            >
-              <span>🏛</span>
-              <span>Wallet</span>
-              {state.activeModule === 'banking' && <div style={styles.activeIndicator} />}
-            </button>
-
-            <button
               onClick={() => state.setActiveModule('documents')}
               className="header-nav-btn-responsive"
               style={state.activeModule === 'documents' ? styles.headerNavBtnActive : styles.headerNavBtn}
@@ -2444,16 +2435,6 @@ export default function Home() {
               <span>🛡</span>
               <span>Vault</span>
               {state.activeModule === 'documents' && <div style={styles.activeIndicator} />}
-            </button>
-
-            <button
-              onClick={() => state.setActiveModule('tax')}
-              className="header-nav-btn-responsive"
-              style={state.activeModule === 'tax' ? styles.headerNavBtnActive : styles.headerNavBtn}
-            >
-              <span>📄</span>
-              <span>Taxes</span>
-              {state.activeModule === 'tax' && <div style={styles.activeIndicator} />}
             </button>
 
             <button
@@ -2932,39 +2913,44 @@ export default function Home() {
                 {state.professionalProfile?.headline || `${state.user.role} Node`}
               </span>
 
-              {/* Active Role Selector (Perspective Switcher inside Card) */}
+              {/* Edit Profile CTA Button */}
               <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '0.65rem' }}>
-                <label style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.3)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '0.2rem' }}>
-                  Perspective Node Selector
-                </label>
-                <select
-                  value={state.user.role}
-                  onChange={(e) => {
-                    const selVal = e.target.value;
-                    state.updateUserProfile({ role: selVal });
-                    if (selVal === 'Investor') state.setActiveModule('portfolio');
-                    else if (selVal === 'Entrepreneur') state.setActiveModule('entrepreneur');
-                    else if (selVal === 'Affiliate') state.setActiveModule('affiliate');
-                    else state.setActiveModule('portfolio');
+                <button
+                  onClick={() => {
+                    state.setActiveModule('profile');
+                    state.setProfileActiveSubTab('my-profile');
                   }}
                   style={{
                     width: '100%',
-                    padding: '0.35rem 0.45rem',
-                    borderRadius: '6px',
-                    background: 'rgba(0,0,0,0.3)',
-                    border: '1px solid rgba(255,255,255,0.08)',
+                    padding: '0.42rem 0.75rem',
+                    borderRadius: '8px',
+                    background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
                     color: '#ffffff',
-                    fontSize: '0.72rem',
-                    fontWeight: '600',
-                    outline: 'none',
-                    cursor: 'pointer'
+                    fontSize: '0.74rem',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.35rem'
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.background = '#ffffff';
+                    e.currentTarget.style.color = '#000000';
+                    e.currentTarget.style.border = '1px solid #ffffff';
+                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(255, 255, 255, 0.15)';
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.background = 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%)';
+                    e.currentTarget.style.color = '#ffffff';
+                    e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.15)';
+                    e.currentTarget.style.boxShadow = 'none';
                   }}
                 >
-                  <option value="Investor">Accredited Investor Perspective</option>
-                  <option value="Entrepreneur">Ecosystem Founder Perspective</option>
-                  <option value="Affiliate">Vetted Advisor Perspective</option>
-                  <option value="Sales Admin">Sales Operations (Admissions)</option>
-                </select>
+                  ⚙️ Edit Profile / Settings
+                </button>
               </div>
             </div>
           </div>
@@ -2982,7 +2968,10 @@ export default function Home() {
           }}>
             {/* Wallet Assets */}
             <div 
-              onClick={() => state.setActiveModule('banking')} 
+              onClick={() => {
+                state.setActiveModule('profile');
+                state.setProfileActiveSubTab('wallet');
+              }} 
               style={styles.sidebarRowItem}
               title="Click to view Wallet details"
             >
@@ -3109,34 +3098,59 @@ export default function Home() {
               <span style={styles.sidebarLinkLabel}>Network Directory</span>
             </div>
 
-            {/* Groups */}
-            <div 
-              onClick={() => alert("Simulating Vetted Crowdfunding Syndicate nodes. Full admissions group chat unlocks when SEC Reg D documents are completely approved.")} 
-              style={styles.sidebarLinkItem}
-              title="Deal-flow investment groups"
-            >
-              <span style={styles.sidebarLinkIcon}>👥</span>
-              <span style={styles.sidebarLinkLabel}>Groups</span>
-            </div>
+            {/* Secondary links (Collapsible Accordion) */}
+            {showAllResources && (
+              <>
+                {/* Groups */}
+                <div 
+                  onClick={() => alert("Simulating Vetted Crowdfunding Syndicate nodes. Full admissions group chat unlocks when SEC Reg D documents are completely approved.")} 
+                  style={styles.sidebarLinkItem}
+                  title="Deal-flow investment groups"
+                >
+                  <span style={styles.sidebarLinkIcon}>👥</span>
+                  <span style={styles.sidebarLinkLabel}>Groups</span>
+                </div>
 
-            {/* Newsletters */}
-            <div 
-              onClick={() => alert("Subscribed! Weekly Reg CF limits, cap table ledgers, and venture placements newsletters will simulate directly in your email inbox.")} 
-              style={styles.sidebarLinkItem}
-              title="Placement weekly briefing newsletters"
-            >
-              <span style={styles.sidebarLinkIcon}>📰</span>
-              <span style={styles.sidebarLinkLabel}>Newsletters</span>
-            </div>
+                {/* Newsletters */}
+                <div 
+                  onClick={() => alert("Subscribed! Weekly Reg CF limits, cap table ledgers, and venture placements newsletters will simulate directly in your email inbox.")} 
+                  style={styles.sidebarLinkItem}
+                  title="Placement weekly briefing newsletters"
+                >
+                  <span style={styles.sidebarLinkIcon}>📰</span>
+                  <span style={styles.sidebarLinkLabel}>Newsletters</span>
+                </div>
 
-            {/* Events */}
+                {/* Events */}
+                <div 
+                  onClick={() => state.setActiveModule('events')} 
+                  style={styles.sidebarLinkItem}
+                  title="Deal-flow briefings and briefings events schedule"
+                >
+                  <span style={styles.sidebarLinkIcon}>📅</span>
+                  <span style={styles.sidebarLinkLabel}>Events</span>
+                </div>
+              </>
+            )}
+
+            {/* Show More/Less Toggle Row */}
             <div 
-              onClick={() => state.setActiveModule('events')} 
-              style={styles.sidebarLinkItem}
-              title="Deal-flow briefings and briefings events schedule"
+              onClick={() => setShowAllResources(!showAllResources)} 
+              style={{
+                ...styles.sidebarLinkItem,
+                justifyContent: 'center',
+                borderTop: '1px solid rgba(255,255,255,0.03)',
+                marginTop: '0.2rem',
+                paddingTop: '0.5rem',
+                color: 'rgba(255,255,255,0.4)',
+                cursor: 'pointer'
+              }}
+              onMouseOver={(e) => e.currentTarget.style.color = '#ffffff'}
+              onMouseOut={(e) => e.currentTarget.style.color = 'rgba(255,255,255,0.4)'}
             >
-              <span style={styles.sidebarLinkIcon}>📅</span>
-              <span style={styles.sidebarLinkLabel}>Events</span>
+              <span style={{ fontSize: '0.7rem', fontWeight: '700' }}>
+                {showAllResources ? 'Show Less ▴' : 'Show More ▾'}
+              </span>
             </div>
           </div>
 

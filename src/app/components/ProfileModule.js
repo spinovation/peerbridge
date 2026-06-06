@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import BankingModule from './BankingModule';
+import TaxModule from './TaxModule';
 
 export default function ProfileModule({ state }) {
   const { 
@@ -221,16 +223,40 @@ export default function ProfileModule({ state }) {
       {/* Subnavigation Bar */}
       <div style={styles.tabButtons}>
         <button
-          onClick={() => setActiveSubTab('my-profile')}
+          onClick={() => {
+            setActiveSubTab('my-profile');
+            state.setProfileActiveSubTab('my-profile');
+          }}
           style={activeSubTab === 'my-profile' ? styles.tabActive : styles.tabInactive}
         >
           👤 My Vetted Credentials
         </button>
         <button
-          onClick={() => setActiveSubTab('network-directory')}
+          onClick={() => {
+            setActiveSubTab('network-directory');
+            state.setProfileActiveSubTab('network-directory');
+          }}
           style={activeSubTab === 'network-directory' ? styles.tabActive : styles.tabInactive}
         >
           🌐 Network Directory
+        </button>
+        <button
+          onClick={() => {
+            setActiveSubTab('wallet');
+            state.setProfileActiveSubTab('wallet');
+          }}
+          style={activeSubTab === 'wallet' ? styles.tabActive : styles.tabInactive}
+        >
+          💳 Wallet & Banking
+        </button>
+        <button
+          onClick={() => {
+            setActiveSubTab('tax');
+            state.setProfileActiveSubTab('tax');
+          }}
+          style={activeSubTab === 'tax' ? styles.tabActive : styles.tabInactive}
+        >
+          🧾 Tax Center
         </button>
       </div>
 
@@ -744,7 +770,7 @@ export default function ProfileModule({ state }) {
             </div>
           </div>
         </>
-      ) : (
+      ) : activeSubTab === 'network-directory' ? (
         /* Vetted Network Directory tabbed system */
         <div style={styles.directoryContainer} className="animate-fade-in-up">
           <div style={styles.introHeader}>
@@ -944,7 +970,11 @@ export default function ProfileModule({ state }) {
             )}
           </div>
         </div>
-      )}
+      ) : activeSubTab === 'wallet' ? (
+        <BankingModule state={state} />
+      ) : activeSubTab === 'tax' ? (
+        <TaxModule state={state} />
+      ) : null}
     </div>
   );
 }
