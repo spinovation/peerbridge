@@ -37,7 +37,7 @@ export default function InvestorModule({ state }) {
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     const ctx = canvas.getContext('2d');
-    ctx.strokeStyle = '#ffffff';
+    ctx.strokeStyle = '#191919';
     ctx.lineWidth = 2.5;
     ctx.lineCap = 'round';
     ctx.beginPath();
@@ -197,8 +197,8 @@ export default function InvestorModule({ state }) {
     if (total === 0) {
       return (
         <svg viewBox="0 0 100 100" style={styles.svg}>
-          <circle cx="50" cy="50" r="40" fill="transparent" stroke="rgba(255, 255, 255, 0.03)" strokeWidth="15" />
-          <circle cx="50" cy="50" r="28" fill="#000000" />
+          <circle cx="50" cy="50" r="40" fill="transparent" stroke="var(--border-color)" strokeWidth="15" />
+          <circle cx="50" cy="50" r="28" fill="var(--bg-primary)" />
         </svg>
       );
     }
@@ -211,7 +211,7 @@ export default function InvestorModule({ state }) {
 
     return (
       <svg viewBox="0 0 100 100" style={styles.svg}>
-        <circle cx="50" cy="50" r="40" fill="transparent" stroke="rgba(255, 255, 255, 0.03)" strokeWidth="15" />
+        <circle cx="50" cy="50" r="40" fill="transparent" stroke="var(--border-color)" strokeWidth="15" />
         {/* Cash Circle (White) */}
         {cash > 0 && (
           <circle
@@ -219,7 +219,7 @@ export default function InvestorModule({ state }) {
             cy="50"
             r="40"
             fill="transparent"
-            stroke="#ffffff"
+            stroke="var(--color-text-primary)"
             strokeWidth="15"
             strokeDasharray={`${strokeCash} ${2 * Math.PI * 40}`}
             strokeDashoffset={(2 * Math.PI * 40) * 0.25}
@@ -238,7 +238,7 @@ export default function InvestorModule({ state }) {
             strokeDashoffset={-strokeCash + (2 * Math.PI * 40) * 0.25}
           />
         )}
-        <circle cx="50" cy="50" r="28" fill="#000000" />
+        <circle cx="50" cy="50" r="28" fill="var(--bg-primary)" />
       </svg>
     );
   };
@@ -300,8 +300,8 @@ export default function InvestorModule({ state }) {
           <div style={{
             display: 'flex',
             gap: '1rem',
-            background: 'rgba(255,255,255,0.02)',
-            border: '1px solid rgba(255,255,255,0.05)',
+            background: 'var(--bg-primary)',
+            border: '1px solid var(--border-color)',
             padding: '0.4rem',
             borderRadius: '30px',
             width: 'fit-content',
@@ -310,7 +310,7 @@ export default function InvestorModule({ state }) {
             <button
               onClick={() => setOfferingTypeFilter('equity')}
               style={{
-                background: offeringTypeFilter === 'equity' ? '#ffffff' : 'transparent',
+                background: offeringTypeFilter === 'equity' ? 'var(--border-accent)' : 'transparent',
                 color: offeringTypeFilter === 'equity' ? '#000000' : '#a3a3a3',
                 border: 'none',
                 padding: '0.5rem 1.25rem',
@@ -326,7 +326,7 @@ export default function InvestorModule({ state }) {
             <button
               onClick={() => setOfferingTypeFilter('debt')}
               style={{
-                background: offeringTypeFilter === 'debt' ? '#ffffff' : 'transparent',
+                background: offeringTypeFilter === 'debt' ? 'var(--border-accent)' : 'transparent',
                 color: offeringTypeFilter === 'debt' ? '#000000' : '#a3a3a3',
                 border: 'none',
                 padding: '0.5rem 1.25rem',
@@ -358,7 +358,7 @@ export default function InvestorModule({ state }) {
                     <div style={styles.campHeader}>
                       <span style={{
                         ...styles.campSector,
-                        background: isDebt ? 'rgba(59, 130, 246, 0.1)' : 'rgba(255, 255, 255, 0.05)',
+                        background: isDebt ? 'rgba(59, 130, 246, 0.1)' : 'var(--border-color)',
                         color: isDebt ? '#3b82f6' : '#a3a3a3'
                       }}>
                         {isDebt ? '🏛 P2P Note' : camp.category}
@@ -632,9 +632,9 @@ export default function InvestorModule({ state }) {
                           onClick={() => handleToggleIndustry(ind)}
                           style={{
                             ...styles.sectorToggleBtn,
-                            background: isSelected ? '#ffffff' : 'transparent',
-                            color: isSelected ? '#000000' : '#ffffff',
-                            border: isSelected ? '1px solid #ffffff' : '1px solid rgba(255,255,255,0.1)'
+                            background: isSelected ? 'var(--border-accent)' : 'transparent',
+                            color: isSelected ? '#ffffff' : 'var(--color-text-primary)',
+                            border: isSelected ? '1px solid #ffffff' : '1px solid var(--border-color)'
                           }}
                         >
                           {ind} {isSelected ? '✕' : '+'}
@@ -791,23 +791,23 @@ export default function InvestorModule({ state }) {
               }}>
                 💼 Lender Pro Membership Required
               </span>
-              <h2 style={{ fontSize: '1.45rem', fontWeight: '850', color: '#ffffff', maxWidth: '640px', lineHeight: '1.3', margin: 0 }}>
+              <h2 style={{ fontSize: '1.45rem', fontWeight: '850', color: 'var(--color-text-primary)', maxWidth: '640px', lineHeight: '1.3', margin: 0 }}>
                 Unlock Institutional-Grade Venture Financial Telemetry & Auto-Invest Tools
               </h2>
-              <p style={{ fontSize: '0.85rem', color: '#a3a3a3', maxWidth: '560px', lineHeight: '1.5', margin: 0 }}>
+              <p style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', maxWidth: '560px', lineHeight: '1.5', margin: 0 }}>
                 Gain real-time insights, ARR tracks, cash-reserves forecasts, EBITDA indicators, fractional auto-invest sweeps, and compiled IRS Form 1099-INT P2P interest tax ledgers.
               </p>
               <div style={{ display: 'flex', gap: '2.5rem', marginTop: '0.5rem' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', textAlign: 'center' }}>
-                  <span style={{ fontSize: '0.62rem', color: '#737373', textTransform: 'uppercase', fontWeight: '700' }}>Fractional Bids</span>
-                  <strong style={{ color: '#ffffff', fontSize: '1.25rem' }}>Auto-Matched</strong>
+                  <span style={{ fontSize: '0.62rem', color: 'var(--color-text-muted)', textTransform: 'uppercase', fontWeight: '700' }}>Fractional Bids</span>
+                  <strong style={{ color: 'var(--color-text-primary)', fontSize: '1.25rem' }}>Auto-Matched</strong>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', textAlign: 'center' }}>
-                  <span style={{ fontSize: '0.62rem', color: '#737373', textTransform: 'uppercase', fontWeight: '700' }}>IRS Tax Forms</span>
+                  <span style={{ fontSize: '0.62rem', color: 'var(--color-text-muted)', textTransform: 'uppercase', fontWeight: '700' }}>IRS Tax Forms</span>
                   <strong style={{ color: '#00f2fe', fontSize: '1.25rem' }}>Auto-Compiled</strong>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', textAlign: 'center' }}>
-                  <span style={{ fontSize: '0.62rem', color: '#737373', textTransform: 'uppercase', fontWeight: '700' }}>Venture Telemetry</span>
+                  <span style={{ fontSize: '0.62rem', color: 'var(--color-text-muted)', textTransform: 'uppercase', fontWeight: '700' }}>Venture Telemetry</span>
                   <strong style={{ color: '#a78bfa', fontSize: '1.25rem' }}>EBITDA / ARR</strong>
                 </div>
               </div>
@@ -839,21 +839,21 @@ export default function InvestorModule({ state }) {
           ) : (
             /* Full Pro Venture Analytics Dashboard */
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
                 <div>
                   <h2 style={styles.title}>📈 Active Venture Portfolio Telemetry</h2>
                   <p style={styles.sub}>Track ARR growth vectoring, cash burn reserves, and key start-up EBITDA markers.</p>
                 </div>
                 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <span style={{ fontSize: '0.76rem', color: '#a3a3a3' }}>Select Portfolio Holding:</span>
+                  <span style={{ fontSize: '0.76rem', color: 'var(--color-text-secondary)' }}>Select Portfolio Holding:</span>
                   <select 
                     value={selectedStartupMetrics} 
                     onChange={(e) => setSelectedStartupMetrics(e.target.value)}
                     style={{
-                      background: '#000000',
-                      border: '1px solid rgba(255,255,255,0.1)',
-                      color: '#ffffff',
+                      background: 'var(--bg-secondary)',
+                      border: '1px solid var(--border-color)',
+                      color: 'var(--color-text-primary)',
                       fontSize: '0.78rem',
                       padding: '0.25rem 0.5rem',
                       borderRadius: '4px',
@@ -871,8 +871,8 @@ export default function InvestorModule({ state }) {
               {/* Startup Metrics KPIs Cards */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1.25rem' }}>
                 <div className="glass-panel" style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-                  <span style={{ fontSize: '0.62rem', color: '#737373', textTransform: 'uppercase', fontWeight: '800' }}>Annual Recurring Revenue (ARR)</span>
-                  <strong style={{ fontSize: '1.5rem', color: '#ffffff' }}>
+                  <span style={{ fontSize: '0.62rem', color: 'var(--color-text-muted)', textTransform: 'uppercase', fontWeight: '800' }}>Annual Recurring Revenue (ARR)</span>
+                  <strong style={{ fontSize: '1.5rem', color: 'var(--color-text-primary)' }}>
                     {selectedStartupMetrics === 'ecosphere' && '$1,250,000'}
                     {selectedStartupMetrics === 'aether' && '$420,000'}
                     {selectedStartupMetrics === 'tonin' && '$150,000'}
@@ -885,7 +885,7 @@ export default function InvestorModule({ state }) {
                 </div>
 
                 <div className="glass-panel" style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-                  <span style={{ fontSize: '0.62rem', color: '#737373', textTransform: 'uppercase', fontWeight: '800' }}>EBITDA Margins</span>
+                  <span style={{ fontSize: '0.62rem', color: 'var(--color-text-muted)', textTransform: 'uppercase', fontWeight: '800' }}>EBITDA Margins</span>
                   <strong style={{ 
                     fontSize: '1.5rem', 
                     color: selectedStartupMetrics === 'aether' ? '#f43f5e' : '#10b981'
@@ -902,18 +902,18 @@ export default function InvestorModule({ state }) {
                 </div>
 
                 <div className="glass-panel" style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-                  <span style={{ fontSize: '0.62rem', color: '#737373', textTransform: 'uppercase', fontWeight: '800' }}>Net Monthly Burn Rate</span>
-                  <strong style={{ fontSize: '1.5rem', color: '#ffffff' }}>
+                  <span style={{ fontSize: '0.62rem', color: 'var(--color-text-muted)', textTransform: 'uppercase', fontWeight: '800' }}>Net Monthly Burn Rate</span>
+                  <strong style={{ fontSize: '1.5rem', color: 'var(--color-text-primary)' }}>
                     {selectedStartupMetrics === 'ecosphere' && '-$35,000'}
                     {selectedStartupMetrics === 'aether' && '-$48,000'}
                     {selectedStartupMetrics === 'tonin' && '-$12,000'}
                   </strong>
-                  <span style={{ fontSize: '0.62rem', color: '#737373' }}>Outflows for ops salaries</span>
+                  <span style={{ fontSize: '0.62rem', color: 'var(--color-text-muted)' }}>Outflows for ops salaries</span>
                 </div>
 
                 <div className="glass-panel" style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-                  <span style={{ fontSize: '0.62rem', color: '#737373', textTransform: 'uppercase', fontWeight: '800' }}>Cash Reserves Runway</span>
-                  <strong style={{ fontSize: '1.5rem', color: '#ffffff' }}>
+                  <span style={{ fontSize: '0.62rem', color: 'var(--color-text-muted)', textTransform: 'uppercase', fontWeight: '800' }}>Cash Reserves Runway</span>
+                  <strong style={{ fontSize: '1.5rem', color: 'var(--color-text-primary)' }}>
                     {selectedStartupMetrics === 'ecosphere' && '18 Months'}
                     {selectedStartupMetrics === 'aether' && '9 Months'}
                     {selectedStartupMetrics === 'tonin' && '12 Months'}
@@ -928,13 +928,13 @@ export default function InvestorModule({ state }) {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
                 {/* SVG ARR Growth Chart */}
                 <div className="glass-panel" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                  <h3 style={{ fontSize: '1rem', fontWeight: '800', color: '#ffffff', margin: 0 }}>📊 Annual Recurring Revenue (ARR) Growth</h3>
-                  <div style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.04)', borderRadius: '6px', padding: '1rem' }}>
+                  <h3 style={{ fontSize: '1rem', fontWeight: '800', color: 'var(--color-text-primary)', margin: 0 }}>📊 Annual Recurring Revenue (ARR) Growth</h3>
+                  <div style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid var(--border-color)', borderRadius: '6px', padding: '1rem' }}>
                     <svg viewBox="0 0 400 180" style={{ width: '100%', height: '180px' }}>
-                      <line x1="40" y1="20" x2="380" y2="20" stroke="rgba(255,255,255,0.03)" strokeDasharray="3" />
-                      <line x1="40" y1="70" x2="380" y2="70" stroke="rgba(255,255,255,0.03)" strokeDasharray="3" />
-                      <line x1="40" y1="120" x2="380" y2="120" stroke="rgba(255,255,255,0.03)" strokeDasharray="3" />
-                      <line x1="40" y1="150" x2="380" y2="150" stroke="rgba(255,255,255,0.08)" />
+                      <line x1="40" y1="20" x2="380" y2="20" stroke="var(--border-color)" strokeDasharray="3" />
+                      <line x1="40" y1="70" x2="380" y2="70" stroke="var(--border-color)" strokeDasharray="3" />
+                      <line x1="40" y1="120" x2="380" y2="120" stroke="var(--border-color)" strokeDasharray="3" />
+                      <line x1="40" y1="150" x2="380" y2="150" stroke="var(--border-color)" />
 
                       {/* Expected ARR Plots based on startups */}
                       {selectedStartupMetrics === 'ecosphere' && (
@@ -957,13 +957,13 @@ export default function InvestorModule({ state }) {
 
                 {/* SVG Cash Reserves Trend Chart */}
                 <div className="glass-panel" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                  <h3 style={{ fontSize: '1rem', fontWeight: '800', color: '#ffffff', margin: 0 }}>📊 Cash Balance Runway Forecast</h3>
-                  <div style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.04)', borderRadius: '6px', padding: '1rem' }}>
+                  <h3 style={{ fontSize: '1rem', fontWeight: '800', color: 'var(--color-text-primary)', margin: 0 }}>📊 Cash Balance Runway Forecast</h3>
+                  <div style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid var(--border-color)', borderRadius: '6px', padding: '1rem' }}>
                     <svg viewBox="0 0 400 180" style={{ width: '100%', height: '180px' }}>
-                      <line x1="40" y1="20" x2="380" y2="20" stroke="rgba(255,255,255,0.03)" strokeDasharray="3" />
-                      <line x1="40" y1="70" x2="380" y2="70" stroke="rgba(255,255,255,0.03)" strokeDasharray="3" />
-                      <line x1="40" y1="120" x2="380" y2="120" stroke="rgba(255,255,255,0.03)" strokeDasharray="3" />
-                      <line x1="40" y1="150" x2="380" y2="150" stroke="rgba(255,255,255,0.08)" />
+                      <line x1="40" y1="20" x2="380" y2="20" stroke="var(--border-color)" strokeDasharray="3" />
+                      <line x1="40" y1="70" x2="380" y2="70" stroke="var(--border-color)" strokeDasharray="3" />
+                      <line x1="40" y1="120" x2="380" y2="120" stroke="var(--border-color)" strokeDasharray="3" />
+                      <line x1="40" y1="150" x2="380" y2="150" stroke="var(--border-color)" />
 
                       {/* Cash balance curves */}
                       {selectedStartupMetrics === 'ecosphere' && (
@@ -1002,7 +1002,7 @@ export default function InvestorModule({ state }) {
                   width: '95%'
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '1rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '1rem' }}>
                   <h3 style={styles.modalTitle}>
                     {wizardStep === 1 && `⚡ Invest in ${selectedCampaign.companyName}`}
                     {wizardStep === 2 && `🖋 Secure SAFE Execution Wizard`}
@@ -1014,7 +1014,7 @@ export default function InvestorModule({ state }) {
                       setWizardStep(1);
                       setSignatureDataUrl('');
                     }}
-                    style={{ background: 'none', border: 'none', color: '#737373', fontSize: '1.2rem', cursor: 'pointer' }}
+                    style={{ background: 'none', border: 'none', color: 'var(--color-text-muted)', fontSize: '1.2rem', cursor: 'pointer' }}
                   >
                     ✕
                   </button>
@@ -1091,23 +1091,23 @@ export default function InvestorModule({ state }) {
                         display: 'flex', 
                         flexDirection: 'column', 
                         gap: '0.75rem', 
-                        background: 'rgba(255,255,255,0.02)',
-                        border: '1px solid rgba(255,255,255,0.05)',
+                        background: 'var(--bg-primary)',
+                        border: '1px solid var(--border-color)',
                         borderRadius: '8px',
                         padding: '1rem',
                         marginTop: '1rem' 
                       }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: '#a3a3a3' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>
                           <span>Approximate Shares to Purchase:</span>
-                          <strong style={{ color: '#ffffff' }}>
+                          <strong style={{ color: 'var(--color-text-primary)' }}>
                             {Math.floor(parseFloat(investAmount || 0) / selectedCampaign.sharePrice).toLocaleString()} Stocks
                           </strong>
                         </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: '#a3a3a3' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>
                           <span>Venture Valuation Cap:</span>
-                          <span style={{ color: '#ffffff' }}>${selectedCampaign.valuation.toLocaleString()}</span>
+                          <span style={{ color: 'var(--color-text-primary)' }}>${selectedCampaign.valuation.toLocaleString()}</span>
                         </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', color: '#a3a3a3', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '0.75rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', color: 'var(--color-text-secondary)', borderTop: '1px solid var(--border-color)', paddingTop: '0.75rem' }}>
                           <span>Projected Equity Stake:</span>
                           <strong style={{ color: '#10b981', fontSize: '0.9rem' }}>
                             {((parseFloat(investAmount || 0) / selectedCampaign.valuation) * 100).toFixed(4)}%
@@ -1151,14 +1151,14 @@ export default function InvestorModule({ state }) {
 
                     {/* SAFE Document scrollbox */}
                     <div style={{
-                      background: 'rgba(0,0,0,0.4)',
-                      border: '1px solid rgba(255,255,255,0.08)',
+                      background: 'var(--bg-primary)',
+                      border: '1px solid var(--border-color)',
                       borderRadius: '8px',
                       padding: '1.5rem',
                       maxHeight: '220px',
                       overflowY: 'auto',
                       fontSize: '0.8rem',
-                      color: '#a3a3a3',
+                      color: 'var(--color-text-secondary)',
                       lineHeight: '1.5',
                       fontFamily: 'monospace',
                       whiteSpace: 'pre-line'
@@ -1189,8 +1189,8 @@ export default function InvestorModule({ state }) {
                           onTouchMove={drawTouch}
                           onTouchEnd={stopDrawing}
                           style={{
-                            background: '#0a0a0a',
-                            border: '1px solid rgba(255,255,255,0.1)',
+                            background: 'var(--bg-secondary)',
+                            border: '1px solid var(--border-color)',
                             borderRadius: '6px',
                             cursor: 'crosshair',
                             width: '100%',
@@ -1215,7 +1215,7 @@ export default function InvestorModule({ state }) {
                         )}
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.25rem' }}>
-                        <span style={{ fontSize: '0.7rem', color: '#737373' }}>
+                        <span style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)' }}>
                           SHA-256 Tamper Lock: <strong style={{ fontFamily: 'monospace' }}>SEC-REG-D-A1</strong>
                         </span>
                         <button
@@ -1276,8 +1276,8 @@ export default function InvestorModule({ state }) {
                       ✓
                     </div>
                     <div>
-                      <h4 style={{ fontSize: '1.25rem', fontWeight: '800', color: '#ffffff', marginBottom: '0.5rem' }}>Investment Executed Successfully!</h4>
-                      <p style={{ fontSize: '0.88rem', color: '#a3a3a3', lineHeight: '1.5', maxWidth: '360px' }}>
+                      <h4 style={{ fontSize: '1.25rem', fontWeight: '800', color: 'var(--color-text-primary)', marginBottom: '0.5rem' }}>Investment Executed Successfully!</h4>
+                      <p style={{ fontSize: '0.88rem', color: 'var(--color-text-secondary)', lineHeight: '1.5', maxWidth: '360px' }}>
                         Your Y-Combinator SAFE contract has been cryptographically signed with a SHA-256 stamp. Your gold-framed Stock Certificate is now secure in your <strong>Ecosystem Vault</strong>.
                       </p>
                     </div>
@@ -1300,10 +1300,10 @@ export default function InvestorModule({ state }) {
                         GOLD FRAMED
                       </div>
                       <span style={{ fontSize: '0.65rem', color: '#d4af37', fontWeight: '700', letterSpacing: '0.1em' }}>PEERBRIDGE SECURITY INC.</span>
-                      <strong style={{ color: '#ffffff', fontSize: '0.9rem' }}>STOCK ACQUISITION CERTIFICATE</strong>
-                      <span style={{ fontSize: '0.8rem', color: '#a3a3a3' }}>ISSUED TO: <strong>{state.customer?.first_name} {state.customer?.last_name}</strong></span>
-                      <span style={{ fontSize: '0.75rem', color: '#a3a3a3' }}>SHARES QUANTITY: <strong>{Math.floor(parseFloat(investAmount || 0) / selectedCampaign.sharePrice).toLocaleString()} Stocks</strong></span>
-                      <span style={{ fontSize: '0.58rem', color: '#525252', fontFamily: 'monospace' }}>SEC SHA256 BLOCK: d41d8cd98f00b204e9800998ecf8427e</span>
+                      <strong style={{ color: 'var(--color-text-primary)', fontSize: '0.9rem' }}>STOCK ACQUISITION CERTIFICATE</strong>
+                      <span style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>ISSUED TO: <strong>{state.customer?.first_name} {state.customer?.last_name}</strong></span>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>SHARES QUANTITY: <strong>{Math.floor(parseFloat(investAmount || 0) / selectedCampaign.sharePrice).toLocaleString()} Stocks</strong></span>
+                      <span style={{ fontSize: '0.58rem', color: 'var(--color-text-muted)', fontFamily: 'monospace' }}>SEC SHA256 BLOCK: d41d8cd98f00b204e9800998ecf8427e</span>
                     </div>
 
                     <button
@@ -1336,7 +1336,7 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+    borderBottom: '1px solid var(--border-color)',
     paddingBottom: '1rem',
     flexWrap: 'wrap',
     gap: '1rem',
@@ -1346,9 +1346,9 @@ const styles = {
     gap: '0.5rem',
   },
   tabActive: {
-    background: 'rgba(255,255,255,0.05)',
-    color: '#ffffff',
-    border: '1px solid rgba(255, 255, 255, 0.25)',
+    background: 'var(--bg-primary)',
+    color: 'var(--color-text-primary)',
+    border: '1px solid var(--border-color)',
     padding: '0.6rem 1.25rem',
     borderRadius: '6px',
     fontWeight: '600',
@@ -1357,7 +1357,7 @@ const styles = {
   },
   tabInactive: {
     background: 'transparent',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     border: '1px solid transparent',
     padding: '0.6rem 1.25rem',
     borderRadius: '6px',
@@ -1366,16 +1366,16 @@ const styles = {
     fontSize: '0.85rem',
     transition: 'all 0.2s ease',
     ':hover': {
-      color: '#ffffff'
+      color: 'var(--color-text-primary)'
     }
   },
   walletBadge: {
-    background: 'rgba(255, 255, 255, 0.02)',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     padding: '0.5rem 1rem',
     borderRadius: '30px',
     fontSize: '0.85rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
   },
   title: {
     fontSize: '1.75rem',
@@ -1383,7 +1383,7 @@ const styles = {
   },
   sub: {
     fontSize: '0.9rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     marginTop: '0.25rem',
   },
   marketplaceView: {
@@ -1411,16 +1411,16 @@ const styles = {
     alignItems: 'center',
   },
   campSector: {
-    background: 'rgba(255,255,255,0.05)',
+    background: 'var(--bg-primary)',
     padding: '0.2rem 0.5rem',
     borderRadius: '4px',
     fontSize: '0.7rem',
     fontWeight: '600',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     textTransform: 'uppercase',
   },
   campActive: {
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '0.7rem',
     fontWeight: '700',
     textTransform: 'uppercase',
@@ -1432,7 +1432,7 @@ const styles = {
   },
   campTagline: {
     fontSize: '0.9rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     lineHeight: '1.4',
     height: '42px',
     overflow: 'hidden',
@@ -1442,7 +1442,7 @@ const styles = {
   },
   progressBar: {
     height: '6px',
-    background: 'rgba(255,255,255,0.05)',
+    background: 'var(--bg-primary)',
     borderRadius: '3px',
     overflow: 'hidden',
     marginBottom: '0.5rem',
@@ -1456,13 +1456,13 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     fontSize: '0.75rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
   },
   cardInfoGrid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(3, 1fr)',
     gap: '1rem',
-    borderTop: '1px solid rgba(255,255,255,0.05)',
+    borderTop: '1px solid var(--border-color)',
     paddingTop: '1rem',
   },
   infoCol: {
@@ -1472,13 +1472,13 @@ const styles = {
   },
   infoLabel: {
     fontSize: '0.7rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     textTransform: 'uppercase',
   },
   infoVal: {
     fontSize: '1rem',
     fontWeight: '700',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
   },
   investBtn: {
     marginTop: '0.5rem',
@@ -1510,27 +1510,27 @@ const styles = {
   },
   modalSub: {
     fontSize: '0.9rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     lineHeight: '1.4',
   },
   modalMetaRow: {
-    background: 'rgba(255,255,255,0.02)',
+    background: 'var(--bg-primary)',
     padding: '1rem',
     borderRadius: '8px',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
+    border: '1px solid var(--border-color)',
     display: 'flex',
     flexDirection: 'column',
     gap: '0.5rem',
   },
   metaLabel: {
     fontSize: '0.8rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     marginRight: '0.5rem',
   },
   metaVal: {
     fontSize: '0.85rem',
     fontWeight: '700',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
   },
   modalForm: {
     display: 'flex',
@@ -1539,18 +1539,18 @@ const styles = {
   },
   input: {
     width: '100%',
-    background: 'rgba(255,255,255,0.03)',
-    border: '1px solid rgba(255,255,255,0.08)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '8px',
     padding: '0.85rem 1rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '1.1rem',
     fontFamily: 'monospace',
     outline: 'none',
   },
   shareCountLabel: {
     fontSize: '0.75rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     marginTop: '0.4rem',
   },
   modalButtons: {
@@ -1558,9 +1558,9 @@ const styles = {
     gap: '1rem',
   },
   successBox: {
-    background: 'rgba(255, 255, 255, 0.05)',
-    border: '1px solid #ffffff',
-    color: '#ffffff',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-accent)',
+    color: 'var(--color-text-primary)',
     padding: '1.25rem',
     borderRadius: '8px',
     fontSize: '0.95rem',
@@ -1597,7 +1597,7 @@ const styles = {
   },
   panelDesc: {
     fontSize: '0.8rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     marginTop: '0.2rem',
   },
   svgSection: {
@@ -1622,20 +1622,20 @@ const styles = {
   },
   svgInnerLabel: {
     fontSize: '0.65rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     textTransform: 'uppercase',
   },
   svgInnerVal: {
     fontSize: '1.25rem',
     fontWeight: '800',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
   },
   legendContainer: {
     display: 'flex',
     flexDirection: 'column',
     gap: '0.75rem',
     marginTop: '1.5rem',
-    borderTop: '1px solid rgba(255,255,255,0.05)',
+    borderTop: '1px solid var(--border-color)',
     paddingTop: '1.5rem',
   },
   legendItem: {
@@ -1650,13 +1650,13 @@ const styles = {
   },
   legendLabel: {
     fontSize: '0.85rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     flex: '1',
   },
   legendVal: {
     fontSize: '0.85rem',
     fontWeight: '700',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
   },
   investmentsTableCard: {
     padding: '2rem',
@@ -1664,7 +1664,7 @@ const styles = {
   emptyPortfolioBox: {
     padding: '4rem 2rem',
     textAlign: 'center',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
   },
   tableContainer: {
     marginTop: '1.5rem',
@@ -1676,28 +1676,28 @@ const styles = {
     textAlign: 'left',
   },
   tr: {
-    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+    borderBottom: '1px solid var(--border-color)',
   },
   th: {
     padding: '0.75rem 1rem',
     fontSize: '0.75rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     textTransform: 'uppercase',
     fontWeight: '700',
   },
   trItem: {
-    borderBottom: '1px solid rgba(255, 255, 255, 0.03)',
+    borderBottom: '1px solid var(--border-color)',
   },
   td: {
     padding: '1rem',
     fontSize: '0.85rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
   },
   tdBold: {
     padding: '1rem',
     fontSize: '0.85rem',
     fontWeight: '700',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
   },
   diligenceView: {
     display: 'flex',
@@ -1714,8 +1714,8 @@ const styles = {
     marginTop: '2rem',
   },
   checkItem: {
-    background: 'rgba(255, 255, 255, 0.01)',
-    border: '1px solid rgba(255, 255, 255, 0.04)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '12px',
     padding: '1.25rem',
     display: 'flex',
@@ -1738,19 +1738,19 @@ const styles = {
   checkTitle: {
     fontSize: '0.95rem',
     fontWeight: '700',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
   },
   checkSub: {
     fontSize: '0.8rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     marginTop: '0.25rem',
   },
   diligenceTip: {
-    background: 'rgba(255, 255, 255, 0.02)',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '8px',
     padding: '1rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '0.85rem',
     marginTop: '2rem',
   },
@@ -1772,7 +1772,7 @@ const styles = {
   },
   cardDesc: {
     fontSize: '0.85rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     lineHeight: '1.4',
   },
   editBtn: {
@@ -1783,7 +1783,7 @@ const styles = {
     display: 'grid',
     gridTemplateColumns: '1fr 1fr',
     gap: '1.5rem',
-    borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+    borderTop: '1px solid var(--border-color)',
     paddingTop: '1.5rem',
   },
   profileItem: {
@@ -1794,12 +1794,12 @@ const styles = {
   profileLabel: {
     fontSize: '0.7rem',
     fontWeight: '700',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     textTransform: 'uppercase',
   },
   profileVal: {
     fontSize: '1.05rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
   },
   preferredRow: {
     display: 'flex',
@@ -1808,9 +1808,9 @@ const styles = {
     marginTop: '0.25rem',
   },
   industryTag: {
-    background: 'rgba(255,255,255,0.05)',
-    border: '1px solid rgba(255,255,255,0.1)',
-    color: '#ffffff',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
+    color: 'var(--color-text-primary)',
     padding: '0.3rem 0.65rem',
     borderRadius: '4px',
     fontSize: '0.78rem',
@@ -1818,14 +1818,14 @@ const styles = {
   },
   emptyText: {
     fontSize: '0.85rem',
-    color: '#525252',
+    color: 'var(--color-text-muted)',
     fontStyle: 'italic',
   },
   profileForm: {
     display: 'flex',
     flexDirection: 'column',
     gap: '1.25rem',
-    borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+    borderTop: '1px solid var(--border-color)',
     paddingTop: '1.5rem',
   },
   formRow2Col: {
@@ -1841,16 +1841,16 @@ const styles = {
   label: {
     fontSize: '0.72rem',
     fontWeight: '700',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     textTransform: 'uppercase',
   },
   select: {
     width: '100%',
-    background: '#000000',
-    border: '1px solid rgba(255,255,255,0.08)',
+    background: 'var(--bg-secondary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '6px',
     padding: '0.7rem 1rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '0.9rem',
     outline: 'none',
     cursor: 'pointer',

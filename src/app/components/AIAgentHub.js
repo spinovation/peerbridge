@@ -287,7 +287,7 @@ export default function AIAgentHub({ state }) {
       const fallbackNotice = {
         sender: 'RiskOps System Core',
         message: '⚡ Gemini Live LLM Key missing or offline. Booting local simulation sandbox...',
-        color: '#737373'
+        color: 'var(--color-text-muted)'
       };
       
       setSimLogs([fallbackNotice]);
@@ -339,8 +339,8 @@ export default function AIAgentHub({ state }) {
             onClick={() => setActiveTab('agents_console')}
             style={{ 
               ...styles.tabBtn, 
-              color: activeTab === 'agents_console' ? '#ffffff' : '#737373',
-              background: activeTab === 'agents_console' ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
+              color: activeTab === 'agents_console' ? 'var(--border-accent)' : 'var(--color-text-secondary)',
+              background: activeTab === 'agents_console' ? 'var(--border-color)' : 'transparent',
               borderBottom: activeTab === 'agents_console' ? '2px solid #00f2fe' : 'none'
             }}
           >
@@ -350,8 +350,8 @@ export default function AIAgentHub({ state }) {
             onClick={() => setActiveTab('simulator')}
             style={{ 
               ...styles.tabBtn, 
-              color: activeTab === 'simulator' ? '#ffffff' : '#737373',
-              background: activeTab === 'simulator' ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
+              color: activeTab === 'simulator' ? 'var(--border-accent)' : 'var(--color-text-secondary)',
+              background: activeTab === 'simulator' ? 'var(--border-color)' : 'transparent',
               borderBottom: activeTab === 'simulator' ? '2px solid #a78bfa' : 'none'
             }}
           >
@@ -502,11 +502,11 @@ export default function AIAgentHub({ state }) {
                     onChange={(e) => setSearchTerm(e.target.value)}
                     style={{
                       flex: 1,
-                      background: 'rgba(10, 10, 10, 0.95)',
-                      border: '1px solid rgba(255, 255, 255, 0.08)',
+                      background: 'var(--bg-secondary)',
+                      border: '1px solid var(--border-color)',
                       borderRadius: '8px',
                       padding: '0.65rem 0.85rem',
-                      color: '#ffffff',
+                      color: 'var(--color-text-primary)',
                       fontSize: '0.85rem',
                       outline: 'none',
                     }}
@@ -516,10 +516,10 @@ export default function AIAgentHub({ state }) {
                     <button
                       onClick={() => setSearchTerm('')}
                       style={{
-                        background: 'rgba(255,255,255,0.05)',
-                        border: '1px solid rgba(255, 255, 255, 0.08)',
+                        background: 'var(--bg-primary)',
+                        border: '1px solid var(--border-color)',
                         borderRadius: '8px',
-                        color: '#a3a3a3',
+                        color: 'var(--color-text-secondary)',
                         padding: '0 0.85rem',
                         cursor: 'pointer',
                         fontSize: '0.85rem'
@@ -556,14 +556,14 @@ export default function AIAgentHub({ state }) {
               <div style={styles.setupInfoBox}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
                   <span style={styles.specLabel}>Selected Borrower Profile</span>
-                  <strong style={{ color: '#ffffff', fontSize: '0.85rem' }}>{candidateDatabase[selectedCandidate].name}</strong>
+                  <strong style={{ color: 'var(--color-text-primary)', fontSize: '0.85rem' }}>{candidateDatabase[selectedCandidate].name}</strong>
                   <span style={{ color: selectedCandidate === 'devon' ? '#f43f5e' : '#d4af37', fontSize: '0.7rem', fontWeight: '700' }}>
                     Index Grade: {candidateDatabase[selectedCandidate].grade}
                   </span>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
                   <span style={styles.specLabel}>Lender Underwriter Profile</span>
-                  <strong style={{ color: '#ffffff', fontSize: '0.85rem' }}>Mohit Mehra (Mehra Ventures)</strong>
+                  <strong style={{ color: 'var(--color-text-primary)', fontSize: '0.85rem' }}>Mohit Mehra (Mehra Ventures)</strong>
                   <span style={{ color: '#00f2fe', fontSize: '0.7rem', fontWeight: '700' }}>Index Strategy: Balanced Yield Matcher</span>
                 </div>
               </div>
@@ -575,7 +575,7 @@ export default function AIAgentHub({ state }) {
                 style={{
                   ...styles.startBtn,
                   background: simActive ? '#525252' : '#8b5cf6',
-                  color: '#ffffff',
+                  color: 'var(--color-text-primary)',
                   fontWeight: '800',
                   alignSelf: 'flex-start',
                   marginTop: '0.5rem'
@@ -601,7 +601,7 @@ export default function AIAgentHub({ state }) {
                 <div style={styles.termsGrid}>
                   <div style={styles.termsBox}>
                     <span style={styles.specLabel}>Principal Note</span>
-                    <strong style={{ fontSize: '1.1rem', color: '#ffffff' }}>${agreedTerms.principal.toLocaleString()}</strong>
+                    <strong style={{ fontSize: '1.1rem', color: 'var(--color-text-primary)' }}>${agreedTerms.principal.toLocaleString()}</strong>
                   </div>
                   <div style={styles.termsBox}>
                     <span style={styles.specLabel}>Gross Borrow Rate</span>
@@ -611,11 +611,11 @@ export default function AIAgentHub({ state }) {
                   </div>
                   <div style={styles.termsBox}>
                     <span style={styles.specLabel}>Maturity Tenor</span>
-                    <strong style={{ fontSize: '1.1rem', color: '#ffffff' }}>{agreedTerms.tenor} Months</strong>
+                    <strong style={{ fontSize: '1.1rem', color: 'var(--color-text-primary)' }}>{agreedTerms.tenor} Months</strong>
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', background: 'rgba(0,0,0,0.2)', padding: '0.75rem', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.03)' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', background: 'var(--bg-primary)', padding: '0.75rem', borderRadius: '6px', border: '1px solid var(--border-color)' }}>
                   <span style={styles.specLabel}>Session Result Hash</span>
                   <code style={{ fontSize: '0.74rem', color: agreedTerms.rate === 'DECLINED' ? '#ef4444' : '#00f2fe', fontFamily: 'monospace', overflowX: 'auto', whiteSpace: 'nowrap' }}>
                     {agreedTerms.hash}
@@ -640,7 +640,7 @@ export default function AIAgentHub({ state }) {
                   <div key={index} className="animate-fade-in-up" style={{
                     ...styles.logItem,
                     borderLeftColor: log.color,
-                    background: `rgba(255,255,255,0.01)`
+                    background: `var(--border-color)`
                   }}>
                     <span style={{
                       fontSize: '0.62rem',
@@ -651,7 +651,7 @@ export default function AIAgentHub({ state }) {
                     }}>
                       {log.sender}
                     </span>
-                    <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.78rem', color: '#ffffff', lineHeight: '1.45' }}>
+                    <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.78rem', color: 'var(--color-text-primary)', lineHeight: '1.45' }}>
                       {log.message}
                     </p>
                   </div>
@@ -677,22 +677,22 @@ const styles = {
     gap: '1.75rem',
   },
   headerTitleRow: {
-    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+    borderBottom: '1px solid var(--border-color)',
     paddingBottom: '1rem',
   },
   mainTitle: {
     fontSize: '1.45rem',
     fontWeight: '850',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     margin: 0,
   },
   subTitle: {
     fontSize: '0.8rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     marginTop: '0.2rem',
   },
   segmentedTabWrapper: {
-    borderBottom: '1px solid rgba(255,255,255,0.06)',
+    borderBottom: '1px solid var(--border-color)',
     marginTop: '-0.5rem',
   },
   tabContainer: {
@@ -726,18 +726,18 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    borderBottom: '1px solid rgba(255,255,255,0.05)',
+    borderBottom: '1px solid var(--border-color)',
     paddingBottom: '0.85rem',
   },
   agentTitle: {
     fontSize: '1.05rem',
     fontWeight: '800',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     margin: 0,
   },
   agentSub: {
     fontSize: '0.7rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
   },
   statusBtn: {
     padding: '0.2rem 0.5rem',
@@ -749,7 +749,7 @@ const styles = {
   },
   agentDesc: {
     fontSize: '0.82rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     lineHeight: '1.45',
     margin: 0,
     minHeight: '80px',
@@ -762,16 +762,16 @@ const styles = {
   label: {
     fontSize: '0.68rem',
     fontWeight: '700',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     textTransform: 'uppercase',
   },
   select: {
     width: '100%',
-    background: 'rgba(10, 10, 10, 0.95)',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
+    background: 'var(--bg-secondary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '8px',
     padding: '0.65rem 0.85rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '0.85rem',
     outline: 'none',
     cursor: 'pointer',
@@ -797,17 +797,17 @@ const styles = {
   cardTitle: {
     fontSize: '1.05rem',
     fontWeight: '800',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     margin: 0,
   },
   cardDesc: {
     fontSize: '0.76rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     lineHeight: '1.35',
   },
   setupInfoBox: {
-    background: 'rgba(0,0,0,0.2)',
-    border: '1px solid rgba(255,255,255,0.03)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '6px',
     padding: '1.25rem',
     display: 'grid',
@@ -816,7 +816,7 @@ const styles = {
   },
   specLabel: {
     fontSize: '0.62rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     textTransform: 'uppercase',
     fontWeight: '700',
   },
@@ -836,8 +836,8 @@ const styles = {
     gap: '0.5rem',
   },
   termsBox: {
-    background: 'rgba(255,255,255,0.01)',
-    border: '1px solid rgba(255,255,255,0.04)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '4px',
     padding: '0.65rem',
     textAlign: 'center',
@@ -857,7 +857,7 @@ const styles = {
     flex: 1,
     minHeight: '340px',
     background: 'rgba(0,0,0,0.3)',
-    border: '1px solid rgba(255,255,255,0.04)',
+    border: '1px solid var(--border-color)',
     borderRadius: '8px',
     padding: '1.25rem',
     display: 'flex',
@@ -871,7 +871,7 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     height: '100%',
-    color: '#525252',
+    color: 'var(--color-text-muted)',
     fontStyle: 'italic',
     fontSize: '0.8rem',
     textAlign: 'center',

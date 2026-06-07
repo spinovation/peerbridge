@@ -1,39 +1,39 @@
-/* Peer Bridge P2P Funding - Premium Monochrome Design System */
+/* Peer Bridge P2P Funding - Premium LinkedIn-Inspired Light Design System */
 
 :root {
   --font-sans: var(--font-geist-sans), Arial, sans-serif;
   --font-mono: var(--font-geist-mono), monospace;
   --font-script: var(--font-caveat), cursive;
 
-  /* Black & White Color System */
-  --bg-primary: #000000;
-  --bg-secondary: #0a0a0a;
-  --bg-surface: rgba(255, 255, 255, 0.03);
-  --bg-surface-hover: rgba(255, 255, 255, 0.07);
+  /* LinkedIn-Inspired Light Theme Color System */
+  --bg-primary: #f3f2f0; /* Cool grey layout background */
+  --bg-secondary: #ffffff; /* Solid white card background */
+  --bg-surface: #ffffff;
+  --bg-surface-hover: rgba(0, 0, 0, 0.03);
   
-  --border-color: rgba(255, 255, 255, 0.08);
-  --border-accent: rgba(255, 255, 255, 0.35);
-  --border-accent-glow: rgba(255, 255, 255, 0.1);
+  --border-color: rgba(0, 0, 0, 0.08);
+  --border-accent: #0a66c2; /* LinkedIn Blue */
+  --border-accent-glow: rgba(10, 102, 194, 0.15);
 
-  --color-text-primary: #ffffff;
-  --color-text-secondary: #a3a3a3;
-  --color-text-muted: #525252;
+  --color-text-primary: #191919; /* Charcoal primary */
+  --color-text-secondary: #5e5e5e; /* Grey secondary */
+  --color-text-muted: #8c8c8c; /* Muted grey */
 
-  /* Grayscale Accents (Mapped to maintain code compatibility) */
-  --accent-cyan: #ffffff;
-  --accent-purple: #a3a3a3;
-  --accent-emerald: #ffffff;
-  --accent-green: #ffffff;
-  --accent-rose: #737373;
+  /* Theme-Safe Accent Colors */
+  --accent-cyan: #0a66c2;
+  --accent-purple: #004182;
+  --accent-emerald: #057642;
+  --accent-green: #057642;
+  --accent-rose: #cc1016;
   
-  --gradient-primary: linear-gradient(135deg, #ffffff 0%, #a3a3a3 100%);
-  --gradient-success: linear-gradient(135deg, #ffffff 0%, #737373 100%);
-  --gradient-dark: linear-gradient(180deg, #0a0a0a 0%, #000000 100%);
-  --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.01) 100%);
+  --gradient-primary: linear-gradient(135deg, #0a66c2 0%, #004182 100%);
+  --gradient-success: linear-gradient(135deg, #057642 0%, #10b981 100%);
+  --gradient-dark: linear-gradient(180deg, #ffffff 0%, #f3f2f0 100%);
+  --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.98) 100%);
 
-  --shadow-glow: 0 0 0 transparent;
-  --shadow-purple-glow: 0 0 0 transparent;
-  --glass-blur: blur(20px);
+  --shadow-glow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-purple-glow: 0 4px 12px rgba(10, 102, 194, 0.12);
+  --glass-blur: none;
 }
 
 * {
@@ -51,7 +51,7 @@ html, body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+  scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
 }
 
 /* Custom Scrollbars */
@@ -63,18 +63,18 @@ html, body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.15);
   border-radius: 2px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.3);
 }
 
 /* Typographical Hierarchy */
 h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
-  letter-spacing: -0.03em;
-  color: #ffffff;
+  letter-spacing: -0.02em;
+  color: var(--color-text-primary);
 }
 
 p {
@@ -83,31 +83,31 @@ p {
 }
 
 a {
-  color: #ffffff;
+  color: var(--border-accent);
   text-decoration: underline;
   text-underline-offset: 4px;
-  text-decoration-color: rgba(255, 255, 255, 0.3);
+  text-decoration-color: rgba(10, 102, 194, 0.3);
   transition: all 0.2s ease;
 }
 a:hover {
-  text-decoration-color: #ffffff;
+  text-decoration-color: var(--border-accent);
 }
 
-/* Luxury Monochrome Glass Panels */
+/* LinkedIn-style Flat Premium Panels */
 .glass-panel {
-  background: var(--bg-surface);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
+  background: var(--bg-secondary);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.02), 0 2px 4px rgba(0, 0, 0, 0.06);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .glass-panel-hover:hover {
   transform: translateY(-2px);
-  border-color: var(--border-accent);
-  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.9);
+  border-color: rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 /* Crisp 1px Glow Borders */
@@ -120,7 +120,7 @@ a:hover {
   inset: -1px;
   border-radius: inherit;
   padding: 1px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
+  background: linear-gradient(135deg, rgba(10, 102, 194, 0.1), rgba(10, 102, 194, 0.35), rgba(10, 102, 194, 0.1));
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
@@ -132,32 +132,33 @@ a:hover {
   opacity: 1;
 }
 
-/* Buttons System - High Contrast Grayscale */
+/* Buttons System - LinkedIn Style Rounded Pill buttons */
 .btn-primary {
-  background: #ffffff;
-  color: #000000;
+  background: #0a66c2;
+  color: #ffffff;
   font-weight: 600;
   border: none;
-  border-radius: 6px;
-  padding: 0.75rem 1.5rem;
+  border-radius: 24px;
+  padding: 0.5rem 1.25rem;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   font-family: var(--font-sans);
+  font-size: 0.82rem;
 }
 .btn-primary:hover {
   transform: translateY(-1px);
-  background: #f5f5f5;
-  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.15);
+  background: #004182;
+  box-shadow: 0 4px 12px rgba(10, 102, 194, 0.2);
 }
 .btn-primary:active {
   transform: translateY(1px);
 }
 .btn-primary:disabled {
-  background: #262626;
-  color: #737373;
+  background: #e0e0e0;
+  color: #8c8c8c;
   cursor: not-allowed;
   transform: none !important;
   box-shadow: none !important;
@@ -165,39 +166,43 @@ a:hover {
 
 .btn-secondary {
   background: transparent;
-  color: #ffffff;
-  font-weight: 550;
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  padding: 0.75rem 1.5rem;
+  color: #0a66c2;
+  font-weight: 600;
+  border: 1px solid #0a66c2;
+  border-radius: 24px;
+  padding: 0.5rem 1.25rem;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   transition: all 0.2s ease;
   font-family: var(--font-sans);
+  font-size: 0.82rem;
 }
 .btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(10, 102, 194, 0.06);
+  border-color: #004182;
+  color: #004182;
 }
 
 .btn-danger {
   background: transparent;
-  color: #f5f5f5;
+  color: #cc1016;
   font-weight: 600;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 6px;
-  padding: 0.75rem 1.5rem;
+  border: 1px solid #cc1016;
+  border-radius: 24px;
+  padding: 0.5rem 1.25rem;
   cursor: pointer;
   transition: all 0.2s ease;
+  font-size: 0.82rem;
 }
 .btn-danger:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: #ffffff;
+  background: rgba(204, 16, 22, 0.06);
+  border-color: #900b0f;
+  color: #900b0f;
 }
 
-/* Grayscale Status Badges */
+/* Light Status Badges */
 .badge {
   display: inline-flex;
   align-items: center;
@@ -211,26 +216,26 @@ a:hover {
 }
 
 .badge-verified {
-  background: transparent;
-  color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  background: rgba(5, 118, 66, 0.08);
+  color: #057642;
+  border: 1px solid rgba(5, 118, 66, 0.2);
 }
 
 .badge-pending {
-  background: transparent;
-  color: #a3a3a3;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(140, 140, 140, 0.08);
+  color: #5e5e5e;
+  border: 1px solid rgba(140, 140, 140, 0.2);
 }
 
 .badge-unverified {
-  background: transparent;
-  color: #525252;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(204, 16, 22, 0.08);
+  color: #cc1016;
+  border: 1px solid rgba(204, 16, 22, 0.2);
 }
 
 .badge-admin {
-  background: #ffffff;
-  color: #000000;
+  background: #0a66c2;
+  color: #ffffff;
   border: none;
 }
 
@@ -285,14 +290,14 @@ a:hover {
 /* 2. Small Laptops / Tablets Landscape (up to 1200px) */
 @media (max-width: 1200px) {
   .main-layout-responsive {
-    grid-template-columns: 240px minmax(0, 1fr) !important; /* Hide right sidebar to prevent overlapping content */
+    grid-template-columns: 240px minmax(0, 1fr) !important;
     gap: 1.5rem !important;
   }
   .right-sidebar-responsive {
-    display: none !important; /* Hide the right news sidebar */
+    display: none !important;
   }
   .logo-slogan-responsive {
-    display: none !important; /* Hide the slogan to prevent logo block from squeezing */
+    display: none !important;
   }
   .search-bar-container-responsive {
     width: 180px !important;
@@ -313,7 +318,7 @@ a:hover {
 /* 3. Tablets Portrait (up to 992px) */
 @media (max-width: 992px) {
   .main-layout-responsive {
-    grid-template-columns: minmax(0, 1fr) !important; /* Single column stack */
+    grid-template-columns: minmax(0, 1fr) !important;
     gap: 2rem !important;
   }
   .left-sidebar-responsive {
@@ -322,10 +327,10 @@ a:hover {
     width: 100% !important;
   }
   .search-bar-container-responsive {
-    display: none !important; /* Hide header search bar, rely on central hub search */
+    display: none !important;
   }
   .header-nav-responsive span:nth-child(2) {
-    display: none !important; /* Hide text, show icons only for nav buttons */
+    display: none !important;
   }
   .header-nav-btn-responsive {
     gap: 0 !important;
@@ -359,21 +364,21 @@ a:hover {
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 .vetting-item-hover:hover {
-  background: rgba(255, 255, 255, 0.05) !important;
-  border-color: rgba(255, 255, 255, 0.15) !important;
+  background: var(--bg-surface-hover) !important;
+  border-color: rgba(0, 0, 0, 0.15) !important;
   transform: translateX(4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-/* Peer Bridge Landing Page Interactive Micro-Animations */
+/* Interactive Micro-Animations */
 .feature-pill-interactive {
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 .feature-pill-interactive:hover {
-  background: rgba(255, 255, 255, 0.05) !important;
-  border-color: rgba(0, 242, 254, 0.3) !important;
+  background: var(--bg-surface-hover) !important;
+  border-color: var(--border-accent) !important;
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 242, 254, 0.08);
+  box-shadow: 0 4px 12px rgba(10, 102, 194, 0.08);
 }
 
 .offering-card-interactive {
@@ -383,8 +388,8 @@ a:hover {
 }
 .offering-card-interactive:hover {
   transform: translateY(-4px);
-  border-color: rgba(255, 255, 255, 0.2) !important;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+  border-color: rgba(0, 0, 0, 0.15) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
 }
 .offering-card-interactive:hover .lock-overlay-interactive {
   opacity: 1 !important;
@@ -393,8 +398,8 @@ a:hover {
 .lock-overlay-interactive {
   position: absolute;
   inset: 0;
-  background: rgba(7, 9, 14, 0.85);
-  backdrop-filter: blur(8px);
+  background: rgba(243, 242, 240, 0.9);
+  backdrop-filter: blur(4px);
   display: flex !important;
   align-items: center;
   justify-content: center;
@@ -421,7 +426,7 @@ a:hover {
 }
 
 .footer-list-item-hover:hover {
-  color: #ffffff !important;
+  color: #0a66c2 !important;
   opacity: 1;
 }
 
@@ -439,4 +444,5 @@ a:hover {
     text-align: center;
   }
 }
+
 

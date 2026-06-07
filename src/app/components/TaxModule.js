@@ -294,7 +294,7 @@ const styles = {
   },
   sub: {
     fontSize: '0.9rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     marginTop: '0.25rem',
   },
   grid: {
@@ -321,14 +321,14 @@ const styles = {
   },
   statLabel: {
     fontSize: '0.68rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     textTransform: 'uppercase',
     fontWeight: '700',
   },
   statVal: {
     fontSize: '1.5rem',
     fontWeight: '800',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
   },
   card: {
     padding: '2rem',
@@ -342,7 +342,7 @@ const styles = {
   },
   cardDesc: {
     fontSize: '0.9rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     lineHeight: '1.4',
   },
   docList: {
@@ -352,8 +352,8 @@ const styles = {
     marginTop: '0.5rem',
   },
   docItem: {
-    background: 'rgba(255,255,255,0.02)',
-    border: '1px solid rgba(255,255,255,0.04)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '8px',
     padding: '1.25rem',
     display: 'flex',
@@ -369,12 +369,12 @@ const styles = {
   docName: {
     fontSize: '0.9rem',
     fontWeight: '700',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
   },
   docDate: {
     display: 'block',
     fontSize: '0.75rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     marginTop: '0.15rem',
   },
   downloadBtn: {
@@ -390,13 +390,13 @@ const styles = {
   },
   rightText: {
     fontSize: '0.9rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     lineHeight: '1.6',
   },
   complianceBadge: {
-    background: 'rgba(255, 255, 255, 0.02)',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
-    color: '#ffffff',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
+    color: 'var(--color-text-primary)',
     padding: '0.75rem',
     borderRadius: '6px',
     fontSize: '0.8rem',
@@ -418,8 +418,8 @@ const styles = {
   form1099Card: {
     width: '100%',
     maxWidth: '720px',
-    background: '#000000',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
+    background: 'var(--bg-secondary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '16px',
     padding: '3rem',
     display: 'flex',
@@ -431,7 +431,7 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderBottom: '2px solid #ffffff',
+    borderBottom: '2px solid var(--color-text-primary)',
     paddingBottom: '1rem',
   },
   formHeaderLeft: {
@@ -441,16 +441,16 @@ const styles = {
   formTitle: {
     fontSize: '1.5rem',
     fontWeight: '800',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
   },
   formSub: {
     fontSize: '0.75rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
   },
   formYear: {
     fontSize: '2rem',
     fontWeight: '900',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
   },
   closeBtn: {
     padding: '0.5rem 1rem',
@@ -460,18 +460,18 @@ const styles = {
     fontSize: '1rem',
     fontWeight: '700',
     textTransform: 'uppercase',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     letterSpacing: '0.05em',
   },
   irsGrid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(3, 1fr)',
     gap: '1px',
-    background: 'rgba(255, 255, 255, 0.1)',
-    border: '1px solid rgba(255, 255, 255, 0.15)',
+    background: 'var(--border-color)',
+    border: '1px solid var(--border-color)',
   },
   irsBox: {
-    background: '#000000',
+    background: 'var(--bg-secondary)',
     padding: '1rem',
     display: 'flex',
     flexDirection: 'column',
@@ -479,29 +479,29 @@ const styles = {
   },
   boxLabel: {
     fontSize: '0.65rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     textTransform: 'uppercase',
     lineHeight: '1.2',
   },
   boxVal: {
     fontSize: '0.9rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontFamily: 'monospace',
   },
   disclaimer: {
-    background: 'rgba(255, 255, 255, 0.02)',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '6px',
     padding: '0.75rem 1rem',
     fontSize: '0.78rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     lineHeight: '1.4',
     textAlign: 'center',
   },
   emptyBoxText: {
     padding: '2rem',
     textAlign: 'center',
-    color: '#525252',
+    color: 'var(--color-text-muted)',
     fontSize: '0.85rem',
     fontStyle: 'italic',
   }

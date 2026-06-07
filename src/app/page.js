@@ -142,17 +142,17 @@ export default function Home() {
     const hasWealthVal = inv.accreditation_status || false;
     const hasAddressAndSsn = basic.address?.trim()?.length > 3 && cust.ssn?.trim()?.length > 0;
 
-    const colorId = hasId ? (hasAddressAndSsn ? '#d4af37' : '#00f2fe') : 'rgba(255,255,255,0.08)';
-    const colorJob = hasJobVal ? '#8f00ff' : 'rgba(255,255,255,0.08)';
-    const colorAcad = hasAcadVal ? '#6366f1' : 'rgba(255,255,255,0.08)';
-    const colorWealth = hasWealthVal ? '#10b981' : 'rgba(255,255,255,0.08)';
+    const colorId = hasId ? (hasAddressAndSsn ? '#d4af37' : '#00f2fe') : 'var(--border-color)';
+    const colorJob = hasJobVal ? '#8f00ff' : 'var(--border-color)';
+    const colorAcad = hasAcadVal ? '#6366f1' : 'var(--border-color)';
+    const colorWealth = hasWealthVal ? '#10b981' : 'var(--border-color)';
 
     const radius = 50;
 
     return (
       <>
         <svg width="60" height="60" viewBox="0 0 120 120" style={{ transform: 'rotate(-90deg)', position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
-          <circle cx="60" cy="60" r={radius} fill="none" stroke="rgba(255,255,255,0.02)" strokeWidth="4" />
+          <circle cx="60" cy="60" r={radius} fill="none" stroke="var(--border-color)" strokeWidth="4" />
           <circle cx="60" cy="60" r={radius} fill="none" stroke={colorId} strokeWidth="8" strokeDasharray="72.5 241.6" strokeDashoffset="0" strokeLinecap="round" />
           <circle cx="60" cy="60" r={radius} fill="none" stroke={colorWealth} strokeWidth="8" strokeDasharray="72.5 241.6" strokeDashoffset="-78.5" strokeLinecap="round" />
           <circle cx="60" cy="60" r={radius} fill="none" stroke={colorAcad} strokeWidth="8" strokeDasharray="72.5 241.6" strokeDashoffset="-157" strokeLinecap="round" />
@@ -313,7 +313,7 @@ export default function Home() {
               right: '1rem',
               background: 'transparent',
               border: 'none',
-              color: '#a3a3a3',
+              color: 'var(--color-text-secondary)',
               fontSize: '1.25rem',
               cursor: 'pointer'
             }}
@@ -321,19 +321,19 @@ export default function Home() {
             ✕
           </button>
           
-          <h3 style={{ fontSize: '1.15rem', fontWeight: '800', margin: 0, color: '#ffffff', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <h3 style={{ fontSize: '1.15rem', fontWeight: '800', margin: 0, color: 'var(--color-text-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <span>👤</span> Stage 1: Identity & SSN Vetting
           </h3>
           
-          <p style={{ fontSize: '0.82rem', color: '#a3a3a3', lineHeight: '1.4', margin: 0 }}>
+          <p style={{ fontSize: '0.82rem', color: 'var(--color-text-secondary)', lineHeight: '1.4', margin: 0 }}>
             Under SEC Reg D alternative fundraising compliance sweeps, you must verify your identity using standard biometric scans.
           </p>
 
           {!idBiometricAgreed ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.04)', padding: '1rem', borderRadius: '8px' }}>
-                <h4 style={{ fontSize: '0.8rem', color: '#ffffff', margin: '0 0 0.5rem 0' }}>Biometrics Attestation Agreement</h4>
-                <p style={{ fontSize: '0.74rem', color: '#737373', lineHeight: '1.3', margin: 0 }}>
+              <div style={{ background: 'var(--bg-primary)', border: '1px solid var(--border-color)', padding: '1rem', borderRadius: '8px' }}>
+                <h4 style={{ fontSize: '0.8rem', color: 'var(--color-text-primary)', margin: '0 0 0.5rem 0' }}>Biometrics Attestation Agreement</h4>
+                <p style={{ fontSize: '0.74rem', color: 'var(--color-text-muted)', lineHeight: '1.3', margin: 0 }}>
                   {"I agree to process my passport or government-issued driver's license followed by a 3D facial sweep to verify my unique physical identity signature."}
                 </p>
               </div>
@@ -363,7 +363,7 @@ export default function Home() {
               <div style={{ fontSize: '0.8rem', color: '#00f2fe', fontWeight: '700', animation: 'pulse 1.5s infinite' }}>
                 Biometric Face Match in Progress...
               </div>
-              <p style={{ fontSize: '0.7rem', color: '#737373', textAlign: 'center', margin: 0 }}>
+              <p style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)', textAlign: 'center', margin: 0 }}>
                 Verifying license text against SEC compliance Sweeps and comparing portrait biometrics.
               </p>
             </div>
@@ -373,8 +373,8 @@ export default function Home() {
                 ✓
               </div>
               <div>
-                <h4 style={{ fontSize: '0.95rem', color: '#ffffff', margin: '0 0 0.25rem 0' }}>Biometrics Verification Complete!</h4>
-                <p style={{ fontSize: '0.78rem', color: '#a3a3a3', margin: 0 }}>
+                <h4 style={{ fontSize: '0.95rem', color: 'var(--color-text-primary)', margin: '0 0 0.25rem 0' }}>Biometrics Verification Complete!</h4>
+                <p style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)', margin: 0 }}>
                   We found a match! Passport signature and face sweep verified successfully.
                 </p>
               </div>
@@ -396,18 +396,18 @@ export default function Home() {
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', alignItems: 'center' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.03)', width: '100%' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', background: 'var(--bg-primary)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--border-color)', width: '100%' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#ffffff', padding: '0.5rem', borderRadius: '8px', width: '100px', height: '100px' }}>
                   <svg width="80" height="80" viewBox="0 0 29 29" style={{ width: '100%', height: '100%' }}>
                     <path fill="#000" d="M0 0h9v9H0zm1 1h7v7H1zm11 0h9v9h-9zm1 1h7v7h-7zM0 12h9v9H0zm1 1h7v7H1zm11 0h9v9h-9zm1 1h7v7h-7zM20 20h9v9h-9zm1 1h7v7h-7zM0 24h9v9H0zm1 1h7v7H1zm11 0h9v9h-9zm1 1h7v7h-7z" />
                   </svg>
                 </div>
-                <span style={{ fontSize: '0.64rem', color: '#737373', textAlign: 'center' }}>
+                <span style={{ fontSize: '0.64rem', color: 'var(--color-text-muted)', textAlign: 'center' }}>
                   Scan this QR code with your phone camera to securely upload your Passport/License and snap a selfie.
                 </span>
               </div>
               
-              <div style={{ height: '1px', background: 'rgba(255,255,255,0.05)', width: '100%' }}></div>
+              <div style={{ height: '1px', background: 'var(--bg-primary)', width: '100%' }}></div>
               
               <button
                 onClick={() => {
@@ -462,7 +462,7 @@ export default function Home() {
               right: '1rem',
               background: 'transparent',
               border: 'none',
-              color: '#a3a3a3',
+              color: 'var(--color-text-secondary)',
               fontSize: '1.25rem',
               cursor: 'pointer'
             }}
@@ -470,11 +470,11 @@ export default function Home() {
             ✕
           </button>
           
-          <h3 style={{ fontSize: '1.15rem', fontWeight: '800', margin: 0, color: '#ffffff', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <h3 style={{ fontSize: '1.15rem', fontWeight: '800', margin: 0, color: 'var(--color-text-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <span>🎓</span> Stage 2: Academic Verification
           </h3>
           
-          <p style={{ fontSize: '0.82rem', color: '#a3a3a3', lineHeight: '1.4', margin: 0 }}>
+          <p style={{ fontSize: '0.82rem', color: 'var(--color-text-secondary)', lineHeight: '1.4', margin: 0 }}>
             Upload a copy of your diploma or degree certificate, followed by a selfie biometric matching scan.
           </p>
 
@@ -498,8 +498,8 @@ export default function Home() {
                 ✓
               </div>
               <div>
-                <h4 style={{ fontSize: '0.95rem', color: '#ffffff', margin: '0 0 0.25rem 0' }}>Academic Verification Complete!</h4>
-                <p style={{ fontSize: '0.78rem', color: '#a3a3a3', margin: 0 }}>
+                <h4 style={{ fontSize: '0.95rem', color: 'var(--color-text-primary)', margin: '0 0 0.25rem 0' }}>Academic Verification Complete!</h4>
+                <p style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)', margin: 0 }}>
                   Diploma matched with face biometrics successfully. Stanford Graduate GSB MBA verified.
                 </p>
               </div>
@@ -525,10 +525,10 @@ export default function Home() {
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', background: 'rgba(255,255,255,0.01)', padding: '1.25rem', borderRadius: '8px', border: '1px dashed rgba(255,255,255,0.08)', alignItems: 'center', justifyContent: 'center', height: '120px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', background: 'var(--bg-primary)', padding: '1.25rem', borderRadius: '8px', border: '1px dashed var(--border-color)', alignItems: 'center', justifyContent: 'center', height: '120px' }}>
                 <span style={{ fontSize: '1.5rem' }}>📄</span>
-                <span style={{ fontSize: '0.78rem', color: '#ffffff', fontWeight: '600' }}>Drop diploma scan here</span>
-                <span style={{ fontSize: '0.64rem', color: '#737373' }}>PDF, JPG, or PNG up to 10MB</span>
+                <span style={{ fontSize: '0.78rem', color: 'var(--color-text-primary)', fontWeight: '600' }}>Drop diploma scan here</span>
+                <span style={{ fontSize: '0.64rem', color: 'var(--color-text-muted)' }}>PDF, JPG, or PNG up to 10MB</span>
               </div>
               <button
                 onClick={() => {
@@ -586,7 +586,7 @@ export default function Home() {
               right: '1rem',
               background: 'transparent',
               border: 'none',
-              color: '#a3a3a3',
+              color: 'var(--color-text-secondary)',
               fontSize: '1.25rem',
               cursor: 'pointer'
             }}
@@ -594,11 +594,11 @@ export default function Home() {
             ✕
           </button>
           
-          <h3 style={{ fontSize: '1.15rem', fontWeight: '800', margin: 0, color: '#ffffff', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <h3 style={{ fontSize: '1.15rem', fontWeight: '800', margin: 0, color: 'var(--color-text-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <span>👥</span> Stage 3: Professional Work Email
           </h3>
           
-          <p style={{ fontSize: '0.82rem', color: '#a3a3a3', lineHeight: '1.4', margin: 0 }}>
+          <p style={{ fontSize: '0.82rem', color: 'var(--color-text-secondary)', lineHeight: '1.4', margin: 0 }}>
             Confirm your current employment status by verifying your corporate work email.
           </p>
 
@@ -631,18 +631,18 @@ export default function Home() {
               }, 1200);
             }} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                <label style={{ fontSize: '0.66rem', color: '#737373', fontWeight: '800', textTransform: 'uppercase' }}>Corporate Work Email</label>
+                <label style={{ fontSize: '0.66rem', color: 'var(--color-text-muted)', fontWeight: '800', textTransform: 'uppercase' }}>Corporate Work Email</label>
                 <input
                   type="email"
                   placeholder="e.g. sarah@skynet-rebel.io"
                   value={workEmail}
                   onChange={(e) => setWorkEmail(e.target.value)}
                   style={{
-                    background: 'rgba(255,255,255,0.03)',
-                    border: '1px solid rgba(255,255,255,0.08)',
+                    background: 'var(--bg-primary)',
+                    border: '1px solid var(--border-color)',
                     borderRadius: '6px',
                     padding: '0.65rem 0.85rem',
-                    color: '#ffffff',
+                    color: 'var(--color-text-primary)',
                     fontSize: '0.85rem',
                     outline: 'none'
                   }}
@@ -672,18 +672,18 @@ export default function Home() {
                 📩 Verification PIN sent! Use simulation code: **PB-VERIFY**
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                <label style={{ fontSize: '0.66rem', color: '#737373', fontWeight: '800', textTransform: 'uppercase' }}>Enter 2FA Code</label>
+                <label style={{ fontSize: '0.66rem', color: 'var(--color-text-muted)', fontWeight: '800', textTransform: 'uppercase' }}>Enter 2FA Code</label>
                 <input
                   type="text"
                   placeholder="PB-VERIFY"
                   value={workPin}
                   onChange={(e) => setWorkPin(e.target.value)}
                   style={{
-                    background: 'rgba(255,255,255,0.03)',
-                    border: '1px solid rgba(255,255,255,0.08)',
+                    background: 'var(--bg-primary)',
+                    border: '1px solid var(--border-color)',
                     borderRadius: '6px',
                     padding: '0.65rem 0.85rem',
-                    color: '#ffffff',
+                    color: 'var(--color-text-primary)',
                     fontSize: '0.85rem',
                     outline: 'none',
                     textAlign: 'center',
@@ -703,8 +703,8 @@ export default function Home() {
                 ✓
               </div>
               <div>
-                <h4 style={{ fontSize: '0.95rem', color: '#ffffff', margin: '0 0 0.25rem 0' }}>Work Experience Active!</h4>
-                <p style={{ fontSize: '0.78rem', color: '#a3a3a3', margin: 0 }}>
+                <h4 style={{ fontSize: '0.95rem', color: 'var(--color-text-primary)', margin: '0 0 0.25rem 0' }}>Work Experience Active!</h4>
+                <p style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)', margin: 0 }}>
                   Email matched with corporate node successfully. Job experience arc unlocked.
                 </p>
               </div>
@@ -770,7 +770,7 @@ export default function Home() {
               right: '1rem',
               background: 'transparent',
               border: 'none',
-              color: '#a3a3a3',
+              color: 'var(--color-text-secondary)',
               fontSize: '1.25rem',
               cursor: 'pointer'
             }}
@@ -778,11 +778,11 @@ export default function Home() {
             ✕
           </button>
           
-          <h3 style={{ fontSize: '1.15rem', fontWeight: '800', margin: 0, color: '#ffffff', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <h3 style={{ fontSize: '1.15rem', fontWeight: '800', margin: 0, color: 'var(--color-text-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <span>🏛</span> Stage 4: Accredited Net Worth
           </h3>
           
-          <p style={{ fontSize: '0.82rem', color: '#a3a3a3', lineHeight: '1.4', margin: 0 }}>
+          <p style={{ fontSize: '0.82rem', color: 'var(--color-text-secondary)', lineHeight: '1.4', margin: 0 }}>
             Declare your liquid assets, bank holdings, capital investments, and debts to attest to your accredited status.
           </p>
 
@@ -806,8 +806,8 @@ export default function Home() {
                 ✓
               </div>
               <div>
-                <h4 style={{ fontSize: '0.95rem', color: '#ffffff', margin: '0 0 0.25rem 0' }}>Wealth Node Verified!</h4>
-                <p style={{ fontSize: '0.78rem', color: '#a3a3a3', margin: 0 }}>
+                <h4 style={{ fontSize: '0.95rem', color: 'var(--color-text-primary)', margin: '0 0 0.25rem 0' }}>Wealth Node Verified!</h4>
+                <p style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)', margin: 0 }}>
                   Calculated Net Worth: **${calculatedNetWorth.toLocaleString()}**. Vetted under SEC accreditation parameters.
                 </p>
               </div>
@@ -837,47 +837,47 @@ export default function Home() {
             }} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '0.75rem' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                  <label style={{ fontSize: '0.62rem', color: '#737373', fontWeight: '800' }}>CASH & BANK BALANCES ($)</label>
+                  <label style={{ fontSize: '0.62rem', color: 'var(--color-text-muted)', fontWeight: '800' }}>CASH & BANK BALANCES ($)</label>
                   <input
                     type="number"
                     value={cashAssets}
                     onChange={(e) => setCashAssets(e.target.value)}
-                    style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '6px', padding: '0.5rem 0.75rem', color: '#ffffff', fontSize: '0.8rem', outline: 'none' }}
+                    style={{ background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: '6px', padding: '0.5rem 0.75rem', color: 'var(--color-text-primary)', fontSize: '0.8rem', outline: 'none' }}
                     required
                   />
                 </div>
                 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                  <label style={{ fontSize: '0.62rem', color: '#737373', fontWeight: '800' }}>INVESTMENTS & EQUITY HOLDINGS ($)</label>
+                  <label style={{ fontSize: '0.62rem', color: 'var(--color-text-muted)', fontWeight: '800' }}>INVESTMENTS & EQUITY HOLDINGS ($)</label>
                   <input
                     type="number"
                     value={investAssets}
                     onChange={(e) => setInvestAssets(e.target.value)}
-                    style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '6px', padding: '0.5rem 0.75rem', color: '#ffffff', fontSize: '0.8rem', outline: 'none' }}
+                    style={{ background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: '6px', padding: '0.5rem 0.75rem', color: 'var(--color-text-primary)', fontSize: '0.8rem', outline: 'none' }}
                     required
                   />
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                  <label style={{ fontSize: '0.62rem', color: '#737373', fontWeight: '800' }}>DEBTS & LIABILITIES ($)</label>
+                  <label style={{ fontSize: '0.62rem', color: 'var(--color-text-muted)', fontWeight: '800' }}>DEBTS & LIABILITIES ($)</label>
                   <input
                     type="number"
                     value={debtLiabilities}
                     onChange={(e) => setDebtLiabilities(e.target.value)}
-                    style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '6px', padding: '0.5rem 0.75rem', color: '#ffffff', fontSize: '0.8rem', outline: 'none' }}
+                    style={{ background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: '6px', padding: '0.5rem 0.75rem', color: 'var(--color-text-primary)', fontSize: '0.8rem', outline: 'none' }}
                     required
                   />
                 </div>
               </div>
 
               <div style={{ background: 'rgba(0,242,254,0.03)', border: '1px solid rgba(0,242,254,0.1)', padding: '0.75rem', borderRadius: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.72rem', color: '#737373', fontWeight: '700' }}>CALCULATED NET WORTH:</span>
+                <span style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)', fontWeight: '700' }}>CALCULATED NET WORTH:</span>
                 <strong style={{ fontSize: '0.9rem', color: calculatedNetWorth >= 1000000 ? '#10b981' : '#00f2fe' }}>
                   ${calculatedNetWorth.toLocaleString()}
                 </strong>
               </div>
 
-              <span style={{ fontSize: '0.62rem', color: '#525252', lineHeight: '1.3' }}>
+              <span style={{ fontSize: '0.62rem', color: 'var(--color-text-muted)', lineHeight: '1.3' }}>
                 ⚖ Note: By submitting, you attest that these financial details are correct. Peer Bridge compliance sweeps may request physical bank statements or asset certificates if co-issuing rounds require direct regulatory audit checks.
               </span>
 
@@ -903,17 +903,17 @@ export default function Home() {
       const hasWealthVal = memberInv?.accreditation_status || false;
       const hasAddressAndSsn = memberBasic?.address?.trim()?.length > 3 && memberCustomer?.ssn?.trim()?.length > 0;
 
-      const colorId = hasId ? (hasAddressAndSsn ? '#d4af37' : '#00f2fe') : 'rgba(255,255,255,0.08)'; // Gold or Cyan
-      const colorJob = hasJobVal ? '#8f00ff' : 'rgba(255,255,255,0.08)'; // Purple
-      const colorAcad = hasAcadVal ? '#6366f1' : 'rgba(255,255,255,0.08)'; // Indigo
-      const colorWealth = hasWealthVal ? '#10b981' : 'rgba(255,255,255,0.08)'; // Emerald
+      const colorId = hasId ? (hasAddressAndSsn ? '#d4af37' : '#00f2fe') : 'var(--border-color)'; // Gold or Cyan
+      const colorJob = hasJobVal ? '#8f00ff' : 'var(--border-color)'; // Purple
+      const colorAcad = hasAcadVal ? '#6366f1' : 'var(--border-color)'; // Indigo
+      const colorWealth = hasWealthVal ? '#10b981' : 'var(--border-color)'; // Emerald
 
       const radius = 54;
       const perimeter = 2 * Math.PI * radius; // 339.29
 
       return (
         <svg width={size} height={size} viewBox="0 0 120 120" style={{ transform: 'rotate(-90deg)', position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
-          <circle cx="60" cy="60" r={radius} fill="none" stroke="rgba(255,255,255,0.02)" strokeWidth={ringWidth - 1} />
+          <circle cx="60" cy="60" r={radius} fill="none" stroke="var(--border-color)" strokeWidth={ringWidth - 1} />
           {/* Tier 1: Identity */}
           <circle cx="60" cy="60" r={radius} fill="none" stroke={colorId} strokeWidth={ringWidth} strokeDasharray="78 261" strokeDashoffset="0" strokeLinecap="round" />
           {/* Tier 4: Wealth */}
@@ -950,8 +950,8 @@ export default function Home() {
           display: 'flex',
           flexDirection: 'column',
           gap: '1.5rem',
-          background: 'rgba(255, 255, 255, 0.02)',
-          border: '1px solid rgba(255, 255, 255, 0.05)',
+          background: 'var(--bg-primary)',
+          border: '1px solid var(--border-color)',
           borderRadius: '16px',
           boxShadow: '0 20px 50px rgba(0,0,0,0.8)',
           position: 'relative',
@@ -1028,7 +1028,7 @@ export default function Home() {
                 <div style={styles.modalSection}>
                   <h4 style={styles.modalSecHeader}>Summary Pedigree</h4>
                   <p style={styles.modalText}>{inspectedMember.professionalProfile?.summary || 'No summary recorded.'}</p>
-                  <p style={{ ...styles.modalText, fontStyle: 'italic', color: '#737373', marginTop: '0.5rem' }}>
+                  <p style={{ ...styles.modalText, fontStyle: 'italic', color: 'var(--color-text-muted)', marginTop: '0.5rem' }}>
                     &quot;{inspectedMember.basicProfile?.bio || 'No bio quote.'}&quot;
                   </p>
                 </div>
@@ -1173,10 +1173,10 @@ export default function Home() {
       <div style={styles.modalOverlay}>
         <div className="glass-panel" style={styles.modalContent}>
           <div style={styles.modalHeader}>
-            <h3 style={{ fontSize: '1.1rem', color: '#ffffff', margin: 0 }}>Recent Profile Viewers Log</h3>
+            <h3 style={{ fontSize: '1.1rem', color: 'var(--color-text-primary)', margin: 0 }}>Recent Profile Viewers Log</h3>
             <button onClick={() => setShowViewersModal(false)} style={styles.closeModalBtn}>✕</button>
           </div>
-          <p style={{ fontSize: '0.78rem', color: '#a3a3a3', marginBottom: '1rem', lineHeight: '1.4' }}>
+          <p style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)', marginBottom: '1rem', lineHeight: '1.4' }}>
             The following verified network nodes have inspected your credentials and placement portfolio within the last 72 hours:
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
@@ -1240,7 +1240,7 @@ export default function Home() {
               </button>
             </div>
           </div>
-          <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '1rem', marginTop: '1.25rem', textAlign: 'right' }}>
+          <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '1rem', marginTop: '1.25rem', textAlign: 'right' }}>
             <button className="btn-primary" onClick={() => setShowViewersModal(false)} style={{ padding: '0.4rem 1rem', fontSize: '0.75rem' }}>
               Acknowledge & Close
             </button>
@@ -1256,10 +1256,10 @@ export default function Home() {
       <div style={styles.modalOverlay}>
         <div className="glass-panel" style={styles.modalContent}>
           <div style={styles.modalHeader}>
-            <h3 style={{ fontSize: '1.1rem', color: '#ffffff', margin: 0 }}>Ecosystem Node Analytics</h3>
+            <h3 style={{ fontSize: '1.1rem', color: 'var(--color-text-primary)', margin: 0 }}>Ecosystem Node Analytics</h3>
             <button onClick={() => setShowImpressionsModal(false)} style={styles.closeModalBtn}>✕</button>
           </div>
-          <p style={{ fontSize: '0.78rem', color: '#a3a3a3', marginBottom: '1.25rem', lineHeight: '1.4' }}>
+          <p style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)', marginBottom: '1.25rem', lineHeight: '1.4' }}>
             Cumulative organic reach and transaction interest on your launched deal-flow campaigns and regulatory forum postings:
           </p>
 
@@ -1276,40 +1276,40 @@ export default function Home() {
             </div>
           </div>
 
-          <h4 style={{ fontSize: '0.78rem', textTransform: 'uppercase', color: '#ffffff', letterSpacing: '0.05em', marginBottom: '0.65rem' }}>Audience Demography</h4>
+          <h4 style={{ fontSize: '0.78rem', textTransform: 'uppercase', color: 'var(--color-text-primary)', letterSpacing: '0.05em', marginBottom: '0.65rem' }}>Audience Demography</h4>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: '#a3a3a3', marginBottom: '0.2rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--color-text-secondary)', marginBottom: '0.2rem' }}>
                 <span>Venture Placement Directors / Investors</span>
-                <span style={{ color: '#ffffff', fontWeight: '700' }}>48%</span>
+                <span style={{ color: 'var(--color-text-primary)', fontWeight: '700' }}>48%</span>
               </div>
-              <div style={{ height: '5px', background: 'rgba(255,255,255,0.05)', borderRadius: '2px', overflow: 'hidden' }}>
+              <div style={{ height: '5px', background: 'var(--bg-primary)', borderRadius: '2px', overflow: 'hidden' }}>
                 <div style={{ width: '48%', height: '100%', background: '#00f2fe' }}></div>
               </div>
             </div>
 
             <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: '#a3a3a3', marginBottom: '0.2rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--color-text-secondary)', marginBottom: '0.2rem' }}>
                 <span>Ecosystem Founders / Entrepreneurs</span>
-                <span style={{ color: '#ffffff', fontWeight: '700' }}>35%</span>
+                <span style={{ color: 'var(--color-text-primary)', fontWeight: '700' }}>35%</span>
               </div>
-              <div style={{ height: '5px', background: 'rgba(255,255,255,0.05)', borderRadius: '2px', overflow: 'hidden' }}>
+              <div style={{ height: '5px', background: 'var(--bg-primary)', borderRadius: '2px', overflow: 'hidden' }}>
                 <div style={{ width: '35%', height: '100%', background: '#8f00ff' }}></div>
               </div>
             </div>
 
             <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: '#a3a3a3', marginBottom: '0.2rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--color-text-secondary)', marginBottom: '0.2rem' }}>
                 <span>Securities Auditors / Legal Affiliates</span>
-                <span style={{ color: '#ffffff', fontWeight: '700' }}>17%</span>
+                <span style={{ color: 'var(--color-text-primary)', fontWeight: '700' }}>17%</span>
               </div>
-              <div style={{ height: '5px', background: 'rgba(255,255,255,0.05)', borderRadius: '2px', overflow: 'hidden' }}>
+              <div style={{ height: '5px', background: 'var(--bg-primary)', borderRadius: '2px', overflow: 'hidden' }}>
                 <div style={{ width: '17%', height: '100%', background: '#10b981' }}></div>
               </div>
             </div>
           </div>
 
-          <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '1rem', marginTop: '1.25rem', textAlign: 'right' }}>
+          <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '1rem', marginTop: '1.25rem', textAlign: 'right' }}>
             <button className="btn-primary" onClick={() => setShowImpressionsModal(false)} style={{ padding: '0.4rem 1rem', fontSize: '0.75rem' }}>
               Dismiss Analytics
             </button>
@@ -1350,9 +1350,9 @@ export default function Home() {
         const savedCampaigns = state.campaigns.filter(c => state.savedCampaignIds.includes(c.id));
         return (
           <div className="glass-panel animate-fade-in-up" style={{ padding: '1.5rem', borderRadius: '16px', minHeight: '80vh' }}>
-            <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.85rem', marginBottom: '1.25rem' }}>
-              <h2 style={{ fontSize: '1.4rem', fontWeight: '850', color: '#ffffff', margin: 0 }}>Saved Placement Vault</h2>
-              <p style={{ fontSize: '0.8rem', color: '#a3a3a3', marginTop: '0.2rem' }}>
+            <div style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.85rem', marginBottom: '1.25rem' }}>
+              <h2 style={{ fontSize: '1.4rem', fontWeight: '850', color: 'var(--color-text-primary)', margin: 0 }}>Saved Placement Vault</h2>
+              <p style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', marginTop: '0.2rem' }}>
                 Bookmarked fundraising campaigns and advisor listings synced to your Reg D credential profile.
               </p>
             </div>
@@ -1360,8 +1360,8 @@ export default function Home() {
             {savedCampaigns.length === 0 ? (
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '4rem 1rem', textAlign: 'center' }}>
                 <span style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔖</span>
-                <h3 style={{ fontSize: '1rem', color: '#ffffff', fontWeight: '700' }}>No Saved Placements</h3>
-                <p style={{ fontSize: '0.8rem', color: '#525252', maxWidth: '300px', margin: '0.25rem 0 1rem 0' }}>
+                <h3 style={{ fontSize: '1rem', color: 'var(--color-text-primary)', fontWeight: '700' }}>No Saved Placements</h3>
+                <p style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', maxWidth: '300px', margin: '0.25rem 0 1rem 0' }}>
                   Browse active seed offerings in the Ecosystem Home feed to save them for future diligence.
                 </p>
                 <button className="btn-primary" onClick={() => state.setActiveModule('portfolio')} style={{ fontSize: '0.75rem', padding: '0.5rem 1rem' }}>
@@ -1373,36 +1373,36 @@ export default function Home() {
                 {savedCampaigns.map(camp => {
                   const progress = Math.min(100, Math.floor((camp.raised / camp.target) * 100));
                   return (
-                    <div className="glass-panel glow-accent-border" key={camp.id} style={{ padding: '1rem', background: 'rgba(255,255,255,0.01)', borderRadius: '10px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                    <div className="glass-panel glow-accent-border" key={camp.id} style={{ padding: '1rem', background: 'var(--bg-primary)', borderRadius: '10px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                       <div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.4rem' }}>
-                          <h3 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#ffffff', margin: 0 }}>{camp.companyName}</h3>
-                          <span style={{ fontSize: '0.62rem', fontWeight: '700', padding: '0.1rem 0.35rem', borderRadius: '4px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: '#a3a3a3' }}>
+                          <h3 style={{ fontSize: '0.95rem', fontWeight: '800', color: 'var(--color-text-primary)', margin: 0 }}>{camp.companyName}</h3>
+                          <span style={{ fontSize: '0.62rem', fontWeight: '700', padding: '0.1rem 0.35rem', borderRadius: '4px', background: 'var(--bg-primary)', border: '1px solid var(--border-color)', color: 'var(--color-text-secondary)' }}>
                             {camp.category}
                           </span>
                         </div>
-                        <p style={{ fontSize: '0.75rem', color: '#a3a3a3', lineHeight: '1.35', minHeight: '2.5rem', marginBottom: '0.75rem', overflow: 'hidden' }}>
+                        <p style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', lineHeight: '1.35', minHeight: '2.5rem', marginBottom: '0.75rem', overflow: 'hidden' }}>
                           {camp.tagline}
                         </p>
 
                         <div style={{ marginBottom: '0.75rem' }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.68rem', color: '#a3a3a3', marginBottom: '0.2rem' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.68rem', color: 'var(--color-text-secondary)', marginBottom: '0.2rem' }}>
                             <span>Raised: <strong>${camp.raised.toLocaleString()}</strong></span>
                             <span>Target: <strong>${camp.target.toLocaleString()}</strong></span>
                           </div>
-                          <div style={{ height: '4px', background: 'rgba(255,255,255,0.05)', borderRadius: '2px', overflow: 'hidden' }}>
+                          <div style={{ height: '4px', background: 'var(--bg-primary)', borderRadius: '2px', overflow: 'hidden' }}>
                             <div style={{ width: `${progress}%`, height: '100%', background: '#00f2fe' }}></div>
                           </div>
                         </div>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', background: 'rgba(0,0,0,0.2)', padding: '0.4rem', borderRadius: '6px', marginBottom: '1rem' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', background: 'var(--bg-primary)', padding: '0.4rem', borderRadius: '6px', marginBottom: '1rem' }}>
                           <div style={{ display: 'flex', flexDirection: 'column' }}>
-                            <span style={{ fontSize: '0.6rem', color: '#525252' }}>Valuation</span>
-                            <span style={{ fontSize: '0.7rem', color: '#ffffff', fontWeight: '700' }}>${(camp.valuation / 1000000).toFixed(1)}M</span>
+                            <span style={{ fontSize: '0.6rem', color: 'var(--color-text-muted)' }}>Valuation</span>
+                            <span style={{ fontSize: '0.7rem', color: 'var(--color-text-primary)', fontWeight: '700' }}>${(camp.valuation / 1000000).toFixed(1)}M</span>
                           </div>
                           <div style={{ display: 'flex', flexDirection: 'column' }}>
-                            <span style={{ fontSize: '0.6rem', color: '#525252' }}>Min Entry</span>
-                            <span style={{ fontSize: '0.7rem', color: '#ffffff', fontWeight: '700' }}>${camp.minInvestment}</span>
+                            <span style={{ fontSize: '0.6rem', color: 'var(--color-text-muted)' }}>Min Entry</span>
+                            <span style={{ fontSize: '0.7rem', color: 'var(--color-text-primary)', fontWeight: '700' }}>${camp.minInvestment}</span>
                           </div>
                         </div>
                       </div>
@@ -1436,9 +1436,9 @@ export default function Home() {
       case 'events':
         return (
           <div className="glass-panel animate-fade-in-up" style={{ padding: '1.5rem', borderRadius: '16px', minHeight: '80vh' }}>
-            <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.85rem', marginBottom: '1.25rem' }}>
-              <h2 style={{ fontSize: '1.4rem', fontWeight: '850', color: '#ffffff', margin: 0 }}>Deal-Flow Briefings & Events</h2>
-              <p style={{ fontSize: '0.8rem', color: '#a3a3a3', marginTop: '0.2rem' }}>
+            <div style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.85rem', marginBottom: '1.25rem' }}>
+              <h2 style={{ fontSize: '1.4rem', fontWeight: '850', color: 'var(--color-text-primary)', margin: 0 }}>Deal-Flow Briefings & Events</h2>
+              <p style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', marginTop: '0.2rem' }}>
                 Register for private deal-flow placement webinars, corporate cap table audits, and Reg D SEC compliance updates.
               </p>
             </div>
@@ -1446,27 +1446,27 @@ export default function Home() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {state.events.map(evt => {
                 return (
-                  <div className="glass-panel glow-accent-border" key={evt.id} style={{ padding: '1.25rem', background: 'rgba(255,255,255,0.01)', borderRadius: '12px', display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '70px', padding: '0.5rem', borderRadius: '8px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.05)', textAlign: 'center', flexShrink: 0 }}>
+                  <div className="glass-panel glow-accent-border" key={evt.id} style={{ padding: '1.25rem', background: 'var(--bg-primary)', borderRadius: '12px', display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '70px', padding: '0.5rem', borderRadius: '8px', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-color)', textAlign: 'center', flexShrink: 0 }}>
                       <span style={{ fontSize: '0.58rem', fontWeight: '800', color: '#00f2fe', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Webinar</span>
                       <span style={{ fontSize: '1.25rem', margin: '0.15rem 0' }}>📅</span>
-                      <span style={{ fontSize: '0.58rem', color: '#a3a3a3' }}>Live</span>
+                      <span style={{ fontSize: '0.58rem', color: 'var(--color-text-secondary)' }}>Live</span>
                     </div>
 
                     <div style={{ flex: 1 }}>
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', alignItems: 'center', marginBottom: '0.4rem' }}>
-                        <h3 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#ffffff', margin: 0 }}>{evt.title}</h3>
-                        <span style={{ fontSize: '0.6rem', fontWeight: '700', padding: '0.1rem 0.35rem', borderRadius: '4px', background: evt.attending ? 'rgba(16, 185, 129, 0.1)' : 'rgba(255,255,255,0.04)', color: evt.attending ? '#10b981' : '#a3a3a3', border: evt.attending ? '1px solid rgba(16, 185, 129, 0.2)' : '1px solid rgba(255,255,255,0.05)' }}>
+                        <h3 style={{ fontSize: '0.95rem', fontWeight: '800', color: 'var(--color-text-primary)', margin: 0 }}>{evt.title}</h3>
+                        <span style={{ fontSize: '0.6rem', fontWeight: '700', padding: '0.1rem 0.35rem', borderRadius: '4px', background: evt.attending ? 'rgba(16, 185, 129, 0.1)' : 'var(--border-color)', color: evt.attending ? '#10b981' : '#a3a3a3', border: evt.attending ? '1px solid rgba(16, 185, 129, 0.2)' : '1px solid var(--border-color)' }}>
                           {evt.category}
                         </span>
                       </div>
-                      <p style={{ fontSize: '0.78rem', color: '#a3a3a3', lineHeight: '1.4', margin: '0.35rem 0 0.75rem 0' }}>
+                      <p style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)', lineHeight: '1.4', margin: '0.35rem 0 0.75rem 0' }}>
                         {evt.description}
                       </p>
                       
-                      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.03)', paddingTop: '0.75rem', gap: '0.75rem' }}>
-                        <div style={{ display: 'flex', gap: '1rem', fontSize: '0.72rem', color: '#525252' }}>
-                          <span>Time: <strong style={{ color: '#ffffff' }}>{evt.date}</strong></span>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border-color)', paddingTop: '0.75rem', gap: '0.75rem' }}>
+                        <div style={{ display: 'flex', gap: '1rem', fontSize: '0.72rem', color: 'var(--color-text-muted)' }}>
+                          <span>Time: <strong style={{ color: 'var(--color-text-primary)' }}>{evt.date}</strong></span>
                           <span>Registered Attendees: <strong style={{ color: '#00f2fe' }}>{evt.attendees} peers</strong></span>
                         </div>
 
@@ -1505,15 +1505,15 @@ export default function Home() {
           const hasAcadVal = prof.education && prof.education.length > 0;
           const hasWealthVal = inv.accreditation_status || false;
 
-          const colorId = hasId ? '#00f2fe' : 'rgba(255,255,255,0.08)';
-          const colorJob = hasJobVal ? '#8f00ff' : 'rgba(255,255,255,0.08)';
-          const colorAcad = hasAcadVal ? '#6366f1' : 'rgba(255,255,255,0.08)';
-          const colorWealth = hasWealthVal ? '#10b981' : 'rgba(255,255,255,0.08)';
+          const colorId = hasId ? '#00f2fe' : 'var(--border-color)';
+          const colorJob = hasJobVal ? '#8f00ff' : 'var(--border-color)';
+          const colorAcad = hasAcadVal ? '#6366f1' : 'var(--border-color)';
+          const colorWealth = hasWealthVal ? '#10b981' : 'var(--border-color)';
 
           return (
             <div style={{ position: 'relative', width: '50px', height: '50px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               <svg width="50" height="50" viewBox="0 0 100 100" style={{ transform: 'rotate(-90deg)', position: 'absolute', top: 0, left: 0 }}>
-                <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.02)" strokeWidth="3" />
+                <circle cx="50" cy="50" r="40" fill="none" stroke="var(--border-color)" strokeWidth="3" />
                 <circle cx="50" cy="50" r="40" fill="none" stroke={colorId} strokeWidth="6" strokeDasharray="58 193.3" strokeDashoffset="0" strokeLinecap="round" />
                 <circle cx="50" cy="50" r="40" fill="none" stroke={colorWealth} strokeWidth="6" strokeDasharray="58 193.3" strokeDashoffset="-62.8" strokeLinecap="round" />
                 <circle cx="50" cy="50" r="40" fill="none" stroke={colorAcad} strokeWidth="6" strokeDasharray="58 193.3" strokeDashoffset="-125.6" strokeLinecap="round" />
@@ -1649,21 +1649,21 @@ export default function Home() {
 
         return (
           <div className="glass-panel animate-fade-in-up" style={{ padding: '1.5rem', borderRadius: '16px', minHeight: '80vh' }}>
-            <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.85rem', marginBottom: '1.25rem' }}>
-              <h2 style={{ fontSize: '1.4rem', fontWeight: '850', color: '#ffffff', margin: 0 }}>Ecosystem Discovery Hub</h2>
-              <p style={{ fontSize: '0.8rem', color: '#a3a3a3', marginTop: '0.2rem' }}>
+            <div style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.85rem', marginBottom: '1.25rem' }}>
+              <h2 style={{ fontSize: '1.4rem', fontWeight: '850', color: 'var(--color-text-primary)', margin: 0 }}>Ecosystem Discovery Hub</h2>
+              <p style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', marginTop: '0.2rem' }}>
                 Globally query verified node credentials, compliant placements, and corporate legal affiliates in real-time.
               </p>
             </div>
 
             {/* Type Tabs */}
-            <div style={{ display: 'flex', gap: '0.5rem', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.75rem', marginBottom: '1.25rem' }}>
+            <div style={{ display: 'flex', gap: '0.5rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem', marginBottom: '1.25rem' }}>
               <button 
                 onClick={() => setSearchTab('people')} 
                 style={{
-                  background: searchTab === 'people' ? 'rgba(255,255,255,0.06)' : 'transparent',
-                  border: searchTab === 'people' ? '1px solid rgba(255,255,255,0.1)' : '1px solid transparent',
-                  color: searchTab === 'people' ? '#ffffff' : '#a3a3a3',
+                  background: searchTab === 'people' ? 'rgba(10, 102, 194, 0.08)' : 'transparent',
+                  border: searchTab === 'people' ? '1px solid var(--border-accent)' : '1px solid transparent',
+                  color: searchTab === 'people' ? 'var(--border-accent)' : 'var(--color-text-secondary)',
                   padding: '0.5rem 1rem',
                   borderRadius: '6px',
                   fontSize: '0.8rem',
@@ -1680,9 +1680,9 @@ export default function Home() {
               <button 
                 onClick={() => setSearchTab('investments')} 
                 style={{
-                  background: searchTab === 'investments' ? 'rgba(255,255,255,0.06)' : 'transparent',
-                  border: searchTab === 'investments' ? '1px solid rgba(255,255,255,0.1)' : '1px solid transparent',
-                  color: searchTab === 'investments' ? '#ffffff' : '#a3a3a3',
+                  background: searchTab === 'investments' ? 'rgba(10, 102, 194, 0.08)' : 'transparent',
+                  border: searchTab === 'investments' ? '1px solid var(--border-accent)' : '1px solid transparent',
+                  color: searchTab === 'investments' ? 'var(--border-accent)' : 'var(--color-text-secondary)',
                   padding: '0.5rem 1rem',
                   borderRadius: '6px',
                   fontSize: '0.8rem',
@@ -1699,9 +1699,9 @@ export default function Home() {
               <button 
                 onClick={() => setSearchTab('advisors')} 
                 style={{
-                  background: searchTab === 'advisors' ? 'rgba(255,255,255,0.06)' : 'transparent',
-                  border: searchTab === 'advisors' ? '1px solid rgba(255,255,255,0.1)' : '1px solid transparent',
-                  color: searchTab === 'advisors' ? '#ffffff' : '#a3a3a3',
+                  background: searchTab === 'advisors' ? 'rgba(10, 102, 194, 0.08)' : 'transparent',
+                  border: searchTab === 'advisors' ? '1px solid var(--border-accent)' : '1px solid transparent',
+                  color: searchTab === 'advisors' ? 'var(--border-accent)' : 'var(--color-text-secondary)',
                   padding: '0.5rem 1rem',
                   borderRadius: '6px',
                   fontSize: '0.8rem',
@@ -1719,16 +1719,16 @@ export default function Home() {
 
             <div style={{ display: 'grid', gridTemplateColumns: '240px minmax(0, 1fr)', gap: '1.5rem' }}>
               {/* Left Column: Advanced Filters Sidebar */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '10px' }}>
-                <h3 style={{ fontSize: '0.82rem', fontWeight: '800', color: '#ffffff', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.5rem', margin: 0 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', background: 'var(--bg-primary)', border: '1px solid var(--border-color)', padding: '1rem', borderRadius: '10px' }}>
+                <h3 style={{ fontSize: '0.82rem', fontWeight: '800', color: 'var(--color-text-primary)', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem', margin: 0 }}>
                   Advanced Filters
                 </h3>
 
                 {/* Location Search Input */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-                  <label style={{ fontSize: '0.68rem', color: '#8a8a8a', fontWeight: '700' }}>LOCATION</label>
+                  <label style={{ fontSize: '0.68rem', color: 'var(--color-text-secondary)', fontWeight: '700' }}>LOCATION</label>
                   <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                    <span style={{ position: 'absolute', left: '0.5rem', fontSize: '0.75rem', color: '#525252' }}>📍</span>
+                    <span style={{ position: 'absolute', left: '0.5rem', fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>📍</span>
                     <input 
                       type="text" 
                       placeholder="e.g. Charlotte, Boston..." 
@@ -1737,10 +1737,10 @@ export default function Home() {
                       style={{
                         width: '100%',
                         background: 'rgba(0,0,0,0.3)',
-                        border: '1px solid rgba(255,255,255,0.06)',
+                        border: '1px solid var(--border-color)',
                         borderRadius: '6px',
                         padding: '0.4rem 0.5rem 0.4rem 1.6rem',
-                        color: '#ffffff',
+                        color: 'var(--color-text-primary)',
                         fontSize: '0.75rem',
                         outline: 'none',
                         transition: 'all 0.2s'
@@ -1751,17 +1751,17 @@ export default function Home() {
 
                 {/* Industry Filter Dropdown */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-                  <label style={{ fontSize: '0.68rem', color: '#8a8a8a', fontWeight: '700' }}>INDUSTRY</label>
+                  <label style={{ fontSize: '0.68rem', color: 'var(--color-text-secondary)', fontWeight: '700' }}>INDUSTRY</label>
                   <select 
                     value={searchIndustry} 
                     onChange={(e) => setSearchIndustry(e.target.value)} 
                     style={{
                       width: '100%',
                       background: 'rgba(0,0,0,0.3)',
-                      border: '1px solid rgba(255,255,255,0.06)',
+                      border: '1px solid var(--border-color)',
                       borderRadius: '6px',
                       padding: '0.4rem 0.5rem',
-                      color: '#ffffff',
+                      color: 'var(--color-text-primary)',
                       fontSize: '0.75rem',
                       outline: 'none',
                       cursor: 'pointer'
@@ -1778,9 +1778,9 @@ export default function Home() {
 
                 {/* Vetted Credentials Checkboxes */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                  <label style={{ fontSize: '0.68rem', color: '#8a8a8a', fontWeight: '700' }}>VETTED CREDENTIALS</label>
+                  <label style={{ fontSize: '0.68rem', color: 'var(--color-text-secondary)', fontWeight: '700' }}>VETTED CREDENTIALS</label>
                   
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.72rem', color: '#a3a3a3', cursor: 'pointer' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.72rem', color: 'var(--color-text-secondary)', cursor: 'pointer' }}>
                     <input 
                       type="checkbox" 
                       checked={vettedCreds.identity} 
@@ -1793,7 +1793,7 @@ export default function Home() {
                     </span>
                   </label>
 
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.72rem', color: '#a3a3a3', cursor: 'pointer' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.72rem', color: 'var(--color-text-secondary)', cursor: 'pointer' }}>
                     <input 
                       type="checkbox" 
                       checked={vettedCreds.wealth} 
@@ -1806,7 +1806,7 @@ export default function Home() {
                     </span>
                   </label>
 
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.72rem', color: '#a3a3a3', cursor: 'pointer' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.72rem', color: 'var(--color-text-secondary)', cursor: 'pointer' }}>
                     <input 
                       type="checkbox" 
                       checked={vettedCreds.academic} 
@@ -1819,7 +1819,7 @@ export default function Home() {
                     </span>
                   </label>
 
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.72rem', color: '#a3a3a3', cursor: 'pointer' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.72rem', color: 'var(--color-text-secondary)', cursor: 'pointer' }}>
                     <input 
                       type="checkbox" 
                       checked={vettedCreds.job} 
@@ -1843,8 +1843,8 @@ export default function Home() {
                   }}
                   style={{
                     background: 'transparent',
-                    border: '1px solid rgba(255,255,255,0.06)',
-                    color: '#a3a3a3',
+                    border: '1px solid var(--border-color)',
+                    color: 'var(--color-text-secondary)',
                     padding: '0.4rem',
                     borderRadius: '6px',
                     fontSize: '0.7rem',
@@ -1859,7 +1859,7 @@ export default function Home() {
 
               {/* Right Column: Search Results Feed */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', flex: 1 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.78rem', color: '#a3a3a3', borderBottom: '1px solid rgba(255,255,255,0.03)', paddingBottom: '0.5rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.78rem', color: 'var(--color-text-secondary)', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>
                   <span>Found <strong>{results.length}</strong> matching records</span>
                   {state.globalSearchQuery && <span>Query: &quot;{state.globalSearchQuery}&quot;</span>}
                 </div>
@@ -1867,8 +1867,8 @@ export default function Home() {
                 {results.length === 0 ? (
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '5rem 1rem', textAlign: 'center' }}>
                     <span style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🔍</span>
-                    <h3 style={{ fontSize: '0.95rem', color: '#ffffff', fontWeight: '700' }}>No Match in Sync</h3>
-                    <p style={{ fontSize: '0.75rem', color: '#525252', maxWidth: '300px', margin: '0.25rem 0 1rem 0' }}>
+                    <h3 style={{ fontSize: '0.95rem', color: 'var(--color-text-primary)', fontWeight: '700' }}>No Match in Sync</h3>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', maxWidth: '300px', margin: '0.25rem 0 1rem 0' }}>
                       No nodes or placements satisfied the current multi-criteria security query. Try expanding filters.
                     </p>
                   </div>
@@ -1890,7 +1890,7 @@ export default function Home() {
                             key={item.customer_id || idx} 
                             style={{ 
                               padding: '1.25rem', 
-                              background: 'rgba(255,255,255,0.01)', 
+                              background: 'var(--bg-primary)', 
                               borderRadius: '12px', 
                               display: 'flex', 
                               gap: '1rem', 
@@ -1904,7 +1904,7 @@ export default function Home() {
                             <div style={{ flex: 1 }}>
                               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem' }}>
                                 <div>
-                                  <h3 style={{ fontSize: '0.95rem', fontWeight: '850', color: '#ffffff', margin: 0, display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                                  <h3 style={{ fontSize: '0.95rem', fontWeight: '850', color: 'var(--color-text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                                     {item.first_name} {item.last_name}
                                     {item.status === 'verified' && <span style={{ color: '#00f2fe', fontSize: '0.8rem', cursor: 'help' }} title="KYC/SSN Background Checked">✓</span>}
                                   </h3>
@@ -1932,7 +1932,7 @@ export default function Home() {
                                 </div>
                               </div>
 
-                              <p style={{ fontSize: '0.76rem', color: '#a3a3a3', lineHeight: '1.4', margin: '0.5rem 0' }}>
+                              <p style={{ fontSize: '0.76rem', color: 'var(--color-text-secondary)', lineHeight: '1.4', margin: '0.5rem 0' }}>
                                 {bio}
                               </p>
 
@@ -1942,8 +1942,8 @@ export default function Home() {
                                 </div>
                               )}
 
-                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.03)', paddingTop: '0.75rem', marginTop: '0.5rem' }}>
-                                <span style={{ fontSize: '0.68rem', color: '#525252', display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border-color)', paddingTop: '0.75rem', marginTop: '0.5rem' }}>
+                                <span style={{ fontSize: '0.68rem', color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
                                   📍 {locationStr}
                                 </span>
                                 
@@ -1989,7 +1989,7 @@ export default function Home() {
                             key={item.id} 
                             style={{ 
                               padding: '1.25rem', 
-                              background: 'rgba(255,255,255,0.01)', 
+                              background: 'var(--bg-primary)', 
                               borderRadius: '12px', 
                               display: 'flex', 
                               flexDirection: 'column', 
@@ -1999,44 +1999,44 @@ export default function Home() {
                           >
                             <div>
                               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.4rem' }}>
-                                <h3 style={{ fontSize: '1rem', fontWeight: '850', color: '#ffffff', margin: 0 }}>{item.companyName}</h3>
+                                <h3 style={{ fontSize: '1rem', fontWeight: '850', color: 'var(--color-text-primary)', margin: 0 }}>{item.companyName}</h3>
                                 <span style={{ fontSize: '0.62rem', fontWeight: '800', padding: '0.15rem 0.45rem', borderRadius: '4px', background: 'rgba(0,242,254,0.06)', border: '1px solid rgba(0,242,254,0.2)', color: '#00f2fe' }}>
                                   {item.category}
                                 </span>
                               </div>
-                              <p style={{ fontSize: '0.78rem', color: '#a3a3a3', lineHeight: '1.4', margin: '0.25rem 0 0.75rem 0' }}>
+                              <p style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)', lineHeight: '1.4', margin: '0.25rem 0 0.75rem 0' }}>
                                 {item.tagline}
                               </p>
 
                               <div style={{ marginBottom: '0.75rem' }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: '#a3a3a3', marginBottom: '0.2rem' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: 'var(--color-text-secondary)', marginBottom: '0.2rem' }}>
                                   <span>Raised: <strong>${item.raised.toLocaleString()}</strong></span>
                                   <span>{progress}% of ${item.target.toLocaleString()}</span>
                                 </div>
-                                <div style={{ height: '4px', background: 'rgba(255,255,255,0.05)', borderRadius: '2px', overflow: 'hidden' }}>
+                                <div style={{ height: '4px', background: 'var(--bg-primary)', borderRadius: '2px', overflow: 'hidden' }}>
                                   <div style={{ width: `${progress}%`, height: '100%', background: '#00f2fe' }}></div>
                                 </div>
                               </div>
 
-                              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.5rem', background: 'rgba(0,0,0,0.2)', padding: '0.5rem', borderRadius: '6px' }}>
+                              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.5rem', background: 'var(--bg-primary)', padding: '0.5rem', borderRadius: '6px' }}>
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                  <span style={{ fontSize: '0.58rem', color: '#525252', fontWeight: '700' }}>Valuation</span>
-                                  <span style={{ fontSize: '0.72rem', color: '#ffffff', fontWeight: '800' }}>${(item.valuation / 1000000).toFixed(1)}M</span>
+                                  <span style={{ fontSize: '0.58rem', color: 'var(--color-text-muted)', fontWeight: '700' }}>Valuation</span>
+                                  <span style={{ fontSize: '0.72rem', color: 'var(--color-text-primary)', fontWeight: '800' }}>${(item.valuation / 1000000).toFixed(1)}M</span>
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                  <span style={{ fontSize: '0.58rem', color: '#525252', fontWeight: '700' }}>Min Entry</span>
-                                  <span style={{ fontSize: '0.72rem', color: '#ffffff', fontWeight: '800' }}>${item.minInvestment.toLocaleString()}</span>
+                                  <span style={{ fontSize: '0.58rem', color: 'var(--color-text-muted)', fontWeight: '700' }}>Min Entry</span>
+                                  <span style={{ fontSize: '0.72rem', color: 'var(--color-text-primary)', fontWeight: '800' }}>${item.minInvestment.toLocaleString()}</span>
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                  <span style={{ fontSize: '0.58rem', color: '#525252', fontWeight: '700' }}>Share Price</span>
-                                  <span style={{ fontSize: '0.72rem', color: '#ffffff', fontWeight: '800' }}>${item.sharePrice.toFixed(2)}</span>
+                                  <span style={{ fontSize: '0.58rem', color: 'var(--color-text-muted)', fontWeight: '700' }}>Share Price</span>
+                                  <span style={{ fontSize: '0.72rem', color: 'var(--color-text-primary)', fontWeight: '800' }}>${item.sharePrice.toFixed(2)}</span>
                                 </div>
                               </div>
                             </div>
 
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.03)', paddingTop: '0.75rem' }}>
-                              <span style={{ fontSize: '0.68rem', color: '#525252' }}>
-                                👤 Founder: <strong style={{ color: '#a3a3a3' }}>{item.founder}</strong>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border-color)', paddingTop: '0.75rem' }}>
+                              <span style={{ fontSize: '0.68rem', color: 'var(--color-text-muted)' }}>
+                                👤 Founder: <strong style={{ color: 'var(--color-text-secondary)' }}>{item.founder}</strong>
                               </span>
                               <button 
                                 onClick={() => {
@@ -2156,9 +2156,9 @@ export default function Home() {
           right: '30px',
           width: '320px',
           height: chatExpanded ? '420px' : '44px',
-          background: 'rgba(10, 10, 10, 0.95)',
+          background: 'var(--bg-secondary)',
           backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
+          border: '1px solid var(--border-color)',
           borderBottom: 'none',
           borderRadius: '12px 12px 0 0',
           boxShadow: '0 -10px 25px -5px rgba(0,0,0,0.5), 0 -5px 10px -5px rgba(0,0,0,0.4)',
@@ -2175,7 +2175,7 @@ export default function Home() {
             height: '44px',
             padding: '0 0.85rem',
             background: 'linear-gradient(90deg, #070a0e 0%, #171c26 100%)',
-            borderBottom: '1px solid rgba(255,255,255,0.06)',
+            borderBottom: '1px solid var(--border-color)',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
@@ -2186,7 +2186,7 @@ export default function Home() {
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
             <span style={{ fontSize: '1rem' }}>💬</span>
-            <strong style={{ fontSize: '0.78rem', color: '#ffffff' }}>
+            <strong style={{ fontSize: '0.78rem', color: 'var(--color-text-primary)' }}>
               {activeChatRecipient ? `Chat: ${activeChatRecipient.first_name}` : 'Peer Bridge DMs'}
             </strong>
             <span style={{
@@ -2197,17 +2197,17 @@ export default function Home() {
               boxShadow: '0 0 8px #10b981'
             }} />
           </div>
-          <span style={{ color: '#8a8a8a', fontSize: '0.75rem', fontWeight: 'bold' }}>
+          <span style={{ color: 'var(--color-text-secondary)', fontSize: '0.75rem', fontWeight: 'bold' }}>
             {chatExpanded ? '▼' : '▲'}
           </span>
         </div>
 
         {chatExpanded && (
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: 'rgba(0,0,0,0.2)' }}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: 'var(--bg-primary)' }}>
             {!activeChatRecipient ? (
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: '0.5rem', gap: '0.35rem' }}>
-                <div style={{ padding: '0.25rem 0.25rem 0.5rem 0.25rem', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-                  <div style={{ fontSize: '0.64rem', color: '#8a8a8a', fontWeight: '800', textTransform: 'uppercase' }}>
+                <div style={{ padding: '0.25rem 0.25rem 0.5rem 0.25rem', borderBottom: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                  <div style={{ fontSize: '0.64rem', color: 'var(--color-text-secondary)', fontWeight: '800', textTransform: 'uppercase' }}>
                     Select Connection to Chat
                   </div>
                   <input
@@ -2217,32 +2217,32 @@ export default function Home() {
                     onChange={(e) => setChatSearchQuery(e.target.value)}
                     style={{
                       width: '100%',
-                      background: 'rgba(255,255,255,0.03)',
-                      border: '1px solid rgba(255,255,255,0.08)',
+                      background: 'var(--bg-primary)',
+                      border: '1px solid var(--border-color)',
                       borderRadius: '6px',
                       padding: '0.35rem 0.65rem',
-                      color: '#ffffff',
+                      color: 'var(--color-text-primary)',
                       fontSize: '0.75rem',
                       outline: 'none',
                       transition: 'border 0.2s'
                     }}
                     onFocus={(e) => e.target.style.borderColor = 'rgba(0, 242, 254, 0.4)'}
-                    onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.08)'}
+                    onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
                   />
                 </div>
                 
                 <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.35rem', marginTop: '0.25rem' }}>
                   {connectionMembers.length === 0 ? (
-                    <div style={{ padding: '2rem 1rem', textShadow: 'none', textAlign: 'center', fontSize: '0.72rem', color: '#525252' }}>
+                    <div style={{ padding: '2rem 1rem', textShadow: 'none', textAlign: 'center', fontSize: '0.72rem', color: 'var(--color-text-muted)' }}>
                       No connections synced. Go to the Network Directory or Ecosystem Search to connect with nodes.
                     </div>
                   ) : !chatSearchQuery.trim() ? (
-                    <div style={{ padding: '3rem 1rem', textShadow: 'none', textAlign: 'center', fontSize: '0.72rem', color: '#737373', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
+                    <div style={{ padding: '3rem 1rem', textShadow: 'none', textAlign: 'center', fontSize: '0.72rem', color: 'var(--color-text-muted)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
                       <span style={{ fontSize: '1.25rem' }}>🔍</span>
                       <span>{"Type a connection's name to start a chat..."}</span>
                     </div>
                   ) : filteredConnections.length === 0 ? (
-                    <div style={{ padding: '2rem 1rem', textShadow: 'none', textAlign: 'center', fontSize: '0.72rem', color: '#737373' }}>
+                    <div style={{ padding: '2rem 1rem', textShadow: 'none', textAlign: 'center', fontSize: '0.72rem', color: 'var(--color-text-muted)' }}>
                       No matching connections found.
                     </div>
                   ) : (
@@ -2261,13 +2261,13 @@ export default function Home() {
                             gap: '0.65rem',
                             padding: '0.5rem',
                             borderRadius: '8px',
-                            background: 'rgba(255,255,255,0.01)',
-                            border: '1px solid rgba(255,255,255,0.03)',
+                            background: 'var(--bg-primary)',
+                            border: '1px solid var(--border-color)',
                             cursor: 'pointer',
                             transition: 'background 0.2s'
                           }}
-                          onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}
-                          onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.01)'}
+                          onMouseEnter={(e) => e.currentTarget.style.background = 'var(--border-color)'}
+                          onMouseLeave={(e) => e.currentTarget.style.background = 'var(--border-color)'}
                         >
                           <div style={{ width: '32px', height: '32px', borderRadius: '50%', overflow: 'hidden', background: '#111', flexShrink: 0, position: 'relative' }}>
                             <img 
@@ -2277,10 +2277,10 @@ export default function Home() {
                             />
                           </div>
                           <div style={{ flex: 1, minWidth: 0 }}>
-                            <h4 style={{ fontSize: '0.76rem', color: '#ffffff', fontWeight: '800', margin: 0 }}>
+                            <h4 style={{ fontSize: '0.76rem', color: 'var(--color-text-primary)', fontWeight: '800', margin: 0 }}>
                               {member.first_name} {member.last_name}
                             </h4>
-                            <p style={{ fontSize: '0.64rem', color: '#8a8a8a', margin: 0, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                            <p style={{ fontSize: '0.64rem', color: 'var(--color-text-secondary)', margin: 0, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
                               {latestMsg ? latestMsg.text : member.professionalProfile?.headline || 'Peer Bridge Node'}
                             </p>
                           </div>
@@ -2292,7 +2292,7 @@ export default function Home() {
               </div>
             ) : (
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-                <div style={{ display: 'flex', alignItems: 'center', background: 'rgba(0,0,0,0.2)', borderBottom: '1px solid rgba(255,255,255,0.04)', padding: '0.35rem 0.5rem', flexShrink: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', background: 'var(--bg-primary)', borderBottom: '1px solid var(--border-color)', padding: '0.35rem 0.5rem', flexShrink: 0 }}>
                   <button
                     onClick={() => setActiveChatRecipient(null)}
                     style={{
@@ -2323,9 +2323,9 @@ export default function Home() {
                       style={{
                         alignSelf: msg.sender === 'me' ? 'flex-end' : 'flex-start',
                         maxWidth: '80%',
-                        background: msg.sender === 'me' ? '#00f2fe' : 'rgba(255,255,255,0.04)',
-                        border: msg.sender === 'me' ? 'none' : '1px solid rgba(255,255,255,0.06)',
-                        color: msg.sender === 'me' ? '#000000' : '#ffffff',
+                        background: msg.sender === 'me' ? 'var(--border-accent)' : 'var(--bg-primary)',
+                        border: msg.sender === 'me' ? 'none' : '1px solid var(--border-color)',
+                        color: msg.sender === 'me' ? '#ffffff' : 'var(--color-text-primary)',
                         padding: '0.45rem 0.65rem',
                         borderRadius: msg.sender === 'me' ? '12px 12px 2px 12px' : '12px 12px 12px 2px',
                         fontSize: '0.7rem',
@@ -2339,7 +2339,7 @@ export default function Home() {
 
                 <form 
                   onSubmit={handleSendMessage}
-                  style={{ display: 'flex', borderTop: '1px solid rgba(255,255,255,0.05)', padding: '0.5rem', gap: '0.4rem', background: 'rgba(10,10,10,0.8)', flexShrink: 0 }}
+                  style={{ display: 'flex', borderTop: '1px solid var(--border-color)', padding: '0.5rem', gap: '0.4rem', background: 'var(--bg-secondary)', flexShrink: 0 }}
                 >
                   <input
                     type="text"
@@ -2348,11 +2348,11 @@ export default function Home() {
                     onChange={(e) => setChatInputText(e.target.value)}
                     style={{
                       flex: 1,
-                      background: 'rgba(0,0,0,0.4)',
-                      border: '1px solid rgba(255,255,255,0.06)',
+                      background: 'var(--bg-primary)',
+                      border: '1px solid var(--border-color)',
                       borderRadius: '6px',
                       padding: '0.4rem 0.5rem',
-                      color: '#ffffff',
+                      color: 'var(--color-text-primary)',
                       fontSize: '0.72rem',
                       outline: 'none'
                     }}
@@ -2533,7 +2533,7 @@ export default function Home() {
                     width: '280px',
                     background: 'rgba(10, 10, 10, 0.98)',
                     backdropFilter: 'blur(20px)',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    border: '1px solid var(--border-color)',
                     borderRadius: '12px',
                     boxShadow: '0 20px 25px -5px rgba(0,0,0,0.5), 0 10px 10px -5px rgba(0,0,0,0.4)',
                     padding: '1rem',
@@ -2543,11 +2543,11 @@ export default function Home() {
                     gap: '0.75rem'
                   }}
                 >
-                  <div style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '0.5rem' }}>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#ffffff', display: 'block' }}>
+                  <div style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: 'var(--color-text-primary)', display: 'block' }}>
                       🛠 Sandbox Sync Console
                     </span>
-                    <span style={{ fontSize: '0.62rem', color: '#a3a3a3', marginTop: '0.1rem', display: 'block', lineHeight: '1.2' }}>
+                    <span style={{ fontSize: '0.62rem', color: 'var(--color-text-secondary)', marginTop: '0.1rem', display: 'block', lineHeight: '1.2' }}>
                       {isFirebaseConfigured 
                         ? 'Live Cloud Firestore sync active. Multi-tab refresh is supported.' 
                         : 'Offline Mode: Browsers block cross-tab storage. Use simulation triggers to verify flows.'
@@ -2571,8 +2571,8 @@ export default function Home() {
                         justifyContent: 'flex-start',
                         padding: '0.45rem',
                         fontSize: '0.68rem',
-                        background: 'rgba(255,255,255,0.02)',
-                        border: '1px solid rgba(255,255,255,0.06)',
+                        background: 'var(--bg-primary)',
+                        border: '1px solid var(--border-color)',
                         textAlign: 'left'
                       }}
                     >
@@ -2590,8 +2590,8 @@ export default function Home() {
                         justifyContent: 'flex-start',
                         padding: '0.45rem',
                         fontSize: '0.68rem',
-                        background: 'rgba(255,255,255,0.02)',
-                        border: '1px solid rgba(255,255,255,0.06)',
+                        background: 'var(--bg-primary)',
+                        border: '1px solid var(--border-color)',
                         textAlign: 'left'
                       }}
                     >
@@ -2609,8 +2609,8 @@ export default function Home() {
                         justifyContent: 'flex-start',
                         padding: '0.45rem',
                         fontSize: '0.68rem',
-                        background: 'rgba(255,255,255,0.02)',
-                        border: '1px solid rgba(255,255,255,0.06)',
+                        background: 'var(--bg-primary)',
+                        border: '1px solid var(--border-color)',
                         textAlign: 'left'
                       }}
                     >
@@ -2618,8 +2618,8 @@ export default function Home() {
                     </button>
                   </div>
                   
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '0.5rem' }}>
-                    <span style={{ fontSize: '0.62rem', color: '#737373' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', borderTop: '1px solid var(--border-color)', paddingTop: '0.5rem' }}>
+                    <span style={{ fontSize: '0.62rem', color: 'var(--color-text-muted)' }}>
                       Status: <strong>{isFirebaseConfigured ? '🟢 Live Firestore' : '🟡 Simulated Sandbox'}</strong>
                     </span>
                     {!isFirebaseConfigured && (
@@ -2641,9 +2641,9 @@ export default function Home() {
                   setShowSimulatorDropdown(false);
                 }}
                 style={{
-                  background: showNotificationsDropdown ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.02)',
-                  border: '1px solid rgba(255,255,255,0.05)',
-                  color: '#ffffff',
+                  background: showNotificationsDropdown ? 'var(--border-color)' : 'var(--border-color)',
+                  border: '1px solid var(--border-color)',
+                  color: 'var(--color-text-primary)',
                   padding: '0.45rem 0.85rem',
                   borderRadius: '6px',
                   fontSize: '0.74rem',
@@ -2661,7 +2661,7 @@ export default function Home() {
                 {(state.notifications || []).filter(n => !n.read_status).length > 0 && (
                   <span style={{
                     background: '#f43f5e',
-                    color: '#ffffff',
+                    color: 'var(--color-text-primary)',
                     fontSize: '0.58rem',
                     fontWeight: '800',
                     borderRadius: '10px',
@@ -2687,9 +2687,9 @@ export default function Home() {
                       width: '320px',
                       maxHeight: '400px',
                       overflowY: 'auto',
-                      background: 'rgba(10, 10, 10, 0.95)',
+                      background: 'var(--bg-secondary)',
                       backdropFilter: 'blur(20px)',
-                      border: '1px solid rgba(255, 255, 255, 0.08)',
+                      border: '1px solid var(--border-color)',
                       borderRadius: '12px',
                       boxShadow: '0 20px 25px -5px rgba(0,0,0,0.5), 0 10px 10px -5px rgba(0,0,0,0.4)',
                       padding: '0.75rem',
@@ -2699,8 +2699,8 @@ export default function Home() {
                       gap: '0.5rem'
                     }}
                   >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.5rem', marginBottom: '0.25rem' }}>
-                      <span style={{ fontSize: '0.76rem', fontWeight: '800', color: '#ffffff' }}>Ecosystem Alerts</span>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem', marginBottom: '0.25rem' }}>
+                      <span style={{ fontSize: '0.76rem', fontWeight: '800', color: 'var(--color-text-primary)' }}>Ecosystem Alerts</span>
                       {(state.notifications || []).length > 0 && (
                         <button
                           onClick={() => state.clearAllNotifications()}
@@ -2719,7 +2719,7 @@ export default function Home() {
                     </div>
 
                     {incomingRequests.length > 0 && (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.5rem', marginBottom: '0.25rem' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem', marginBottom: '0.25rem' }}>
                         <span style={{ fontSize: '0.68rem', fontWeight: '850', color: '#d4af37', letterSpacing: '0.05em' }}>
                           🔑 PENDING INVITATIONS ({incomingRequests.length})
                         </span>
@@ -2739,10 +2739,10 @@ export default function Home() {
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                               <span style={{ fontSize: '1.1rem' }}>👋</span>
                               <div style={{ flex: 1 }}>
-                                <div style={{ fontSize: '0.74rem', fontWeight: '700', color: '#ffffff' }}>
+                                <div style={{ fontSize: '0.74rem', fontWeight: '700', color: 'var(--color-text-primary)' }}>
                                   {req.from_name}
                                 </div>
-                                <div style={{ fontSize: '0.62rem', color: '#a3a3a3' }}>
+                                <div style={{ fontSize: '0.62rem', color: 'var(--color-text-secondary)' }}>
                                   Wants to link secure P2P connection node.
                                 </div>
                               </div>
@@ -2791,7 +2791,7 @@ export default function Home() {
                     )}
 
                     {(state.notifications || []).length === 0 ? (
-                      <div style={{ padding: '2rem 1rem', textAlign: 'center', fontSize: '0.72rem', color: '#525252' }}>
+                      <div style={{ padding: '2rem 1rem', textAlign: 'center', fontSize: '0.72rem', color: 'var(--color-text-muted)' }}>
                         No unread compliance or node alert logs in ledger.
                       </div>
                     ) : (
@@ -2800,8 +2800,8 @@ export default function Home() {
                           <div 
                             key={notif.notification_id} 
                             style={{
-                              background: 'rgba(255,255,255,0.01)',
-                              border: '1px solid rgba(255,255,255,0.03)',
+                              background: 'var(--bg-primary)',
+                              border: '1px solid var(--border-color)',
                               borderRadius: '8px',
                               padding: '0.5rem',
                               display: 'flex',
@@ -2818,7 +2818,7 @@ export default function Home() {
                                 right: '0.35rem',
                                 background: 'transparent',
                                 border: 'none',
-                                color: '#525252',
+                                color: 'var(--color-text-muted)',
                                 fontSize: '0.66rem',
                                 cursor: 'pointer',
                                 padding: '0 0.2rem'
@@ -2833,11 +2833,11 @@ export default function Home() {
                                 borderRadius: '50%',
                                 background: notif.type === 'investment' ? '#10b981' : notif.type === 'system' ? '#00f2fe' : '#8f00ff'
                               }} />
-                              <span style={{ fontSize: '0.58rem', fontWeight: '800', textTransform: 'uppercase', color: '#8a8a8a' }}>
+                              <span style={{ fontSize: '0.58rem', fontWeight: '800', textTransform: 'uppercase', color: 'var(--color-text-secondary)' }}>
                                 {notif.type}
                               </span>
                             </div>
-                            <p style={{ fontSize: '0.7rem', color: '#ffffff', margin: 0, paddingRight: '1rem', lineHeight: '1.3' }}>
+                            <p style={{ fontSize: '0.7rem', color: 'var(--color-text-primary)', margin: 0, paddingRight: '1rem', lineHeight: '1.3' }}>
                               {notif.message}
                             </p>
                           </div>
@@ -2888,8 +2888,8 @@ export default function Home() {
           <div className="glass-panel" style={{ 
             borderRadius: '12px', 
             overflow: 'hidden', 
-            background: 'rgba(255, 255, 255, 0.02)', 
-            border: '1px solid rgba(255, 255, 255, 0.05)',
+            background: 'var(--bg-primary)', 
+            border: '1px solid var(--border-color)',
             position: 'relative'
           }}>
             {/* Header Banner */}
@@ -2917,7 +2917,7 @@ export default function Home() {
                 style={{ 
                   fontSize: '0.95rem', 
                   fontWeight: '850', 
-                  color: '#ffffff', 
+                  color: 'var(--color-text-primary)', 
                   margin: 0, 
                   cursor: 'pointer',
                   display: 'flex',
@@ -2934,7 +2934,7 @@ export default function Home() {
               
               <span style={{ 
                 fontSize: '0.7rem', 
-                color: 'rgba(255,255,255,0.4)', 
+                color: 'rgba(0, 0, 0, 0.06)', 
                 display: 'block', 
                 margin: '0.25rem 0 0.65rem 0',
                 lineHeight: '1.25',
@@ -2946,7 +2946,7 @@ export default function Home() {
               </span>
 
               {/* Edit Profile CTA Button */}
-              <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '0.65rem' }}>
+              <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '0.65rem' }}>
                 <button
                   onClick={() => {
                     state.setActiveModule('profile');
@@ -2956,9 +2956,9 @@ export default function Home() {
                     width: '100%',
                     padding: '0.42rem 0.75rem',
                     borderRadius: '8px',
-                    background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%)',
-                    border: '1px solid rgba(255, 255, 255, 0.15)',
-                    color: '#ffffff',
+                    background: 'linear-gradient(135deg, var(--border-color) 0%, var(--border-color) 100%)',
+                    border: '1px solid var(--border-color)',
+                    color: 'var(--color-text-primary)',
                     fontSize: '0.74rem',
                     fontWeight: '700',
                     cursor: 'pointer',
@@ -2972,12 +2972,12 @@ export default function Home() {
                     e.currentTarget.style.background = '#ffffff';
                     e.currentTarget.style.color = '#000000';
                     e.currentTarget.style.border = '1px solid #ffffff';
-                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(255, 255, 255, 0.15)';
+                    e.currentTarget.style.boxShadow = '0 4px 12px var(--border-color)';
                   }}
                   onMouseOut={(e) => {
-                    e.currentTarget.style.background = 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%)';
+                    e.currentTarget.style.background = 'linear-gradient(135deg, var(--border-color) 0%, var(--border-color) 100%)';
                     e.currentTarget.style.color = '#ffffff';
-                    e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.15)';
+                    e.currentTarget.style.border = '1px solid var(--border-color)';
                     e.currentTarget.style.boxShadow = 'none';
                   }}
                 >
@@ -2991,8 +2991,8 @@ export default function Home() {
           <div className="glass-panel" style={{ 
             borderRadius: '12px', 
             overflow: 'hidden', 
-            background: 'rgba(255, 255, 255, 0.02)', 
-            border: '1px solid rgba(255, 255, 255, 0.05)',
+            background: 'var(--bg-primary)', 
+            border: '1px solid var(--border-color)',
             padding: '0.75rem 0.85rem',
             display: 'flex',
             flexDirection: 'column',
@@ -3036,7 +3036,7 @@ export default function Home() {
               </strong>
             </div>
 
-            <div style={{ height: '1px', background: 'rgba(255,255,255,0.03)', margin: '0.2rem 0' }}></div>
+            <div style={{ height: '1px', background: 'var(--bg-primary)', margin: '0.2rem 0' }}></div>
 
             {/* Connections */}
             <div 
@@ -3086,8 +3086,8 @@ export default function Home() {
           <div className="glass-panel" style={{ 
             borderRadius: '12px', 
             overflow: 'hidden', 
-            background: 'rgba(255, 255, 255, 0.02)', 
-            border: '1px solid rgba(255, 255, 255, 0.05)',
+            background: 'var(--bg-primary)', 
+            border: '1px solid var(--border-color)',
             padding: '0.65rem 0.85rem',
             display: 'flex',
             flexDirection: 'column',
@@ -3171,14 +3171,14 @@ export default function Home() {
               style={{
                 ...styles.sidebarLinkItem,
                 justifyContent: 'center',
-                borderTop: '1px solid rgba(255,255,255,0.03)',
+                borderTop: '1px solid var(--border-color)',
                 marginTop: '0.2rem',
                 paddingTop: '0.5rem',
-                color: 'rgba(255,255,255,0.4)',
+                color: 'rgba(0, 0, 0, 0.06)',
                 cursor: 'pointer'
               }}
               onMouseOver={(e) => e.currentTarget.style.color = '#ffffff'}
-              onMouseOut={(e) => e.currentTarget.style.color = 'rgba(255,255,255,0.4)'}
+              onMouseOut={(e) => e.currentTarget.style.color = 'rgba(0, 0, 0, 0.06)'}
             >
               <span style={{ fontSize: '0.7rem', fontWeight: '700' }}>
                 {showAllResources ? 'Show Less ▴' : 'Show More ▾'}
@@ -3216,9 +3216,9 @@ export default function Home() {
 
             return (
               <div className="glass-panel animate-fade-in-up" style={{
-                background: 'rgba(10, 10, 10, 0.4)',
+                background: 'var(--bg-secondary)',
                 backdropFilter: 'blur(16px)',
-                border: '1px solid rgba(255, 255, 255, 0.05)',
+                border: '1px solid var(--border-color)',
                 borderRadius: '12px',
                 padding: '1.25rem',
                 marginBottom: '1rem',
@@ -3230,7 +3230,7 @@ export default function Home() {
                   <h3 style={{
                     fontSize: '0.9rem',
                     fontWeight: '850',
-                    color: '#ffffff',
+                    color: 'var(--color-text-primary)',
                     letterSpacing: '0.05em',
                     margin: 0,
                     display: 'flex',
@@ -3242,17 +3242,17 @@ export default function Home() {
                   </h3>
                   <span style={{
                     fontSize: '0.62rem',
-                    color: '#737373',
-                    background: 'rgba(255,255,255,0.03)',
+                    color: 'var(--color-text-muted)',
+                    background: 'var(--bg-primary)',
                     padding: '0.15rem 0.4rem',
                     borderRadius: '4px',
-                    border: '1px solid rgba(255, 255, 255, 0.05)'
+                    border: '1px solid var(--border-color)'
                   }}>
                     PB-SECURE
                   </span>
                 </div>
 
-                <p style={{ fontSize: '0.74rem', color: '#a3a3a3', lineHeight: '1.3', margin: 0 }}>
+                <p style={{ fontSize: '0.74rem', color: 'var(--color-text-secondary)', lineHeight: '1.3', margin: 0 }}>
                   Verify your ecosystem node credentials under SEC Reg D guidelines to unlock primary venture syndicate allocations.
                 </p>
 
@@ -3261,8 +3261,8 @@ export default function Home() {
                   <div 
                     onClick={() => setShowIdVettingModal(true)}
                     style={{
-                      background: hasAddressAndSsn ? 'rgba(212,175,55,0.03)' : 'rgba(255,255,255,0.01)',
-                      border: `1px solid ${hasAddressAndSsn ? 'rgba(212,175,55,0.2)' : 'rgba(255,255,255,0.04)'}`,
+                      background: hasAddressAndSsn ? 'rgba(212,175,55,0.03)' : 'var(--border-color)',
+                      border: `1px solid ${hasAddressAndSsn ? 'rgba(212,175,55,0.2)' : 'var(--border-color)'}`,
                       borderRadius: '8px',
                       padding: '0.65rem 0.8rem',
                       display: 'flex',
@@ -3288,8 +3288,8 @@ export default function Home() {
                         👤
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <span style={{ fontSize: '0.76rem', fontWeight: '700', color: '#ffffff' }}>1. Identity & SSN</span>
-                        <span style={{ fontSize: '0.62rem', color: '#737373' }}>{"Passport / Driver's License"}</span>
+                        <span style={{ fontSize: '0.76rem', fontWeight: '700', color: 'var(--color-text-primary)' }}>1. Identity & SSN</span>
+                        <span style={{ fontSize: '0.62rem', color: 'var(--color-text-muted)' }}>{"Passport / Driver's License"}</span>
                       </div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
@@ -3309,8 +3309,8 @@ export default function Home() {
                   <div 
                     onClick={() => setShowEduVettingModal(true)}
                     style={{
-                      background: hasAcadVal ? 'rgba(99,102,241,0.03)' : 'rgba(255,255,255,0.01)',
-                      border: `1px solid ${hasAcadVal ? 'rgba(99,102,241,0.2)' : 'rgba(255,255,255,0.04)'}`,
+                      background: hasAcadVal ? 'rgba(99,102,241,0.03)' : 'var(--border-color)',
+                      border: `1px solid ${hasAcadVal ? 'rgba(99,102,241,0.2)' : 'var(--border-color)'}`,
                       borderRadius: '8px',
                       padding: '0.65rem 0.8rem',
                       display: 'flex',
@@ -3325,8 +3325,8 @@ export default function Home() {
                         width: '32px',
                         height: '32px',
                         borderRadius: '50%',
-                        background: hasAcadVal ? 'rgba(99,102,241,0.1)' : 'rgba(255,255,255,0.02)',
-                        border: `1px solid ${hasAcadVal ? '#6366f1' : 'rgba(255,255,255,0.1)'}`,
+                        background: hasAcadVal ? 'rgba(99,102,241,0.1)' : 'var(--border-color)',
+                        border: `1px solid ${hasAcadVal ? '#6366f1' : 'var(--border-color)'}`,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -3336,8 +3336,8 @@ export default function Home() {
                         🎓
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <span style={{ fontSize: '0.76rem', fontWeight: '700', color: '#ffffff' }}>2. Education Credentials</span>
-                        <span style={{ fontSize: '0.62rem', color: '#737373' }}>Degree / Diploma Upload</span>
+                        <span style={{ fontSize: '0.76rem', fontWeight: '700', color: 'var(--color-text-primary)' }}>2. Education Credentials</span>
+                        <span style={{ fontSize: '0.62rem', color: 'var(--color-text-muted)' }}>Degree / Diploma Upload</span>
                       </div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
@@ -3346,7 +3346,7 @@ export default function Home() {
                           ✓ VETTED
                         </span>
                       ) : (
-                        <span style={{ fontSize: '0.62rem', color: '#a3a3a3', fontWeight: '800' }}>
+                        <span style={{ fontSize: '0.62rem', color: 'var(--color-text-secondary)', fontWeight: '800' }}>
                           VERIFY →
                         </span>
                       )}
@@ -3357,8 +3357,8 @@ export default function Home() {
                   <div 
                     onClick={() => setShowWorkVettingModal(true)}
                     style={{
-                      background: hasJobVal ? 'rgba(143,0,255,0.03)' : 'rgba(255,255,255,0.01)',
-                      border: `1px solid ${hasJobVal ? 'rgba(143,0,255,0.2)' : 'rgba(255,255,255,0.04)'}`,
+                      background: hasJobVal ? 'rgba(143,0,255,0.03)' : 'var(--border-color)',
+                      border: `1px solid ${hasJobVal ? 'rgba(143,0,255,0.2)' : 'var(--border-color)'}`,
                       borderRadius: '8px',
                       padding: '0.65rem 0.8rem',
                       display: 'flex',
@@ -3373,8 +3373,8 @@ export default function Home() {
                         width: '32px',
                         height: '32px',
                         borderRadius: '50%',
-                        background: hasJobVal ? 'rgba(143,0,255,0.1)' : 'rgba(255,255,255,0.02)',
-                        border: `1px solid ${hasJobVal ? '#8f00ff' : 'rgba(255,255,255,0.1)'}`,
+                        background: hasJobVal ? 'rgba(143,0,255,0.1)' : 'var(--border-color)',
+                        border: `1px solid ${hasJobVal ? '#8f00ff' : 'var(--border-color)'}`,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -3384,8 +3384,8 @@ export default function Home() {
                         💼
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <span style={{ fontSize: '0.76rem', fontWeight: '700', color: '#ffffff' }}>3. Current Employment</span>
-                        <span style={{ fontSize: '0.62rem', color: '#737373' }}>Work Email Confirmation</span>
+                        <span style={{ fontSize: '0.76rem', fontWeight: '700', color: 'var(--color-text-primary)' }}>3. Current Employment</span>
+                        <span style={{ fontSize: '0.62rem', color: 'var(--color-text-muted)' }}>Work Email Confirmation</span>
                       </div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
@@ -3394,7 +3394,7 @@ export default function Home() {
                           ✓ VETTED
                         </span>
                       ) : (
-                        <span style={{ fontSize: '0.62rem', color: '#a3a3a3', fontWeight: '800' }}>
+                        <span style={{ fontSize: '0.62rem', color: 'var(--color-text-secondary)', fontWeight: '800' }}>
                           VERIFY →
                         </span>
                       )}
@@ -3405,8 +3405,8 @@ export default function Home() {
                   <div 
                     onClick={() => setShowNetWorthVettingModal(true)}
                     style={{
-                      background: hasWealthVal ? 'rgba(16,185,129,0.03)' : 'rgba(255,255,255,0.01)',
-                      border: `1px solid ${hasWealthVal ? 'rgba(16,185,129,0.2)' : 'rgba(255,255,255,0.04)'}`,
+                      background: hasWealthVal ? 'rgba(16,185,129,0.03)' : 'var(--border-color)',
+                      border: `1px solid ${hasWealthVal ? 'rgba(16,185,129,0.2)' : 'var(--border-color)'}`,
                       borderRadius: '8px',
                       padding: '0.65rem 0.8rem',
                       display: 'flex',
@@ -3421,8 +3421,8 @@ export default function Home() {
                         width: '32px',
                         height: '32px',
                         borderRadius: '50%',
-                        background: hasWealthVal ? 'rgba(16,185,129,0.1)' : 'rgba(255,255,255,0.02)',
-                        border: `1px solid ${hasWealthVal ? '#10b981' : 'rgba(255,255,255,0.1)'}`,
+                        background: hasWealthVal ? 'rgba(16,185,129,0.1)' : 'var(--border-color)',
+                        border: `1px solid ${hasWealthVal ? '#10b981' : 'var(--border-color)'}`,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -3432,8 +3432,8 @@ export default function Home() {
                         🏛️
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <span style={{ fontSize: '0.76rem', fontWeight: '700', color: '#ffffff' }}>4. Net Worth Attestation</span>
-                        <span style={{ fontSize: '0.62rem', color: '#737373' }}>Assets, Liabilities, Wealth</span>
+                        <span style={{ fontSize: '0.76rem', fontWeight: '700', color: 'var(--color-text-primary)' }}>4. Net Worth Attestation</span>
+                        <span style={{ fontSize: '0.62rem', color: 'var(--color-text-muted)' }}>Assets, Liabilities, Wealth</span>
                       </div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
@@ -3442,7 +3442,7 @@ export default function Home() {
                           ✓ VETTED
                         </span>
                       ) : (
-                        <span style={{ fontSize: '0.62rem', color: '#a3a3a3', fontWeight: '800' }}>
+                        <span style={{ fontSize: '0.62rem', color: 'var(--color-text-secondary)', fontWeight: '800' }}>
                           VERIFY →
                         </span>
                       )}
@@ -3453,12 +3453,12 @@ export default function Home() {
                 {/* Vetting progress tracker */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', marginTop: '0.25rem' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '0.64rem', color: '#737373', fontWeight: '600' }}>OVERALL COMPLIANCE SCORE</span>
-                    <span style={{ fontSize: '0.66rem', color: '#ffffff', fontWeight: '800' }}>
+                    <span style={{ fontSize: '0.64rem', color: 'var(--color-text-muted)', fontWeight: '600' }}>OVERALL COMPLIANCE SCORE</span>
+                    <span style={{ fontSize: '0.66rem', color: 'var(--color-text-primary)', fontWeight: '800' }}>
                       {compliancePercentage}%
                     </span>
                   </div>
-                  <div style={{ height: '4px', background: 'rgba(255,255,255,0.03)', borderRadius: '2px', overflow: 'hidden' }}>
+                  <div style={{ height: '4px', background: 'var(--bg-primary)', borderRadius: '2px', overflow: 'hidden' }}>
                     <div style={{
                       height: '100%',
                       width: `${compliancePercentage}%`,
@@ -3550,14 +3550,12 @@ const styles = {
     minHeight: '100vh',
     display: 'flex',
     flexDirection: 'column',
-    backgroundColor: '#000000',
-    backgroundImage: 'radial-gradient(circle at 50% 50%, #0a0a0a 0%, #000000 100%)',
+    backgroundColor: 'var(--bg-primary)',
   },
   header: {
     height: '80px',
-    background: 'rgba(13, 17, 27, 0.8)',
-    backdropFilter: 'blur(12px)',
-    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+    background: 'var(--bg-secondary)',
+    borderBottom: '1px solid var(--border-color)',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -3580,22 +3578,21 @@ const styles = {
     fontSize: '1.4rem',
     fontWeight: '850',
     letterSpacing: '0.06em',
-    color: '#ffffff',
+    color: 'var(--border-accent)',
     lineHeight: '1',
   },
   logoSlogan: {
     fontFamily: 'var(--font-script)',
     fontSize: '0.74rem',
-    color: '#ffffff',
+    color: 'var(--color-text-secondary)',
     lineHeight: '1',
     letterSpacing: '0.18em',
     marginTop: '0.25rem',
-    opacity: 0.9,
   },
   homeBtn: {
-    background: 'rgba(255, 255, 255, 0.02)',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
-    color: '#a3a3a3',
+    background: 'transparent',
+    border: '1px solid var(--border-color)',
+    color: 'var(--color-text-secondary)',
     padding: '0.45rem 0.9rem',
     borderRadius: '8px',
     fontSize: '0.75rem',
@@ -3607,9 +3604,9 @@ const styles = {
     gap: '0.3rem',
   },
   homeBtnActive: {
-    background: 'rgba(255, 255, 255, 0.06)',
-    border: '1px solid rgba(255, 255, 255, 0.15)',
-    color: '#ffffff',
+    background: 'var(--border-accent)',
+    border: '1px solid var(--border-accent)',
+    color: 'var(--color-text-primary)',
     padding: '0.45rem 0.9rem',
     borderRadius: '8px',
     fontSize: '0.75rem',
@@ -3619,7 +3616,7 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     gap: '0.3rem',
-    boxShadow: '0 0 12px rgba(255,255,255,0.05)',
+    boxShadow: 'var(--shadow-purple-glow)',
   },
   headerNav: {
     display: 'flex',
@@ -3630,7 +3627,7 @@ const styles = {
   headerNavBtn: {
     background: 'transparent',
     border: 'none',
-    color: '#94a3b8',
+    color: 'var(--color-text-secondary)',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -3647,7 +3644,7 @@ const styles = {
   headerNavBtnActive: {
     background: 'transparent',
     border: 'none',
-    color: '#ffffff',
+    color: 'var(--border-accent)',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -3667,9 +3664,9 @@ const styles = {
     left: '12%',
     right: '12%',
     height: '3px',
-    background: '#00f2fe',
+    background: 'var(--border-accent)',
     borderRadius: '2px 2px 0 0',
-    boxShadow: '0 -2px 10px rgba(0, 242, 254, 0.4)',
+    boxShadow: '0 -2px 10px rgba(10, 102, 194, 0.4)',
   },
   headerRightActions: {
     display: 'flex',
@@ -3678,8 +3675,8 @@ const styles = {
   },
   adminBtn: {
     background: 'transparent',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
-    color: '#94a3b8',
+    border: '1px solid var(--border-color)',
+    color: 'var(--color-text-secondary)',
     padding: '0.4rem 0.75rem',
     borderRadius: '6px',
     fontSize: '0.72rem',
@@ -3688,9 +3685,9 @@ const styles = {
     transition: 'all 0.2s ease',
   },
   adminBtnActive: {
-    background: 'rgba(255, 255, 255, 0.05)',
-    border: '1px solid rgba(255, 255, 255, 0.12)',
-    color: '#00f2fe',
+    background: 'var(--border-accent)',
+    border: '1px solid var(--border-accent)',
+    color: 'var(--color-text-primary)',
     padding: '0.4rem 0.75rem',
     borderRadius: '6px',
     fontSize: '0.72rem',
@@ -3700,8 +3697,8 @@ const styles = {
   },
   supportBtn: {
     background: 'transparent',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
-    color: '#94a3b8',
+    border: '1px solid var(--border-color)',
+    color: 'var(--color-text-secondary)',
     padding: '0.4rem 0.75rem',
     borderRadius: '6px',
     fontSize: '0.72rem',
@@ -3710,9 +3707,9 @@ const styles = {
     transition: 'all 0.2s ease',
   },
   supportBtnActive: {
-    background: 'rgba(255, 255, 255, 0.05)',
-    border: '1px solid rgba(255, 255, 255, 0.12)',
-    color: '#ffffff',
+    background: 'var(--border-accent)',
+    border: '1px solid var(--border-accent)',
+    color: 'var(--color-text-primary)',
     padding: '0.4rem 0.75rem',
     borderRadius: '6px',
     fontSize: '0.72rem',
@@ -3756,12 +3753,12 @@ const styles = {
     transition: 'all 0.15s ease',
     borderRadius: '4px',
     ':hover': {
-      background: 'rgba(255,255,255,0.02)'
+      background: 'var(--bg-surface-hover)'
     }
   },
   sidebarRowLabel: {
     fontSize: '0.72rem',
-    color: 'rgba(255,255,255,0.45)',
+    color: 'var(--color-text-secondary)',
     fontWeight: '600',
   },
   sidebarLinkItem: {
@@ -3773,7 +3770,7 @@ const styles = {
     borderRadius: '4px',
     transition: 'all 0.15s ease',
     ':hover': {
-      background: 'rgba(255,255,255,0.03)'
+      background: 'var(--bg-surface-hover)'
     }
   },
   sidebarLinkIcon: {
@@ -3785,14 +3782,13 @@ const styles = {
   },
   sidebarLinkLabel: {
     fontSize: '0.74rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontWeight: '700',
   },
   sidebarFooter: {
     fontSize: '0.65rem',
-    color: '#525252',
-    textAlign: 'center',
-    borderTop: '1px solid rgba(255,255,255,0.03)',
+    color: 'var(--color-text-muted)',
+    borderTop: '1px solid var(--border-color)',
     paddingTop: '0.75rem',
     display: 'flex',
     flexDirection: 'column',
@@ -3801,7 +3797,7 @@ const styles = {
   nodeId: {
     fontFamily: 'monospace',
     fontSize: '0.6rem',
-    color: '#404040',
+    color: 'var(--color-text-muted)',
   },
   workspace: {
     flex: 1,
@@ -3815,8 +3811,8 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    background: 'rgba(0, 0, 0, 0.75)',
-    backdropFilter: 'blur(8px)',
+    background: 'rgba(0, 0, 0, 0.45)',
+    backdropFilter: 'blur(4px)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -3826,37 +3822,37 @@ const styles = {
     width: '100%',
     maxWidth: '450px',
     padding: '1.25rem',
-    background: 'rgba(10, 10, 10, 0.95)',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
+    background: 'var(--bg-secondary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '16px',
-    boxShadow: '0 20px 50px rgba(0,0,0,0.8)',
+    boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
   },
   modalHeader: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderBottom: '1px solid rgba(255,255,255,0.05)',
+    borderBottom: '1px solid var(--border-color)',
     paddingBottom: '0.75rem',
     marginBottom: '0.75rem',
   },
   closeModalBtn: {
     background: 'transparent',
     border: 'none',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     fontSize: '1rem',
     cursor: 'pointer',
     padding: '0.2rem',
     transition: 'color 0.2s',
     ':hover': {
-      color: '#ffffff'
+      color: 'var(--color-text-primary)'
     }
   },
   viewerItem: {
     display: 'flex',
     alignItems: 'center',
     gap: '0.65rem',
-    background: 'rgba(255,255,255,0.01)',
-    border: '1px solid rgba(255,255,255,0.03)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '8px',
     padding: '0.5rem',
     transition: 'all 0.2s',
@@ -3870,17 +3866,17 @@ const styles = {
   viewerName: {
     fontSize: '0.78rem',
     fontWeight: '800',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     margin: 0,
   },
   viewerTitle: {
     fontSize: '0.64rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     margin: '0.05rem 0',
   },
   viewerTime: {
     fontSize: '0.58rem',
-    color: '#525252',
+    color: 'var(--color-text-muted)',
     display: 'block',
   },
   viewerBtn: {
@@ -3889,8 +3885,8 @@ const styles = {
     borderRadius: '4px',
   },
   analyticCard: {
-    background: 'rgba(0,0,0,0.4)',
-    border: '1px solid rgba(255,255,255,0.05)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '8px',
     padding: '0.65rem',
     display: 'flex',
@@ -3898,26 +3894,26 @@ const styles = {
   },
   analyticLabel: {
     fontSize: '0.65rem',
-    color: '#525252',
+    color: 'var(--color-text-muted)',
     fontWeight: '700',
     textTransform: 'uppercase',
   },
   analyticVal: {
     fontSize: '1.25rem',
-    color: '#00f2fe',
+    color: 'var(--border-accent)',
     fontWeight: '800',
     margin: '0.15rem 0',
   },
   analyticSub: {
     fontSize: '0.58rem',
-    color: '#10b981',
+    color: '#057642',
   },
   // New Layout & Search styles
   searchBarContainer: {
     display: 'flex',
     alignItems: 'center',
-    background: 'rgba(0, 0, 0, 0.4)',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '100px',
     padding: '0.35rem 0.75rem',
     gap: '0.4rem',
@@ -3926,12 +3922,12 @@ const styles = {
   },
   searchIcon: {
     fontSize: '0.8rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
   },
   searchInput: {
     background: 'transparent',
     border: 'none',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '0.74rem',
     outline: 'none',
     width: '100%',
@@ -3948,15 +3944,15 @@ const styles = {
   sidebarNewsCard: {
     padding: '1rem',
     borderRadius: '12px',
-    background: 'rgba(10, 10, 10, 0.4)',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
+    background: 'var(--bg-secondary)',
+    border: '1px solid var(--border-color)',
   },
   sidebarNewsTitle: {
     fontSize: '0.82rem',
     fontWeight: '800',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     margin: '0 0 0.75rem 0',
-    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+    borderBottom: '1px solid var(--border-color)',
     paddingBottom: '0.4rem',
   },
   newsList: {
@@ -3973,7 +3969,7 @@ const styles = {
     gap: '0.4rem',
   },
   newsBullet: {
-    color: '#00f2fe',
+    color: 'var(--border-accent)',
     fontSize: '0.8rem',
     lineHeight: '1.2',
   },
@@ -3985,18 +3981,18 @@ const styles = {
   newsHeading: {
     fontSize: '0.74rem',
     fontWeight: '800',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
   },
   newsText: {
     fontSize: '0.64rem',
-    color: '#8a8a8a',
+    color: 'var(--color-text-secondary)',
     lineHeight: '1.3',
   },
   sidebarAdCard: {
     padding: '1rem',
     borderRadius: '12px',
-    background: 'linear-gradient(135deg, rgba(0, 242, 254, 0.04) 0%, rgba(143, 0, 255, 0.04) 100%)',
-    border: '1px solid rgba(0, 242, 254, 0.15)',
+    background: 'linear-gradient(135deg, rgba(10, 102, 194, 0.04) 0%, rgba(0, 65, 130, 0.04) 100%)',
+    border: '1px solid rgba(10, 102, 194, 0.15)',
     position: 'relative',
     overflow: 'hidden',
   },
@@ -4009,28 +4005,28 @@ const styles = {
   adLabel: {
     fontSize: '0.58rem',
     fontWeight: '900',
-    color: '#00f2fe',
+    color: 'var(--border-accent)',
     letterSpacing: '0.08em',
   },
   adOptOut: {
     fontSize: '0.65rem',
-    color: 'rgba(255,255,255,0.2)',
+    color: 'var(--color-text-muted)',
   },
   adTitle: {
     fontSize: '0.84rem',
     fontWeight: '850',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     margin: '0 0 0.25rem 0',
   },
   adText: {
     fontSize: '0.68rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     lineHeight: '1.4',
     margin: 0,
   },
   adMinEntry: {
     fontSize: '0.62rem',
-    color: '#525252',
+    color: 'var(--color-text-muted)',
     fontWeight: '700',
   },
   adButton: {
@@ -4038,22 +4034,22 @@ const styles = {
     fontSize: '0.68rem',
     borderRadius: '6px',
     cursor: 'pointer',
-    background: 'rgba(255, 255, 255, 0.02)',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
-    color: '#ffffff',
+    background: 'transparent',
+    border: '1px solid var(--border-accent)',
+    color: 'var(--border-accent)',
   },
   sidebarAnnounceCard: {
     padding: '1rem',
     borderRadius: '12px',
-    background: 'rgba(10, 10, 10, 0.4)',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
+    background: 'var(--bg-secondary)',
+    border: '1px solid var(--border-color)',
   },
   sidebarAnnounceTitle: {
     fontSize: '0.82rem',
     fontWeight: '800',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     margin: '0 0 0.75rem 0',
-    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+    borderBottom: '1px solid var(--border-color)',
     paddingBottom: '0.4rem',
   },
   announceList: {
@@ -4070,19 +4066,19 @@ const styles = {
     width: '6px',
     height: '6px',
     borderRadius: '50%',
-    background: '#10b981',
+    background: '#057642',
     marginTop: '0.3rem',
     flexShrink: 0,
   },
   announceHeader: {
     fontSize: '0.74rem',
     fontWeight: '800',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     display: 'block',
   },
   announceText: {
     fontSize: '0.64rem',
-    color: '#8a8a8a',
+    color: 'var(--color-text-secondary)',
     lineHeight: '1.3',
     display: 'block',
     marginTop: '0.1rem',
@@ -4097,10 +4093,10 @@ const styles = {
     flexDirection: 'column',
     gap: '1.5rem',
     overflowY: 'auto',
-    background: 'rgba(10, 10, 10, 0.95)',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
+    background: 'var(--bg-secondary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '16px',
-    boxShadow: '0 20px 50px rgba(0,0,0,0.8)',
+    boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
     position: 'relative',
   },
   modalHeader: {
@@ -4111,17 +4107,17 @@ const styles = {
   modalMemberName: {
     fontSize: '1.4rem',
     fontWeight: '800',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
   },
   modalMemberHeadline: {
     fontSize: '0.85rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     marginTop: '0.15rem',
   },
   closeModalBtn: {
     background: 'transparent',
     border: 'none',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     fontSize: '1rem',
     cursor: 'pointer',
     padding: '0.2rem',
@@ -4130,12 +4126,12 @@ const styles = {
   modalTabRow: {
     display: 'flex',
     gap: '0.5rem',
-    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+    borderBottom: '1px solid var(--border-color)',
     paddingBottom: '0.5rem',
   },
   modalTabActive: {
-    background: 'rgba(255,255,255,0.03)',
-    color: '#00f2fe',
+    background: 'rgba(10, 102, 194, 0.08)',
+    color: 'var(--border-accent)',
     border: 'none',
     padding: '0.5rem 1rem',
     borderRadius: '4px',
@@ -4145,7 +4141,7 @@ const styles = {
   },
   modalTabInactive: {
     background: 'transparent',
-    color: '#737373',
+    color: 'var(--color-text-secondary)',
     border: 'none',
     padding: '0.5rem 1rem',
     borderRadius: '4px',
@@ -4173,13 +4169,13 @@ const styles = {
   modalSecHeader: {
     fontSize: '0.7rem',
     fontWeight: '700',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     textTransform: 'uppercase',
     letterSpacing: '0.05em',
   },
   modalText: {
     fontSize: '0.82rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     lineHeight: '1.4',
   },
   demographicsGrid: {
@@ -4187,7 +4183,7 @@ const styles = {
     gridTemplateColumns: '1fr 1fr',
     gap: '0.75rem',
     fontSize: '0.8rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
   },
   modalJobList: {
     display: 'flex',
@@ -4195,8 +4191,8 @@ const styles = {
     gap: '1rem',
   },
   modalJobItem: {
-    background: 'rgba(255,255,255,0.01)',
-    border: '1px solid rgba(255,255,255,0.03)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '8px',
     padding: '0.75rem',
   },
@@ -4204,27 +4200,27 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     fontSize: '0.8rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
   },
   modalJobCompany: {
     fontSize: '0.72rem',
-    color: '#00f2fe',
+    color: 'var(--border-accent)',
     display: 'block',
     marginTop: '0.15rem',
   },
   modalJobDesc: {
     fontSize: '0.74rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     lineHeight: '1.35',
     marginTop: '0.4rem',
   },
   modalEduItem: {
     fontSize: '0.8rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
   },
   modalEmptyText: {
     fontSize: '0.78rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     fontStyle: 'italic',
   },
   skillsTagRow: {
@@ -4237,8 +4233,8 @@ const styles = {
     fontSize: '0.68rem',
     padding: '0.2rem 0.5rem',
     borderRadius: '4px',
-    background: 'rgba(255, 255, 255, 0.03)',
-    border: '1px solid rgba(255, 255, 255, 0.06)',
-    color: '#a3a3a3',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
+    color: 'var(--color-text-secondary)',
   }
 };

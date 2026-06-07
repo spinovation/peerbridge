@@ -185,8 +185,8 @@ export default function BankingModule({ state }) {
                   <div style={styles.txMeta}>
                     <span style={{ 
                       ...styles.txTypeBadge,
-                      background: tx.type === 'Deposit' ? 'rgba(16, 185, 129, 0.1)' : tx.type === 'Withdrawal' ? 'rgba(245, 158, 11, 0.1)' : tx.type === 'Investment' ? 'rgba(143, 0, 255, 0.1)' : 'rgba(255,255,255,0.05)',
-                      color: tx.type === 'Deposit' ? '#10b981' : tx.type === 'Withdrawal' ? '#f59e0b' : tx.type === 'Investment' ? '#c084fc' : '#ffffff',
+                      background: tx.type === 'Deposit' ? 'rgba(16, 185, 129, 0.1)' : tx.type === 'Withdrawal' ? 'rgba(245, 158, 11, 0.1)' : tx.type === 'Investment' ? 'rgba(143, 0, 255, 0.1)' : 'var(--border-color)',
+                      color: tx.type === 'Deposit' ? '#057642' : tx.type === 'Withdrawal' ? '#f59e0b' : tx.type === 'Investment' ? '#8b5cf6' : 'var(--color-text-primary)',
                     }}>
                       {tx.type}
                     </span>
@@ -197,7 +197,7 @@ export default function BankingModule({ state }) {
                   </div>
                   <span style={{ 
                     ...styles.txAmount,
-                    color: tx.type === 'Deposit' ? '#10b981' : tx.type === 'Withdrawal' || tx.type === 'Investment' ? '#f43f5e' : '#ffffff'
+                    color: tx.type === 'Deposit' ? '#057642' : tx.type === 'Withdrawal' || tx.type === 'Investment' ? '#f43f5e' : 'var(--color-text-primary)'
                   }}>
                     {tx.type === 'Deposit' ? '+' : tx.type === 'Withdrawal' || tx.type === 'Investment' ? '-' : ''}
                     ${tx.amount.toLocaleString(undefined, { minimumFractionDigits: 0 })}
@@ -285,7 +285,7 @@ export default function BankingModule({ state }) {
 
 const subStyle = {
   fontSize: '0.9rem',
-  color: '#94a3b8',
+  color: 'var(--color-text-secondary)',
   marginTop: '0.2rem',
 };
 
@@ -349,7 +349,7 @@ const styles = {
   },
   walletLabel: {
     fontSize: '0.8rem',
-    color: '#94a3b8',
+    color: 'var(--color-text-secondary)',
     textTransform: 'uppercase',
     fontWeight: '700',
     letterSpacing: '0.05em',
@@ -364,12 +364,12 @@ const styles = {
   walletBalance: {
     fontSize: '3rem',
     fontWeight: '800',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     letterSpacing: '-0.02em',
   },
   walletDesc: {
     fontSize: '0.85rem',
-    color: '#94a3b8',
+    color: 'var(--color-text-secondary)',
     lineHeight: '1.4',
   },
   card: {
@@ -384,12 +384,12 @@ const styles = {
   },
   cardDesc: {
     fontSize: '0.9rem',
-    color: '#94a3b8',
+    color: 'var(--color-text-secondary)',
     lineHeight: '1.4',
   },
   bankEmptyBox: {
-    background: 'rgba(255,255,255,0.01)',
-    border: '1px dashed rgba(255,255,255,0.1)',
+    background: 'var(--bg-primary)',
+    border: '1px dashed var(--border-color)',
     borderRadius: '12px',
     padding: '2rem 1.5rem',
     textAlign: 'center',
@@ -425,7 +425,7 @@ const styles = {
     width: '42px',
     height: '42px',
     borderRadius: '10px',
-    background: 'rgba(255,255,255,0.05)',
+    background: 'var(--bg-primary)',
     fontSize: '1.25rem',
     display: 'flex',
     alignItems: 'center',
@@ -434,7 +434,7 @@ const styles = {
   bankNameText: {
     fontSize: '0.95rem',
     fontWeight: '700',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
   },
   bankAccountText: {
     fontSize: '0.78rem',
@@ -447,7 +447,7 @@ const styles = {
   consoleTitle: {
     fontSize: '1rem',
     fontWeight: '700',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
   },
   consoleForm: {
     display: 'flex',
@@ -472,22 +472,22 @@ const styles = {
   },
   input: {
     width: '100%',
-    background: 'rgba(255,255,255,0.03)',
-    border: '1px solid rgba(255,255,255,0.08)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '8px',
     padding: '0.75rem 1rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '1.1rem',
     fontFamily: 'monospace',
     outline: 'none',
   },
   select: {
     width: '100%',
-    background: 'rgba(25, 33, 52, 1)',
-    border: '1px solid rgba(255,255,255,0.08)',
+    background: 'var(--bg-secondary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '8px',
     padding: '0.75rem 1rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '0.95rem',
     outline: 'none',
     cursor: 'pointer',
@@ -495,7 +495,7 @@ const styles = {
   emptyLedgerBox: {
     padding: '4rem 2rem',
     textAlign: 'center',
-    color: '#64748b',
+    color: 'var(--color-text-muted)',
   },
   ledgerList: {
     display: 'flex',
@@ -506,8 +506,8 @@ const styles = {
     paddingRight: '0.5rem',
   },
   txItem: {
-    background: 'rgba(255,255,255,0.02)',
-    border: '1px solid rgba(255,255,255,0.04)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '8px',
     padding: '1rem',
     display: 'flex',
@@ -531,12 +531,12 @@ const styles = {
   txDescription: {
     fontSize: '0.88rem',
     fontWeight: '700',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
   },
   txDate: {
     display: 'block',
     fontSize: '0.75rem',
-    color: '#64748b',
+    color: 'var(--color-text-muted)',
     marginTop: '0.2rem',
   },
   txAmount: {
@@ -547,8 +547,8 @@ const styles = {
   plaidBackdrop: {
     position: 'fixed',
     inset: 0,
-    background: 'rgba(0,0,0,0.6)',
-    backdropFilter: 'blur(8px)',
+    background: 'rgba(0, 0, 0, 0.45)',
+    backdropFilter: 'blur(4px)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -568,7 +568,7 @@ const styles = {
   },
   plaidSub: {
     fontSize: '0.88rem',
-    color: '#94a3b8',
+    color: 'var(--color-text-secondary)',
     lineHeight: '1.4',
   },
   plaidForm: {
@@ -577,12 +577,12 @@ const styles = {
     gap: '1.5rem',
   },
   plaidConsentBox: {
-    background: 'rgba(0, 242, 254, 0.05)',
-    border: '1px solid rgba(0, 242, 254, 0.1)',
+    background: 'rgba(10, 102, 194, 0.05)',
+    border: '1px solid rgba(10, 102, 194, 0.15)',
     borderRadius: '6px',
     padding: '0.75rem 1rem',
     fontSize: '0.78rem',
-    color: '#00f2fe',
+    color: '#0a66c2',
     lineHeight: '1.4',
   },
   plaidButtons: {

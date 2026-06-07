@@ -40,7 +40,7 @@ export default function LendingModule({ state }) {
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     const ctx = canvas.getContext('2d');
-    ctx.strokeStyle = '#ffffff';
+    ctx.strokeStyle = '#191919';
     ctx.lineWidth = 2.5;
     ctx.lineCap = 'round';
     ctx.beginPath();
@@ -220,8 +220,8 @@ export default function LendingModule({ state }) {
           onClick={() => setActiveSubTab('marketplace')}
           style={{
             ...styles.subTabButton,
-            color: activeSubTab === 'marketplace' ? '#ffffff' : '#737373',
-            borderBottom: activeSubTab === 'marketplace' ? '2px solid #ffffff' : '2px solid transparent'
+            color: activeSubTab === 'marketplace' ? 'var(--border-accent)' : 'var(--color-text-secondary)',
+            borderBottom: activeSubTab === 'marketplace' ? '2px solid var(--border-accent)' : '2px solid transparent'
           }}
         >
           💱 Credit Registry
@@ -230,8 +230,8 @@ export default function LendingModule({ state }) {
           onClick={() => setActiveSubTab('active_loans')}
           style={{
             ...styles.subTabButton,
-            color: activeSubTab === 'active_loans' ? '#ffffff' : '#737373',
-            borderBottom: activeSubTab === 'active_loans' ? '2px solid #ffffff' : '2px solid transparent'
+            color: activeSubTab === 'active_loans' ? 'var(--border-accent)' : 'var(--color-text-secondary)',
+            borderBottom: activeSubTab === 'active_loans' ? '2px solid var(--border-accent)' : '2px solid transparent'
           }}
         >
           📂 Portfolio Debt Slices ({userLoans.length})
@@ -240,8 +240,8 @@ export default function LendingModule({ state }) {
           onClick={() => setActiveSubTab('ledger')}
           style={{
             ...styles.subTabButton,
-            color: activeSubTab === 'ledger' ? '#ffffff' : '#737373',
-            borderBottom: activeSubTab === 'ledger' ? '2px solid #ffffff' : '2px solid transparent'
+            color: activeSubTab === 'ledger' ? 'var(--border-accent)' : 'var(--color-text-secondary)',
+            borderBottom: activeSubTab === 'ledger' ? '2px solid var(--border-accent)' : '2px solid transparent'
           }}
         >
           📊 Revenue Audit Ledger
@@ -294,7 +294,7 @@ export default function LendingModule({ state }) {
                     />
                     <div style={styles.sliderValues}>
                       <span>$100</span>
-                      <strong style={{ fontSize: '1.1rem', color: '#ffffff' }}>${principal}</strong>
+                      <strong style={{ fontSize: '1.1rem', color: 'var(--color-text-primary)' }}>${principal}</strong>
                       <span>$10,000</span>
                     </div>
                   </div>
@@ -335,7 +335,7 @@ export default function LendingModule({ state }) {
                         onChange={(e) => setCustomRate(parseFloat(e.target.value) || 0)}
                         style={{ ...styles.select, width: '120px' }}
                       />
-                      <span style={{ fontSize: '0.82rem', color: '#a3a3a3', fontWeight: '600' }}>
+                      <span style={{ fontSize: '0.82rem', color: 'var(--color-text-secondary)', fontWeight: '600' }}>
                         % Gross Rate ({Math.max(0, (customRate - 1.5).toFixed(2))}% Net Lender Yield after spread)
                       </span>
                     </div>
@@ -389,8 +389,8 @@ export default function LendingModule({ state }) {
 
               <div style={styles.needCard}>
                 <div style={styles.needBadge}>ACTIVE FUNDING REQUEST</div>
-                <strong style={{ display: 'block', fontSize: '1.2rem', color: '#ffffff', margin: '0.5rem 0' }}>Tonin Logistics expansion pool</strong>
-                <p style={{ color: '#a3a3a3', fontSize: '0.85rem', margin: 0 }}>Targeting $500.00 senior secured loan to scale green cold storage container units.</p>
+                <strong style={{ display: 'block', fontSize: '1.2rem', color: 'var(--color-text-primary)', margin: '0.5rem 0' }}>Tonin Logistics expansion pool</strong>
+                <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.85rem', margin: 0 }}>Targeting $500.00 senior secured loan to scale green cold storage container units.</p>
               </div>
 
               <div style={styles.offersSection}>
@@ -402,8 +402,8 @@ export default function LendingModule({ state }) {
                     <div key={loan.loan_id} style={styles.loanOfferCard}>
                       <div style={styles.offerHead}>
                         <div>
-                          <strong style={{ color: '#ffffff' }}>{loan.lender_name}</strong>
-                          <span style={{ fontSize: '0.72rem', color: '#737373', display: 'block' }}>Ref: {loan.loan_id.toUpperCase()}</span>
+                          <strong style={{ color: 'var(--color-text-primary)' }}>{loan.lender_name}</strong>
+                          <span style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)', display: 'block' }}>Ref: {loan.loan_id.toUpperCase()}</span>
                         </div>
                         <span style={styles.statusBadge(loan.status)}>{loan.status.toUpperCase()}</span>
                       </div>
@@ -478,8 +478,8 @@ export default function LendingModule({ state }) {
                     <div key={loan.loan_id} style={styles.loanOfferCard}>
                       <div style={styles.offerHead}>
                         <div>
-                          <strong style={{ color: '#ffffff' }}>Borrower: {loan.borrower_name}</strong>
-                          <span style={{ fontSize: '0.72rem', color: '#737373', display: 'block' }}>Ref: {loan.loan_id.toUpperCase()}</span>
+                          <strong style={{ color: 'var(--color-text-primary)' }}>Borrower: {loan.borrower_name}</strong>
+                          <span style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)', display: 'block' }}>Ref: {loan.loan_id.toUpperCase()}</span>
                         </div>
                         <span style={styles.statusBadge(loan.status)}>{loan.status.toUpperCase()}</span>
                       </div>
@@ -501,8 +501,8 @@ export default function LendingModule({ state }) {
 
                       {loan.status === 'countered' && (
                         <div style={styles.offerActions}>
-                          <div style={{ fontSize: '0.85rem', color: '#a3a3a3' }}>
-                            Borrower countered rate to: <strong style={{ color: '#ffffff' }}>{loan.countered_rate}%</strong>
+                          <div style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)' }}>
+                            Borrower countered rate to: <strong style={{ color: 'var(--color-text-primary)' }}>{loan.countered_rate}%</strong>
                           </div>
                           <button
                             onClick={() => handleStartExecuteWizard(loan)}
@@ -541,8 +541,8 @@ export default function LendingModule({ state }) {
                 <div key={loan.loan_id} style={styles.loanContractCard}>
                   <div style={styles.contractHeader}>
                     <div>
-                      <strong style={{ color: '#ffffff', fontSize: '1.1rem' }}>P2P Commercial Note Agreement</strong>
-                      <span style={{ fontSize: '0.75rem', color: '#737373', display: 'block', marginTop: '0.15rem' }}>Contract Hash ID: {loan.loan_id.toUpperCase()}</span>
+                      <strong style={{ color: 'var(--color-text-primary)', fontSize: '1.1rem' }}>P2P Commercial Note Agreement</strong>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', display: 'block', marginTop: '0.15rem' }}>Contract Hash ID: {loan.loan_id.toUpperCase()}</span>
                     </div>
                     <span style={styles.statusBadge(loan.status)}>{loan.status.toUpperCase()}</span>
                   </div>
@@ -562,7 +562,7 @@ export default function LendingModule({ state }) {
                     </div>
                   </div>
 
-                  <div style={styles.calcGrid} style={{ background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '6px', margin: '1rem 0' }}>
+                  <div style={styles.calcGrid} style={{ background: 'var(--bg-primary)', padding: '1rem', borderRadius: '6px', margin: '1rem 0' }}>
                     <div style={styles.calcRow}>
                       <span>Original Loan Capital:</span>
                       <strong>${loan.principal.toFixed(2)}</strong>
@@ -596,7 +596,7 @@ export default function LendingModule({ state }) {
                   )}
 
                   {loan.status === 'active' && isLender && (
-                    <div style={{ fontSize: '0.85rem', color: '#a3a3a3', fontStyle: 'italic', marginTop: '0.5rem' }}>
+                    <div style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', fontStyle: 'italic', marginTop: '0.5rem' }}>
                       ⏳ Servicing active. Yield and principal return will deposit automatically upon borrower repay.
                     </div>
                   )}
@@ -623,13 +623,13 @@ export default function LendingModule({ state }) {
             <div style={styles.revenueGrid}>
               <div style={styles.revenueCard}>
                 <span>Origination Revenue</span>
-                <strong style={{ color: '#ffffff' }}>${upfrontFeeTotal.toFixed(2)}</strong>
-                <span style={{ fontSize: '0.7rem', color: '#737373' }}>1.5% at origination</span>
+                <strong style={{ color: 'var(--color-text-primary)' }}>${upfrontFeeTotal.toFixed(2)}</strong>
+                <span style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)' }}>1.5% at origination</span>
               </div>
               <div style={styles.revenueCard}>
                 <span>Servicing Spread Revenue</span>
-                <strong style={{ color: '#ffffff' }}>${spreadTotal.toFixed(2)}</strong>
-                <span style={{ fontSize: '0.7rem', color: '#737373' }}>1.5% at settlement</span>
+                <strong style={{ color: 'var(--color-text-primary)' }}>${spreadTotal.toFixed(2)}</strong>
+                <span style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)' }}>1.5% at settlement</span>
               </div>
             </div>
 
@@ -676,16 +676,16 @@ export default function LendingModule({ state }) {
               ...styles.modalCard, 
               maxWidth: sigWizardStep === 2 ? '640px' : '480px',
               width: '95%',
-              background: 'rgba(10, 10, 10, 0.95)',
+              background: 'var(--bg-secondary)',
               backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255,255,255,0.08)',
+              border: '1px solid var(--border-color)',
               padding: '2.5rem',
               display: 'flex',
               flexDirection: 'column',
               gap: '1.5rem',
             }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '1rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '1rem' }}>
               <h3 style={styles.modalTitle}>
                 {sigWizardStep === 1 && `🏛 SEC Reg D Promissory Note Wizard`}
                 {sigWizardStep === 2 && `🎉 Credit Pool Disbursed!`}
@@ -696,7 +696,7 @@ export default function LendingModule({ state }) {
                   setSigWizardStep(1);
                   setSignatureDataUrl('');
                 }}
-                style={{ background: 'none', border: 'none', color: '#737373', fontSize: '1.2rem', cursor: 'pointer' }}
+                style={{ background: 'none', border: 'none', color: 'var(--color-text-muted)', fontSize: '1.2rem', cursor: 'pointer' }}
               >
                 ✕
               </button>
@@ -710,14 +710,14 @@ export default function LendingModule({ state }) {
 
                 {/* Promissory Note Textbox */}
                 <div style={{
-                  background: 'rgba(0,0,0,0.4)',
-                  border: '1px solid rgba(255,255,255,0.08)',
+                  background: 'var(--bg-primary)',
+                  border: '1px solid var(--border-color)',
                   borderRadius: '8px',
                   padding: '1.5rem',
                   maxHeight: '200px',
                   overflowY: 'auto',
                   fontSize: '0.8rem',
-                  color: '#a3a3a3',
+                  color: 'var(--color-text-secondary)',
                   lineHeight: '1.5',
                   fontFamily: 'monospace',
                   whiteSpace: 'pre-line'
@@ -755,8 +755,8 @@ export default function LendingModule({ state }) {
                       onTouchMove={drawTouch}
                       onTouchEnd={stopDrawing}
                       style={{
-                        background: 'rgba(255,255,255,0.02)',
-                        border: '1px dashed rgba(255,255,255,0.15)',
+                        background: 'var(--bg-primary)',
+                        border: '1px dashed var(--border-color)',
                         borderRadius: '6px',
                         cursor: 'crosshair',
                         width: '100%',
@@ -765,13 +765,13 @@ export default function LendingModule({ state }) {
                       }}
                     />
                     {signatureDataUrl && (
-                      <div style={{ position: 'absolute', bottom: 5, right: 5, fontSize: '0.65rem', color: '#10b981', background: 'rgba(0,0,0,0.7)', padding: '2px 5px', borderRadius: '3px' }}>
+                      <div style={{ position: 'absolute', bottom: 5, right: 5, fontSize: '0.65rem', color: '#10b981', background: 'var(--bg-primary)', padding: '2px 5px', borderRadius: '3px' }}>
                         ✓ Capture Active
                       </div>
                     )}
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.35rem' }}>
-                    <span style={{ fontSize: '0.72rem', color: '#737373' }}>Use mouse or trackpad to sign in the box.</span>
+                    <span style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)' }}>Use mouse or trackpad to sign in the box.</span>
                     <button
                       type="button"
                       onClick={clearSignature}
@@ -823,8 +823,8 @@ export default function LendingModule({ state }) {
                   ✓
                 </div>
                 <div>
-                  <h4 style={{ fontSize: '1.25rem', fontWeight: '800', color: '#ffffff', marginBottom: '0.5rem' }}>P2P Promissory Note Executed!</h4>
-                  <p style={{ fontSize: '0.88rem', color: '#a3a3a3', lineHeight: '1.5', maxWidth: '360px' }}>
+                  <h4 style={{ fontSize: '1.25rem', fontWeight: '800', color: 'var(--color-text-primary)', marginBottom: '0.5rem' }}>P2P Promissory Note Executed!</h4>
+                  <p style={{ fontSize: '0.88rem', color: 'var(--color-text-secondary)', lineHeight: '1.5', maxWidth: '360px' }}>
                     The commercial Promissory Note is now cryptographically locked with a unique SHA-256 compliance hash. Duplicate executed copies have been deposited in the **Document Vault** for both lender and borrower.
                   </p>
                 </div>
@@ -847,12 +847,12 @@ export default function LendingModule({ state }) {
                     SEC REG D
                   </div>
                   <span style={{ fontSize: '0.65rem', color: '#3b82f6', fontWeight: '700', letterSpacing: '0.1em' }}>PEERBRIDGE CREDIT NETWORK</span>
-                  <strong style={{ color: '#ffffff', fontSize: '0.9rem' }}>COMMERCIAL PROMISSORY NOTE CERTIFICATE</strong>
-                  <span style={{ fontSize: '0.8rem', color: '#a3a3a3' }}>LENDER: <strong>{selectedLoanForExecution.lender_name}</strong></span>
-                  <span style={{ fontSize: '0.8rem', color: '#a3a3a3' }}>BORROWER: <strong>{selectedLoanForExecution.borrower_name}</strong></span>
-                  <span style={{ fontSize: '0.75rem', color: '#a3a3a3' }}>PRINCIPAL TARGET: <strong>${selectedLoanForExecution.principal.toFixed(2)}</strong></span>
-                  <span style={{ color: '#a3a3a3', fontSize: '0.75rem' }}>RATE: <strong>{(selectedLoanForExecution.countered_rate || selectedLoanForExecution.rate)}% Gross Yield</strong></span>
-                  <span style={{ fontSize: '0.58rem', color: '#525252', fontFamily: 'monospace' }}>SEC SHA256 BLOCK: 77f8aa8810eb0cf83b77abffea56bc18</span>
+                  <strong style={{ color: 'var(--color-text-primary)', fontSize: '0.9rem' }}>COMMERCIAL PROMISSORY NOTE CERTIFICATE</strong>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>LENDER: <strong>{selectedLoanForExecution.lender_name}</strong></span>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>BORROWER: <strong>{selectedLoanForExecution.borrower_name}</strong></span>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>PRINCIPAL TARGET: <strong>${selectedLoanForExecution.principal.toFixed(2)}</strong></span>
+                  <span style={{ color: 'var(--color-text-secondary)', fontSize: '0.75rem' }}>RATE: <strong>{(selectedLoanForExecution.countered_rate || selectedLoanForExecution.rate)}% Gross Yield</strong></span>
+                  <span style={{ fontSize: '0.58rem', color: 'var(--color-text-muted)', fontFamily: 'monospace' }}>SEC SHA256 BLOCK: 77f8aa8810eb0cf83b77abffea56bc18</span>
                 </div>
 
                 <button
@@ -900,7 +900,7 @@ const styles = {
   },
   modalSub: {
     fontSize: '0.9rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     lineHeight: '1.4',
   },
   modalForm: {
@@ -926,13 +926,13 @@ const styles = {
   },
   sub: {
     fontSize: '0.9rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     marginTop: '0.25rem',
   },
   subTabContainer: {
     display: 'flex',
     gap: '1.5rem',
-    borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+    borderBottom: '1px solid var(--border-color)',
     paddingBottom: '0.5rem'
   },
   subTabButton: {
@@ -983,12 +983,12 @@ const styles = {
   },
   cardDesc: {
     fontSize: '0.9rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     lineHeight: '1.4',
   },
   walletState: {
-    background: 'rgba(255,255,255,0.02)',
-    border: '1px solid rgba(255,255,255,0.06)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '8px',
     padding: '1rem 1.25rem',
     display: 'flex',
@@ -997,14 +997,14 @@ const styles = {
   },
   walletLabel: {
     fontSize: '0.75rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     textTransform: 'uppercase',
     fontWeight: '700',
   },
   walletBalance: {
     fontSize: '1.4rem',
     fontWeight: '800',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
   },
   form: {
     display: 'flex',
@@ -1019,16 +1019,16 @@ const styles = {
   label: {
     fontSize: '0.72rem',
     fontWeight: '700',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     textTransform: 'uppercase',
   },
   select: {
     width: '100%',
-    background: '#000000',
-    border: '1px solid rgba(255,255,255,0.08)',
+    background: 'var(--bg-secondary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '6px',
     padding: '0.7rem 1rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '0.9rem',
     outline: 'none',
     cursor: 'pointer',
@@ -1047,18 +1047,18 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     fontSize: '0.8rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
   },
   calculatorCard: {
-    background: 'rgba(255,255,255,0.02)',
-    border: '1px solid rgba(255,255,255,0.05)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '8px',
     padding: '1rem',
   },
   calcTitle: {
     fontSize: '0.8rem',
     fontWeight: '700',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     marginBottom: '0.5rem',
   },
   calcGrid: {
@@ -1070,11 +1070,11 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     fontSize: '0.82rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
   },
   needCard: {
-    background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)',
-    border: '1px solid rgba(255,255,255,0.08)',
+    background: 'linear-gradient(135deg, var(--border-color) 0%, var(--border-color) 100%)',
+    border: '1px solid var(--border-color)',
     borderRadius: '8px',
     padding: '1.25rem',
   },
@@ -1097,22 +1097,22 @@ const styles = {
   sectionTitle: {
     fontSize: '1rem',
     fontWeight: '800',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     marginBottom: '0.25rem',
   },
   emptyOffers: {
     padding: '2rem 1.5rem',
     textAlign: 'center',
-    color: '#525252',
+    color: 'var(--color-text-muted)',
     fontStyle: 'italic',
     fontSize: '0.85rem',
-    background: 'rgba(255,255,255,0.01)',
-    border: '1px dashed rgba(255,255,255,0.05)',
+    background: 'var(--bg-primary)',
+    border: '1px dashed var(--border-color)',
     borderRadius: '8px',
   },
   loanOfferCard: {
-    background: 'rgba(255,255,255,0.02)',
-    border: '1px solid rgba(255,255,255,0.04)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '8px',
     padding: '1.25rem',
     display: 'flex',
@@ -1137,7 +1137,7 @@ const styles = {
     gap: '0.15rem',
     flex: 1,
     fontSize: '0.75rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
   },
   offerActions: {
     display: 'flex',
@@ -1152,25 +1152,25 @@ const styles = {
   },
   counterInput: {
     width: '60px',
-    background: '#000000',
-    border: '1px solid rgba(255,255,255,0.08)',
+    background: 'var(--bg-secondary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '4px',
     padding: '0.25rem 0.5rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '0.85rem',
     outline: 'none',
   },
   counterPendingBadge: {
-    background: 'rgba(255,255,255,0.03)',
-    border: '1px solid rgba(255,255,255,0.05)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '6px',
     padding: '0.5rem 0.75rem',
     fontSize: '0.82rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     textAlign: 'center',
   },
   statusBadge: (status) => {
-    let background = 'rgba(255,255,255,0.05)';
+    let background = 'var(--border-color)';
     let color = '#737373';
     if (status === 'active') {
       background = 'rgba(16, 185, 129, 0.1)';
@@ -1198,8 +1198,8 @@ const styles = {
     gap: '1.25rem',
   },
   loanContractCard: {
-    background: 'linear-gradient(135deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.005) 100%)',
-    border: '1px solid rgba(255,255,255,0.05)',
+    background: 'linear-gradient(135deg, var(--border-color) 0%, var(--border-color) 100%)',
+    border: '1px solid var(--border-color)',
     borderRadius: '8px',
     padding: '1.75rem',
     display: 'flex',
@@ -1210,7 +1210,7 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    borderBottom: '1px solid rgba(255,255,255,0.05)',
+    borderBottom: '1px solid var(--border-color)',
     paddingBottom: '0.75rem',
   },
   contractMeta: {
@@ -1224,7 +1224,7 @@ const styles = {
     flexDirection: 'column',
     gap: '0.25rem',
     fontSize: '0.7rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     fontWeight: '700',
     textTransform: 'uppercase',
   },
@@ -1235,15 +1235,15 @@ const styles = {
   },
   revenueCard: {
     flex: 1,
-    background: 'rgba(255,255,255,0.01)',
-    border: '1px solid rgba(255,255,255,0.04)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '6px',
     padding: '1rem',
     display: 'flex',
     flexDirection: 'column',
     gap: '0.25rem',
     fontSize: '0.8rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
   },
   totalRevenueHighlight: {
     background: 'linear-gradient(135deg, rgba(16,185,129,0.1) 0%, rgba(16,185,129,0.02) 100%)',
@@ -1255,7 +1255,7 @@ const styles = {
     alignItems: 'center',
     marginTop: '0.5rem',
     fontSize: '0.9rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
   },
   auditTimeline: {
     display: 'flex',
@@ -1263,7 +1263,7 @@ const styles = {
     gap: '1.5rem',
     position: 'relative',
     paddingLeft: '1rem',
-    borderLeft: '1px solid rgba(255,255,255,0.08)',
+    borderLeft: '1px solid var(--border-color)',
   },
   timelineItem: {
     display: 'flex',
@@ -1286,7 +1286,7 @@ const styles = {
     flexDirection: 'column',
     gap: '0.25rem',
     fontSize: '0.85rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
   },
   timestamp: {
     fontSize: '0.72rem',

@@ -221,7 +221,7 @@ export default function EntrepreneurModule({ state }) {
     const colors = ['#ffffff', '#00f2fe', '#8b5cf6', '#d4af37', '#737373'];
     return (
       <svg viewBox="0 0 100 100" style={styles.svg}>
-        <circle cx="50" cy="50" r="40" fill="transparent" stroke="rgba(255, 255, 255, 0.03)" strokeWidth="15" />
+        <circle cx="50" cy="50" r="40" fill="transparent" stroke="var(--border-color)" strokeWidth="15" />
         {capTable.map((item, idx) => {
           const strokeVal = (item.percentage / 100) * (2 * Math.PI * 40);
           const dashArray = `${strokeVal} ${2 * Math.PI * 40}`;
@@ -243,7 +243,7 @@ export default function EntrepreneurModule({ state }) {
             />
           );
         })}
-        <circle cx="50" cy="50" r="28" fill="#000000" />
+        <circle cx="50" cy="50" r="28" fill="var(--bg-primary)" />
       </svg>
     );
   };
@@ -265,8 +265,8 @@ export default function EntrepreneurModule({ state }) {
             onClick={() => { setEntrepreneurTab('round_launcher'); setShowLauncher(false); }}
             style={{ 
               ...styles.tabBtn, 
-              color: entrepreneurTab === 'round_launcher' ? '#ffffff' : '#737373',
-              background: entrepreneurTab === 'round_launcher' ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
+              color: entrepreneurTab === 'round_launcher' ? 'var(--border-accent)' : 'var(--color-text-secondary)',
+              background: entrepreneurTab === 'round_launcher' ? 'var(--border-color)' : 'transparent',
               borderBottom: entrepreneurTab === 'round_launcher' ? '2px solid #00f2fe' : 'none'
             }}
           >
@@ -276,8 +276,8 @@ export default function EntrepreneurModule({ state }) {
             onClick={() => setEntrepreneurTab('founder_pro')}
             style={{ 
               ...styles.tabBtn, 
-              color: entrepreneurTab === 'founder_pro' ? '#ffffff' : '#737373',
-              background: entrepreneurTab === 'founder_pro' ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
+              color: entrepreneurTab === 'founder_pro' ? 'var(--border-accent)' : 'var(--color-text-secondary)',
+              background: entrepreneurTab === 'founder_pro' ? 'var(--border-color)' : 'transparent',
               borderBottom: entrepreneurTab === 'founder_pro' ? '2px solid #a78bfa' : 'none'
             }}
           >
@@ -340,8 +340,8 @@ export default function EntrepreneurModule({ state }) {
                       onClick={() => setOfferingType('equity')}
                       style={{
                         ...styles.pillBtn,
-                        background: offeringType === 'equity' ? 'rgba(0, 242, 254, 0.1)' : 'rgba(255, 255, 255, 0.02)',
-                        borderColor: offeringType === 'equity' ? '#00f2fe' : 'rgba(255, 255, 255, 0.08)',
+                        background: offeringType === 'equity' ? 'rgba(0, 242, 254, 0.1)' : 'var(--border-color)',
+                        borderColor: offeringType === 'equity' ? '#00f2fe' : 'var(--border-color)',
                         color: offeringType === 'equity' ? '#00f2fe' : '#a3a3a3'
                       }}
                     >
@@ -352,8 +352,8 @@ export default function EntrepreneurModule({ state }) {
                       onClick={() => setOfferingType('debt')}
                       style={{
                         ...styles.pillBtn,
-                        background: offeringType === 'debt' ? 'rgba(139, 92, 246, 0.1)' : 'rgba(255, 255, 255, 0.02)',
-                        borderColor: offeringType === 'debt' ? '#a78bfa' : 'rgba(255, 255, 255, 0.08)',
+                        background: offeringType === 'debt' ? 'rgba(139, 92, 246, 0.1)' : 'var(--border-color)',
+                        borderColor: offeringType === 'debt' ? '#a78bfa' : 'var(--border-color)',
                         color: offeringType === 'debt' ? '#a78bfa' : '#a3a3a3'
                       }}
                     >
@@ -616,7 +616,7 @@ export default function EntrepreneurModule({ state }) {
 
                 <div style={styles.teamList}>
                   {team.length === 0 ? (
-                    <span style={{ fontSize: '0.76rem', color: '#525252', fontStyle: 'italic' }}>No team members registered yet. Add co-founders above.</span>
+                    <span style={{ fontSize: '0.76rem', color: 'var(--color-text-muted)', fontStyle: 'italic' }}>No team members registered yet. Add co-founders above.</span>
                   ) : (
                     team.map((member, idx) => (
                       <div key={idx} style={styles.teamItem}>
@@ -652,7 +652,7 @@ export default function EntrepreneurModule({ state }) {
               <div style={styles.upsellMetricsRow}>
                 <div style={styles.upsellMetricBox}>
                   <span style={styles.upsellLabel}>Dilution update fees</span>
-                  <strong style={{ color: '#ffffff', fontSize: '1.25rem' }}>0% flat rate</strong>
+                  <strong style={{ color: 'var(--color-text-primary)', fontSize: '1.25rem' }}>0% flat rate</strong>
                 </div>
                 <div style={styles.upsellMetricBox}>
                   <span style={styles.upsellLabel}>IRS Form generation</span>
@@ -693,7 +693,7 @@ export default function EntrepreneurModule({ state }) {
                         </div>
 
                         <div style={styles.billRight}>
-                          <strong style={{ fontSize: '0.85rem', color: '#ffffff' }}>${bill.amount.toFixed(2)}</strong>
+                          <strong style={{ fontSize: '0.85rem', color: 'var(--color-text-primary)' }}>${bill.amount.toFixed(2)}</strong>
                           {bill.status === 'paid' ? (
                             <span style={styles.billPaidBadge}>Settled</span>
                           ) : (
@@ -856,7 +856,7 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+    borderBottom: '1px solid var(--border-color)',
     paddingBottom: '1rem',
   },
   title: {
@@ -866,11 +866,11 @@ const styles = {
   },
   sub: {
     fontSize: '0.9rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     marginTop: '0.25rem',
   },
   segmentedTabWrapper: {
-    borderBottom: '1px solid rgba(255,255,255,0.06)',
+    borderBottom: '1px solid var(--border-color)',
     marginTop: '-1.5rem',
   },
   tabContainer: {
@@ -911,8 +911,8 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     gap: '1.25rem',
-    background: 'rgba(0,0,0,0.4)',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
   },
   launcherTitle: {
     fontSize: '1.35rem',
@@ -921,7 +921,7 @@ const styles = {
   },
   launcherDesc: {
     fontSize: '0.85rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     lineHeight: '1.4',
   },
   formGrid: {
@@ -953,27 +953,27 @@ const styles = {
   label: {
     fontSize: '0.68rem',
     fontWeight: '700',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     textTransform: 'uppercase',
   },
   input: {
     width: '100%',
     background: 'rgba(0, 0, 0, 0.25)',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
+    border: '1px solid var(--border-color)',
     borderRadius: '8px',
     padding: '0.65rem 0.85rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '0.85rem',
     outline: 'none',
     transition: 'all 0.2s',
   },
   select: {
     width: '100%',
-    background: 'rgba(10, 10, 10, 0.95)',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
+    background: 'var(--bg-secondary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '8px',
     padding: '0.65rem 0.85rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '0.85rem',
     outline: 'none',
     cursor: 'pointer',
@@ -981,10 +981,10 @@ const styles = {
   textarea: {
     width: '100%',
     background: 'rgba(0, 0, 0, 0.25)',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
+    border: '1px solid var(--border-color)',
     borderRadius: '8px',
     padding: '0.65rem 0.85rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '0.85rem',
     outline: 'none',
     resize: 'none',
@@ -1028,7 +1028,7 @@ const styles = {
   emptyBox: {
     padding: '3rem',
     textAlign: 'center',
-    color: '#525252',
+    color: 'var(--color-text-muted)',
     fontSize: '0.85rem',
     fontStyle: 'italic',
   },
@@ -1042,7 +1042,7 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    borderBottom: '1px solid rgba(255,255,255,0.05)',
+    borderBottom: '1px solid var(--border-color)',
     paddingBottom: '0.85rem',
   },
   campTitle: {
@@ -1052,7 +1052,7 @@ const styles = {
   },
   campTag: {
     fontSize: '0.78rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
   },
   specsLine: {
     display: 'grid',
@@ -1064,14 +1064,14 @@ const styles = {
   },
   specLabel: {
     fontSize: '0.62rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     textTransform: 'uppercase',
     fontWeight: '750',
     display: 'block',
   },
   specVal: {
     fontSize: '0.85rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontWeight: '700',
   },
   capSection: {
@@ -1083,7 +1083,7 @@ const styles = {
   capTitle: {
     fontSize: '0.92rem',
     fontWeight: '800',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     margin: 0,
     textTransform: 'uppercase',
     letterSpacing: '0.03em',
@@ -1111,14 +1111,14 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     fontSize: '0.76rem',
-    borderBottom: '1px solid rgba(255,255,255,0.03)',
+    borderBottom: '1px solid var(--border-color)',
     paddingBottom: '0.25rem',
   },
   shareholderName: {
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
   },
   shareholderPercent: {
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontWeight: '800',
   },
   card: {
@@ -1130,12 +1130,12 @@ const styles = {
   cardTitle: {
     fontSize: '1.05rem',
     fontWeight: '800',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     margin: 0,
   },
   cardDesc: {
     fontSize: '0.76rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     lineHeight: '1.35',
   },
   profileForm: {
@@ -1160,8 +1160,8 @@ const styles = {
     marginTop: '0.5rem',
   },
   teamItem: {
-    background: 'rgba(255,255,255,0.01)',
-    border: '1px solid rgba(255,255,255,0.04)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '8px',
     padding: '1rem',
     display: 'flex',
@@ -1176,16 +1176,16 @@ const styles = {
   teamName: {
     fontSize: '0.85rem',
     fontWeight: '800',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     margin: 0,
   },
   teamRole: {
     fontSize: '0.68rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
   },
   teamBio: {
     fontSize: '0.72rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     margin: 0,
     lineHeight: '1.4',
   },
@@ -1225,13 +1225,13 @@ const styles = {
   upsellTitle: {
     fontSize: '1.45rem',
     fontWeight: '850',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     maxWidth: '640px',
     lineHeight: '1.3',
   },
   upsellDesc: {
     fontSize: '0.85rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     maxWidth: '560px',
     lineHeight: '1.5',
   },
@@ -1248,7 +1248,7 @@ const styles = {
   },
   upsellLabel: {
     fontSize: '0.62rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     textTransform: 'uppercase',
     fontWeight: '700',
   },
@@ -1277,8 +1277,8 @@ const styles = {
     gap: '0.75rem',
   },
   billItem: {
-    background: 'rgba(255,255,255,0.01)',
-    border: '1px solid rgba(255,255,255,0.04)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '8px',
     padding: '0.85rem 1.25rem',
     display: 'flex',
@@ -1293,12 +1293,12 @@ const styles = {
   billNameText: {
     fontSize: '0.82rem',
     fontWeight: '800',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     margin: 0,
   },
   billMeta: {
     fontSize: '0.68rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     display: 'block',
     marginTop: '0.1rem',
   },
@@ -1319,7 +1319,7 @@ const styles = {
   },
   runwayCard: {
     background: 'rgba(0,0,0,0.25)',
-    border: '1px solid rgba(255,255,255,0.03)',
+    border: '1px solid var(--border-color)',
     borderRadius: '6px',
     padding: '1rem',
     display: 'flex',
@@ -1338,10 +1338,10 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    border: '1px solid rgba(255,255,255,0.08)',
+    border: '1px solid var(--border-color)',
     cursor: 'pointer',
-    background: 'rgba(255,255,255,0.02)',
-    color: '#ffffff'
+    background: 'var(--bg-primary)',
+    color: 'var(--color-text-primary)'
   },
   downloadBtn: {
     padding: '0.5rem 1rem',
@@ -1350,10 +1350,10 @@ const styles = {
 
   // Chore Delegation
   choreForm: {
-    background: 'rgba(0,0,0,0.2)',
+    background: 'var(--bg-primary)',
     padding: '0.75rem',
     borderRadius: '6px',
-    border: '1px solid rgba(255,255,255,0.03)',
+    border: '1px solid var(--border-color)',
     marginBottom: '0.5rem',
   },
   choresList: {
@@ -1362,8 +1362,8 @@ const styles = {
     gap: '0.75rem',
   },
   choreItem: {
-    background: 'rgba(255,255,255,0.01)',
-    border: '1px solid rgba(255,255,255,0.04)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '8px',
     padding: '0.85rem 1.25rem',
     display: 'flex',
@@ -1373,12 +1373,12 @@ const styles = {
   choreItemTitle: {
     fontSize: '0.82rem',
     fontWeight: '800',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     margin: 0,
   },
   choreItemMeta: {
     fontSize: '0.68rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
   },
 
   // Spreadsheet Reg CF
@@ -1390,22 +1390,22 @@ const styles = {
     marginTop: '0.5rem',
   },
   spreadHeaderRow: {
-    borderBottom: '1px solid rgba(255,255,255,0.08)',
+    borderBottom: '1px solid var(--border-color)',
   },
   spreadHeaderCell: {
     padding: '0.65rem 0.85rem',
     fontWeight: '800',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     textTransform: 'uppercase',
     fontSize: '0.62rem',
     letterSpacing: '0.03em',
   },
   spreadRow: {
-    borderBottom: '1px solid rgba(255,255,255,0.03)',
+    borderBottom: '1px solid var(--border-color)',
   },
   spreadCell: {
     padding: '0.75rem 0.85rem',
     verticalAlign: 'middle',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
   }
 };

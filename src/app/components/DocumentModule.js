@@ -180,11 +180,11 @@ export default function DocumentModule({ state }) {
                   onChange={(e) => setDocTypeToVerify(e.target.value)}
                   style={{
                     width: '100%',
-                    background: 'rgba(255,255,255,0.03)',
-                    border: '1px solid rgba(255,255,255,0.08)',
+                    background: 'var(--bg-primary)',
+                    border: '1px solid var(--border-color)',
                     borderRadius: '8px',
                     padding: '0.75rem 1rem',
-                    color: '#ffffff',
+                    color: 'var(--color-text-primary)',
                     fontSize: '0.9rem',
                     outline: 'none',
                     cursor: 'pointer',
@@ -202,8 +202,8 @@ export default function DocumentModule({ state }) {
               <div
                 style={{
                   ...styles.dragArea,
-                  borderColor: dragActive ? '#ffffff' : 'rgba(255,255,255,0.1)',
-                  background: dragActive ? 'rgba(255,255,255,0.02)' : 'transparent'
+                  borderColor: dragActive ? '#ffffff' : 'var(--border-color)',
+                  background: dragActive ? 'var(--border-color)' : 'transparent'
                 }}
                 onDragEnter={handleDrag}
                 onDragOver={handleDrag}
@@ -312,8 +312,8 @@ export default function DocumentModule({ state }) {
                 ✓
               </div>
               <div>
-                <h4 style={{ fontSize: '1rem', fontWeight: '800', color: '#ffffff' }}>Audit Completed!</h4>
-                <p style={{ fontSize: '0.8rem', color: '#a3a3a3', marginTop: '0.35rem', lineHeight: '1.4' }}>
+                <h4 style={{ fontSize: '1rem', fontWeight: '800', color: 'var(--color-text-primary)' }}>Audit Completed!</h4>
+                <p style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', marginTop: '0.35rem', lineHeight: '1.4' }}>
                   {docTypeToVerify === 'kyc' && 'Biometric passport sweeps cleared. Accredited Node Status fully activated.'}
                   {docTypeToVerify === 'safe_agreement' && 'Y-Combinator SAFE placement verified intact. Cap table ledger successfully synced.'}
                   {docTypeToVerify === 'promissory_note' && 'P2P Commercial Note signature locks and wallet escrow clearances verified.'}
@@ -351,10 +351,10 @@ export default function DocumentModule({ state }) {
             gap: '1rem'
           }}>
             <div style={{ flex: 1 }}>
-              <h4 style={{ fontSize: '0.82rem', fontWeight: '700', color: '#ffffff', margin: 0, display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+              <h4 style={{ fontSize: '0.82rem', fontWeight: '700', color: 'var(--color-text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                 <span>📜</span> SEC Form C Disclosure Template
               </h4>
-              <p style={{ fontSize: '0.74rem', color: '#a3a3a3', margin: '0.2rem 0 0 0', lineHeight: '1.3' }}>
+              <p style={{ fontSize: '0.74rem', color: 'var(--color-text-secondary)', margin: '0.2rem 0 0 0', lineHeight: '1.3' }}>
                 Review a sample of our SEC Form C filing disclosure outlining the Crowd SPV structure.
               </p>
             </div>
@@ -378,7 +378,7 @@ export default function DocumentModule({ state }) {
                   key={doc.doc_id} 
                   style={{
                     ...styles.vaultItem,
-                    border: doc.doc_type === 'stock_certificate' ? '1px solid rgba(212,175,55,0.3)' : doc.doc_type === 'promissory_note' ? '1px solid rgba(59,130,246,0.3)' : '1px solid rgba(255,255,255,0.04)',
+                    border: doc.doc_type === 'stock_certificate' ? '1px solid rgba(212,175,55,0.3)' : doc.doc_type === 'promissory_note' ? '1px solid rgba(59,130,246,0.3)' : '1px solid var(--border-color)',
                     boxShadow: doc.doc_type === 'stock_certificate' ? '0 4px 20px rgba(212,175,55,0.08)' : doc.doc_type === 'promissory_note' ? '0 4px 20px rgba(59,130,246,0.08)' : 'none'
                   }}
                 >
@@ -393,7 +393,7 @@ export default function DocumentModule({ state }) {
                   <div style={styles.docMeta}>
                     <h4 style={{
                       ...styles.docTitle,
-                      color: doc.doc_type === 'stock_certificate' ? '#d4af37' : doc.doc_type === 'promissory_note' ? '#60a5fa' : '#ffffff'
+                      color: doc.doc_type === 'stock_certificate' ? '#d4af37' : doc.doc_type === 'promissory_note' ? 'var(--border-accent)' : 'var(--color-text-primary)'
                     }}>
                       {doc.doc_type === 'tax_document' && doc.companyName 
                         ? `1099-DIV_${doc.companyName.replace(/\s+/g, '_')}_2026.pdf`
@@ -442,13 +442,13 @@ const styles = {
   },
   sub: {
     fontSize: '0.9rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     marginTop: '0.25rem',
   },
   successToast: {
-    background: 'rgba(255, 255, 255, 0.05)',
-    border: '1px solid #ffffff',
-    color: '#ffffff',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-accent)',
+    color: 'var(--color-text-primary)',
     padding: '1rem',
     borderRadius: '6px',
     fontSize: '0.9rem',
@@ -474,12 +474,12 @@ const styles = {
   },
   cardDesc: {
     fontSize: '0.9rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     lineHeight: '1.4',
   },
   verifiedNodeCard: {
-    background: 'rgba(255, 255, 255, 0.02)',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '12px',
     padding: '1.5rem',
     marginTop: '0.5rem',
@@ -489,7 +489,7 @@ const styles = {
   },
   verifiedText: {
     fontSize: '0.9rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     lineHeight: '1.5',
     marginTop: '0.75rem',
   },
@@ -499,7 +499,7 @@ const styles = {
     gap: '1rem',
   },
   dragArea: {
-    border: '2px dashed rgba(255,255,255,0.1)',
+    border: '2px dashed var(--border-color)',
     borderRadius: '12px',
     padding: '3rem 2rem',
     textAlign: 'center',
@@ -516,11 +516,11 @@ const styles = {
   uploadTitle: {
     fontSize: '1rem',
     fontWeight: '700',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
   },
   uploadSub: {
     fontSize: '0.8rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
   },
   fileLabel: {
     marginTop: '1rem',
@@ -529,7 +529,7 @@ const styles = {
     cursor: 'pointer',
   },
   selectedFileRow: {
-    background: 'rgba(255,255,255,0.02)',
+    background: 'var(--bg-primary)',
     padding: '1rem',
     borderRadius: '8px',
     display: 'flex',
@@ -544,8 +544,8 @@ const styles = {
     marginTop: '0.5rem',
   },
   stepItem: {
-    background: 'rgba(255,255,255,0.01)',
-    border: '1px solid rgba(255,255,255,0.04)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '10px',
     padding: '1.25rem',
     display: 'flex',
@@ -558,9 +558,9 @@ const styles = {
     width: '28px',
     height: '28px',
     borderRadius: '50%',
-    background: 'rgba(255, 255, 255, 0.05)',
-    border: '1px solid rgba(255, 255, 255, 0.2)',
-    color: '#ffffff',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
+    color: 'var(--color-text-primary)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -573,18 +573,18 @@ const styles = {
   stepTitle: {
     fontSize: '0.9rem',
     fontWeight: '700',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
   },
   stepStatusText: {
     fontSize: '0.78rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     display: 'block',
     marginTop: '0.2rem',
   },
   spinner: {
     width: '18px',
     height: '18px',
-    border: '2px solid rgba(255, 255, 255, 0.1)',
+    border: '2px solid var(--border-color)',
     borderTopColor: '#ffffff',
     borderRadius: '50%',
     animation: 'spin 0.8s linear infinite',
@@ -597,8 +597,8 @@ const styles = {
     width: '100%',
   },
   vaultItem: {
-    background: 'rgba(255,255,255,0.02)',
-    border: '1px solid rgba(255,255,255,0.04)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '8px',
     padding: '1rem',
     display: 'flex',
@@ -615,22 +615,22 @@ const styles = {
   docTitle: {
     fontSize: '0.85rem',
     fontWeight: '700',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     wordBreak: 'break-all',
   },
   docSub: {
     fontSize: '0.75rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     display: 'block',
     marginTop: '0.1rem',
   },
   docSize: {
     fontSize: '0.75rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
   },
   emptyText: {
     fontSize: '0.85rem',
-    color: '#525252',
+    color: 'var(--color-text-muted)',
     fontStyle: 'italic',
   }
 };

@@ -194,7 +194,7 @@ export default function LandingView({ state }) {
           <div className="glass-panel glow-accent-border" style={styles.gateCard}>
             {/* Tab Navigation for Gate */}
             {!showRegisterForm && (
-              <div style={{ display: 'flex', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: '1.5rem' }}>
+              <div style={{ display: 'flex', borderBottom: '1px solid var(--border-color)', marginBottom: '1.5rem' }}>
                 <button
                   type="button"
                   onClick={() => { setActiveGateTab('login'); setError(''); }}
@@ -204,7 +204,7 @@ export default function LandingView({ state }) {
                     background: 'none',
                     border: 'none',
                     borderBottom: activeGateTab === 'login' ? '2px solid #00f2fe' : '2px solid transparent',
-                    color: activeGateTab === 'login' ? '#ffffff' : 'rgba(255,255,255,0.4)',
+                    color: activeGateTab === 'login' ? 'var(--border-accent)' : 'var(--color-text-muted)',
                     fontWeight: '700',
                     cursor: 'pointer',
                     fontSize: '0.9rem',
@@ -222,7 +222,7 @@ export default function LandingView({ state }) {
                     background: 'none',
                     border: 'none',
                     borderBottom: activeGateTab === 'register' ? '2px solid #00f2fe' : '2px solid transparent',
-                    color: activeGateTab === 'register' ? '#ffffff' : 'rgba(255,255,255,0.4)',
+                    color: activeGateTab === 'register' ? 'var(--border-accent)' : 'var(--color-text-muted)',
                     fontWeight: '700',
                     cursor: 'pointer',
                     fontSize: '0.9rem',
@@ -726,29 +726,29 @@ export default function LandingView({ state }) {
 
               {footerModalType === 'legal_tos' && (
                 <div style={styles.legalText}>
-                  <h4 style={{ color: '#ffffff', margin: '1rem 0 0.5rem 0', fontSize: '1rem' }}>1. Acceptance of Terms</h4>
+                  <h4 style={{ color: 'var(--color-text-primary)', margin: '1rem 0 0.5rem 0', fontSize: '1rem' }}>1. Acceptance of Terms</h4>
                   <p>By accessing or using the Peer Bridge Private Gateway (peerbridge.ai), you agree to be bound by these Terms of Service. If you do not agree, you are legally restricted from viewing or participating in private note syndicates or crowdfunding placements.</p>
                   
-                  <h4 style={{ color: '#ffffff', margin: '1rem 0 0.5rem 0', fontSize: '1rem' }}>2. Regulation Crowdfunding (Reg CF) & Reg D Limitations</h4>
+                  <h4 style={{ color: 'var(--color-text-primary)', margin: '1rem 0 0.5rem 0', fontSize: '1rem' }}>2. Regulation Crowdfunding (Reg CF) & Reg D Limitations</h4>
                   <p>All fundraising offerings listed on the Peer Bridge gateway represent private placements under SEC Regulation D (Rule 506(c)) or Regulation Crowdfunding (Reg CF). Participating investors must satisfy specific accreditation standards, verify financial credentials, and acknowledge secondary-market transfer restrictions.</p>
                   
-                  <h4 style={{ color: '#ffffff', margin: '1rem 0 0.5rem 0', fontSize: '1rem' }}>3. Direct API Vetting Authorization</h4>
+                  <h4 style={{ color: 'var(--color-text-primary)', margin: '1rem 0 0.5rem 0', fontSize: '1rem' }}>3. Direct API Vetting Authorization</h4>
                   <p>When you sync your payroll credentials (ADP, Paychex) or banking connections (Plaid), you authorize Peer Bridge to run real-time automated gross-to-net salary verification and category discretionary burn auditing. This information is utilized strictly to compute the BRS (Behavioral Risk Score) and Proprietary Risk Index (PRI), which bypass traditional credit bureau weights.</p>
                   
-                  <h4 style={{ color: '#ffffff', margin: '1rem 0 0.5rem 0', fontSize: '1rem' }}>4. Platform Servicing & Origination Fees</h4>
+                  <h4 style={{ color: 'var(--color-text-primary)', margin: '1rem 0 0.5rem 0', fontSize: '1rem' }}>4. Platform Servicing & Origination Fees</h4>
                   <p>Lenders acknowledge that Peer Bridge extracts a 1.5% origination fee from disbursed principal notes and a 1.5% servicing fee from note repayment distributions. Equity campaign placements carry a 3.5% transaction success fee upon closing.</p>
                 </div>
               )}
 
               {footerModalType === 'legal_privacy' && (
                 <div style={styles.legalText}>
-                  <h4 style={{ color: '#ffffff', margin: '1rem 0 0.5rem 0', fontSize: '1rem' }}>1. Information We Collect</h4>
+                  <h4 style={{ color: 'var(--color-text-primary)', margin: '1rem 0 0.5rem 0', fontSize: '1rem' }}>1. Information We Collect</h4>
                   <p>We collect personal information directly from your credential inputs, passport identity files (KYC), linked ADP/Paychex W-2 payroll telemetry, and Plaid transactional records. We do not inspect or store password credentials; payroll and bank synchronizations are executed securely via sandboxed OAuth redirects.</p>
                   
-                  <h4 style={{ color: '#ffffff', margin: '1rem 0 0.5rem 0', fontSize: '1rem' }}>2. Use of Telemetry Data</h4>
+                  <h4 style={{ color: 'var(--color-text-primary)', margin: '1rem 0 0.5rem 0', fontSize: '1rem' }}>2. Use of Telemetry Data</h4>
                   <p>Telemetry data is parsed locally by the PRI risk engine to evaluate probability of default (PD) and savings buffers. We do not sell, rent, or distribute transactional details to marketing affiliates. Data is stored in secure Firebase Firestore instances using military-grade AES-256 field-level encryption.</p>
                   
-                  <h4 style={{ color: '#ffffff', margin: '1rem 0 0.5rem 0', fontSize: '1rem' }}>3. SEC Audit Trails & Compliance</h4>
+                  <h4 style={{ color: 'var(--color-text-primary)', margin: '1rem 0 0.5rem 0', fontSize: '1rem' }}>3. SEC Audit Trails & Compliance</h4>
                   <p>Pursuant to FINRA and SEC funding portal guidelines, we are legally required to maintain secure audit trails of all transactions, SAFE warrants, promissory agreements, and identity verifications for a minimum of 6 years. Cryptographic SHA-256 agreement signatures are recorded on the public ledger.</p>
                 </div>
               )}
@@ -758,10 +758,10 @@ export default function LandingView({ state }) {
                   <h4 style={{ color: '#f43f5e', margin: '1rem 0 0.5rem 0', fontSize: '1rem' }}>⚠️ PRIVATE PLACEMENT RISK DISCLOSURE</h4>
                   <p>Investments in private debt notes and early-stage startup SAFEs are highly speculative and carry extreme volatility. Lenders can lose their entire principal balance in default events. Debt note interest payments are not guaranteed by Peer Bridge, and holdings are not FDIC insured.</p>
                   
-                  <h4 style={{ color: '#ffffff', margin: '1rem 0 0.5rem 0', fontSize: '1rem' }}>⚠️ NO RECOMMENDATION OR INVESTMENT ADVICE</h4>
+                  <h4 style={{ color: 'var(--color-text-primary)', margin: '1rem 0 0.5rem 0', fontSize: '1rem' }}>⚠️ NO RECOMMENDATION OR INVESTMENT ADVICE</h4>
                   <p>Peer Bridge is a technology gateway platform and does not offer financial advisory services. Listing campaigns on the credit registry does not constitute a platform recommendation. Investors must perform independent due diligence before placing fractional note balances.</p>
                   
-                  <h4 style={{ color: '#ffffff', margin: '1rem 0 0.5rem 0', fontSize: '1rem' }}>⚠️ RESTRICTIONS ON TRANSFERS (DOMESTIC USA EXCLUSIONS)</h4>
+                  <h4 style={{ color: 'var(--color-text-primary)', margin: '1rem 0 0.5rem 0', fontSize: '1rem' }}>⚠️ RESTRICTIONS ON TRANSFERS (DOMESTIC USA EXCLUSIONS)</h4>
                   <p>Securities issued under SEC Reg CF and Reg D are restricted and cannot be sold, transferred, or reassigned for a period of 12 months, except in limited cases (e.g. transfers to family members or trust estates). Retail debt syndicates are strictly restricted to domestic USA-to-USA routing channels.</p>
                 </div>
               )}
@@ -778,8 +778,7 @@ const styles = {
     minHeight: '100vh',
     display: 'flex',
     flexDirection: 'column',
-    background: '#000000',
-    backgroundImage: 'radial-gradient(circle at 50% 50%, #0a0a0a 0%, #000000 100%)',
+    background: 'var(--bg-primary)',
     padding: '0 2rem',
   },
   header: {
@@ -787,7 +786,7 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+    borderBottom: '1px solid var(--border-color)',
   },
   logoContainer: {
     display: 'flex',
@@ -799,13 +798,13 @@ const styles = {
     fontSize: '1.5rem',
     fontWeight: '850',
     letterSpacing: '0.06em',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     lineHeight: '1',
   },
   logoSlogan: {
     fontFamily: 'var(--font-script)',
     fontSize: '0.78rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     lineHeight: '1',
     letterSpacing: '0.19em',
     marginTop: '0.25rem',
@@ -814,8 +813,8 @@ const styles = {
   inviteBadge: {
     padding: '0.35rem 0.75rem',
     borderRadius: '4px',
-    border: '1px solid rgba(255, 255, 255, 0.15)',
-    color: '#ffffff',
+    border: '1px solid var(--border-color)',
+    color: 'var(--color-text-primary)',
     fontSize: '0.75rem',
     fontWeight: '700',
   },
@@ -863,7 +862,7 @@ const styles = {
   },
   heroSub: {
     fontSize: '1.15rem',
-    color: '#94a3b8',
+    color: 'var(--color-text-secondary)',
     maxWidth: '540px',
   },
   featureGrid: {
@@ -877,13 +876,13 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     gap: '0.65rem',
-    background: 'rgba(255, 255, 255, 0.02)',
-    border: '1px solid rgba(255, 255, 255, 0.06)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '12px',
     padding: '0.75rem 1rem',
     fontSize: '0.85rem',
     fontWeight: '600',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     backdropFilter: 'blur(8px)',
   },
   featureIcon: {
@@ -903,14 +902,14 @@ const styles = {
     marginTop: '2rem',
   },
   metricCard: {
-    borderLeft: '2.5px solid #ffffff',
+    borderLeft: '2.5px solid var(--border-accent)',
     paddingLeft: '1rem',
   },
   metricVal: {
     display: 'block',
     fontSize: '1.75rem',
     fontWeight: '800',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
   },
   metricLabel: {
     fontSize: '0.8rem',
@@ -936,7 +935,7 @@ const styles = {
   },
   gateCardSub: {
     fontSize: '0.9rem',
-    color: '#94a3b8',
+    color: 'var(--color-text-secondary)',
   },
   inputGroup: {
     display: 'flex',
@@ -946,16 +945,16 @@ const styles = {
   label: {
     fontSize: '0.8rem',
     fontWeight: '600',
-    color: '#94a3b8',
+    color: 'var(--color-text-secondary)',
     textTransform: 'uppercase',
   },
   input: {
     width: '100%',
-    background: 'rgba(255,255,255,0.03)',
-    border: '1px solid rgba(255,255,255,0.08)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '8px',
     padding: '0.85rem 1rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '0.95rem',
     outline: 'none',
     transition: 'border 0.2s ease',
@@ -963,21 +962,21 @@ const styles = {
   select: {
     width: '100%',
     background: '#121212',
-    border: '1px solid rgba(255,255,255,0.08)',
+    border: '1px solid var(--border-color)',
     borderRadius: '8px',
     padding: '0.85rem 1rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '0.95rem',
     outline: 'none',
     cursor: 'pointer',
   },
   tipBox: {
-    background: 'rgba(255, 255, 255, 0.02)',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '6px',
     padding: '0.75rem',
     fontSize: '0.8rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     lineHeight: '1.4',
   },
   submitBtn: {
@@ -1000,7 +999,7 @@ const styles = {
     margin: '0 auto',
     width: '100%',
     padding: '4rem 0 6rem 0',
-    borderTop: '1px solid rgba(255,255,255,0.05)',
+    borderTop: '1px solid var(--border-color)',
   },
   sectionHeader: {
     textAlign: 'center',
@@ -1030,16 +1029,16 @@ const styles = {
     marginBottom: '1rem',
   },
   offeringCategory: {
-    background: 'rgba(255,255,255,0.05)',
+    background: 'var(--bg-primary)',
     padding: '0.2rem 0.5rem',
     borderRadius: '4px',
     fontSize: '0.7rem',
     fontWeight: '600',
-    color: '#94a3b8',
+    color: 'var(--color-text-secondary)',
     textTransform: 'uppercase',
   },
   offeringStatus: {
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '0.7rem',
     fontWeight: '700',
     textTransform: 'uppercase',
@@ -1052,7 +1051,7 @@ const styles = {
   },
   tagline: {
     fontSize: '0.9rem',
-    color: '#94a3b8',
+    color: 'var(--color-text-secondary)',
     height: '42px',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
@@ -1066,7 +1065,7 @@ const styles = {
   },
   progressBar: {
     height: '6px',
-    background: 'rgba(255,255,255,0.05)',
+    background: 'var(--bg-primary)',
     borderRadius: '3px',
     overflow: 'hidden',
     marginBottom: '0.5rem',
@@ -1086,7 +1085,7 @@ const styles = {
     display: 'grid',
     gridTemplateColumns: 'repeat(3, 1fr)',
     gap: '1rem',
-    borderTop: '1px solid rgba(255,255,255,0.05)',
+    borderTop: '1px solid var(--border-color)',
     paddingTop: '1.25rem',
   },
   labelMuted: {
@@ -1097,7 +1096,7 @@ const styles = {
   footerVal: {
     fontSize: '1rem',
     fontWeight: '700',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     marginTop: '0.2rem',
   },
   lockOverlay: {
@@ -1120,17 +1119,17 @@ const styles = {
     opacity: 1
   },
   lockText: {
-    background: 'rgba(255,255,255,0.05)',
-    border: '1px solid rgba(255,255,255,0.1)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '30px',
     padding: '0.65rem 1.25rem',
     fontSize: '0.85rem',
     fontWeight: '700',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
   },
   footerContainer: {
-    borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+    borderTop: '1px solid var(--border-color)',
     padding: '4rem 2rem 2rem 2rem',
     marginTop: '6rem',
     background: 'rgba(5, 5, 5, 0.4)',
@@ -1151,16 +1150,16 @@ const styles = {
   footerColTitle: {
     fontSize: '0.88rem',
     fontWeight: '800',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     textTransform: 'uppercase',
     letterSpacing: '0.05em',
     margin: 0,
-    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+    borderBottom: '1px solid var(--border-color)',
     paddingBottom: '0.5rem',
   },
   footerColText: {
     fontSize: '0.82rem',
-    color: '#94a3b8',
+    color: 'var(--color-text-secondary)',
     lineHeight: '1.55',
     margin: 0,
   },
@@ -1174,7 +1173,7 @@ const styles = {
   },
   footerListItem: {
     fontSize: '0.82rem',
-    color: '#94a3b8',
+    color: 'var(--color-text-secondary)',
     cursor: 'pointer',
     transition: 'color 0.2s ease',
   },
@@ -1185,7 +1184,7 @@ const styles = {
     transition: 'opacity 0.2s ease',
   },
   footerBottom: {
-    borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+    borderTop: '1px solid var(--border-color)',
     paddingTop: '2rem',
     textAlign: 'center',
     maxWidth: '1200px',
@@ -1206,7 +1205,7 @@ const styles = {
   },
   modalContent: {
     background: '#0b0f1a',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
+    border: '1px solid var(--border-color)',
     borderRadius: '16px',
     width: '100%',
     maxWidth: '600px',
@@ -1221,19 +1220,19 @@ const styles = {
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: '1.5rem',
-    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+    borderBottom: '1px solid var(--border-color)',
   },
   modalTitle: {
     fontSize: '1.15rem',
     fontWeight: '800',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     margin: 0,
   },
   modalCloseBtn: {
     background: 'none',
     border: 'none',
     fontSize: '1.75rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     cursor: 'pointer',
     outline: 'none',
     transition: 'color 0.2s ease',
@@ -1255,26 +1254,26 @@ const styles = {
   modalLabel: {
     fontSize: '0.72rem',
     fontWeight: '700',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     textTransform: 'uppercase',
   },
   modalInput: {
     width: '100%',
-    background: 'rgba(255, 255, 255, 0.02)',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '8px',
     padding: '0.75rem 1rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '0.95rem',
     outline: 'none',
   },
   modalTextarea: {
     width: '100%',
-    background: 'rgba(255, 255, 255, 0.02)',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '8px',
     padding: '0.75rem 1rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '0.95rem',
     outline: 'none',
     resize: 'none',
@@ -1289,10 +1288,10 @@ const styles = {
   successMessage: {
     textAlign: 'center',
     padding: '2rem 1rem',
-    color: '#94a3b8',
+    color: 'var(--color-text-secondary)',
   },
   legalText: {
-    color: '#94a3b8',
+    color: 'var(--color-text-secondary)',
     fontSize: '0.88rem',
     lineHeight: '1.65',
     display: 'flex',
@@ -1306,10 +1305,10 @@ const styles = {
   modalSelect: {
     width: '100%',
     background: '#121212',
-    border: '1px solid rgba(255,255,255,0.08)',
+    border: '1px solid var(--border-color)',
     borderRadius: '8px',
     padding: '0.75rem 1rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '0.95rem',
     outline: 'none',
     cursor: 'pointer',
@@ -1319,7 +1318,7 @@ const styles = {
     margin: '0 auto',
     width: '100%',
     padding: '4rem 0 6rem 0',
-    borderTop: '1px solid rgba(255,255,255,0.05)',
+    borderTop: '1px solid var(--border-color)',
   },
   howTabsContainer: {
     display: 'flex',
@@ -1330,9 +1329,9 @@ const styles = {
   howTab: {
     padding: '0.8rem 1.75rem',
     borderRadius: '30px',
-    background: 'rgba(255, 255, 255, 0.02)',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
-    color: 'rgba(255,255,255,0.6)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
+    color: 'rgba(0, 0, 0, 0.09)',
     fontWeight: '700',
     cursor: 'pointer',
     fontSize: '0.92rem',
@@ -1343,7 +1342,7 @@ const styles = {
     borderRadius: '30px',
     background: 'linear-gradient(135deg, rgba(0, 242, 254, 0.15) 0%, rgba(79, 172, 254, 0.15) 100%)',
     border: '1px solid #00f2fe',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontWeight: '700',
     cursor: 'pointer',
     fontSize: '0.92rem',
@@ -1353,7 +1352,7 @@ const styles = {
   howCard: {
     padding: '2.5rem',
     background: 'rgba(7, 9, 14, 0.4)',
-    border: '1px solid rgba(255,255,255,0.06)',
+    border: '1px solid var(--border-color)',
     borderRadius: '16px',
     backdropFilter: 'blur(16px)',
   },
@@ -1362,7 +1361,7 @@ const styles = {
     justifyContent: 'space-between',
     alignItems: 'flex-start',
     gap: '2rem',
-    borderBottom: '1px solid rgba(255,255,255,0.05)',
+    borderBottom: '1px solid var(--border-color)',
     paddingBottom: '2rem',
     marginBottom: '2.5rem',
     flexWrap: 'wrap',
@@ -1370,19 +1369,19 @@ const styles = {
   howCardTitle: {
     fontSize: '1.5rem',
     fontWeight: '800',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     margin: 0,
   },
   howCardSub: {
     fontSize: '0.92rem',
-    color: '#94a3b8',
+    color: 'var(--color-text-secondary)',
     marginTop: '0.35rem',
     maxWidth: '600px',
   },
   howTypeToggle: {
     display: 'flex',
     background: 'rgba(0, 0, 0, 0.3)',
-    border: '1px solid rgba(255,255,255,0.06)',
+    border: '1px solid var(--border-color)',
     borderRadius: '10px',
     padding: '0.25rem',
     gap: '0.25rem',
@@ -1392,7 +1391,7 @@ const styles = {
     background: 'none',
     border: 'none',
     borderRadius: '8px',
-    color: 'rgba(255,255,255,0.5)',
+    color: 'rgba(0, 0, 0, 0.075)',
     fontWeight: '600',
     fontSize: '0.85rem',
     cursor: 'pointer',
@@ -1400,10 +1399,10 @@ const styles = {
   },
   howTypeBtnActive: {
     padding: '0.6rem 1.25rem',
-    background: 'rgba(255,255,255,0.06)',
+    background: 'var(--bg-primary)',
     border: 'none',
     borderRadius: '8px',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontWeight: '600',
     fontSize: '0.85rem',
     cursor: 'pointer',
@@ -1443,17 +1442,17 @@ const styles = {
   howStepLine: {
     flex: 1,
     height: '1px',
-    background: 'linear-gradient(90deg, rgba(0, 242, 254, 0.2) 0%, rgba(255, 255, 255, 0.02) 100%)',
+    background: 'linear-gradient(90deg, rgba(0, 242, 254, 0.2) 0%, var(--border-color) 100%)',
   },
   howStepTitle: {
     fontSize: '1.05rem',
     fontWeight: '750',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     margin: 0,
   },
   howStepText: {
     fontSize: '0.82rem',
-    color: '#94a3b8',
+    color: 'var(--color-text-secondary)',
     lineHeight: '1.5',
     margin: 0,
   }

@@ -331,8 +331,8 @@ export default function SalesAdminModule({ state }) {
             onClick={() => setActiveAdminTab('admittance')}
             style={{ 
               ...styles.tabBtn, 
-              color: activeAdminTab === 'admittance' ? '#ffffff' : '#737373',
-              background: activeAdminTab === 'admittance' ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
+              color: activeAdminTab === 'admittance' ? 'var(--border-accent)' : 'var(--color-text-secondary)',
+              background: activeAdminTab === 'admittance' ? 'var(--border-color)' : 'transparent',
               borderBottom: activeAdminTab === 'admittance' ? '2px solid #00f2fe' : 'none'
             }}
           >
@@ -342,8 +342,8 @@ export default function SalesAdminModule({ state }) {
             onClick={() => setActiveAdminTab('risk_console')}
             style={{ 
               ...styles.tabBtn, 
-              color: activeAdminTab === 'risk_console' ? '#ffffff' : '#737373',
-              background: activeAdminTab === 'risk_console' ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
+              color: activeAdminTab === 'risk_console' ? 'var(--border-accent)' : 'var(--color-text-secondary)',
+              background: activeAdminTab === 'risk_console' ? 'var(--border-color)' : 'transparent',
               borderBottom: activeAdminTab === 'risk_console' ? '2px solid #00f2fe' : 'none'
             }}
           >
@@ -353,8 +353,8 @@ export default function SalesAdminModule({ state }) {
             onClick={() => setActiveAdminTab('portfolio_risk')}
             style={{ 
               ...styles.tabBtn, 
-              color: activeAdminTab === 'portfolio_risk' ? '#ffffff' : '#737373',
-              background: activeAdminTab === 'portfolio_risk' ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
+              color: activeAdminTab === 'portfolio_risk' ? 'var(--border-accent)' : 'var(--color-text-secondary)',
+              background: activeAdminTab === 'portfolio_risk' ? 'var(--border-color)' : 'transparent',
               borderBottom: activeAdminTab === 'portfolio_risk' ? '2px solid #00f2fe' : 'none'
             }}
           >
@@ -364,8 +364,8 @@ export default function SalesAdminModule({ state }) {
             onClick={() => setActiveAdminTab('content_publisher')}
             style={{ 
               ...styles.tabBtn, 
-              color: activeAdminTab === 'content_publisher' ? '#ffffff' : '#737373',
-              background: activeAdminTab === 'content_publisher' ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
+              color: activeAdminTab === 'content_publisher' ? 'var(--border-accent)' : 'var(--color-text-secondary)',
+              background: activeAdminTab === 'content_publisher' ? 'var(--border-color)' : 'transparent',
               borderBottom: activeAdminTab === 'content_publisher' ? '2px solid #00f2fe' : 'none'
             }}
           >
@@ -478,8 +478,8 @@ export default function SalesAdminModule({ state }) {
                     <span style={{ fontSize: '0.7rem', color: '#00f2fe', fontWeight: '800', textTransform: 'uppercase' }}>
                       🔑 Cryptographic Waitlist Bypass Code
                     </span>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(0,0,0,0.3)', padding: '0.5rem 0.75rem', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.06)' }}>
-                      <code style={{ fontSize: '0.9rem', color: '#ffffff', fontWeight: '800', letterSpacing: '0.05em' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(0,0,0,0.3)', padding: '0.5rem 0.75rem', borderRadius: '6px', border: '1px solid var(--border-color)' }}>
+                      <code style={{ fontSize: '0.9rem', color: 'var(--color-text-primary)', fontWeight: '800', letterSpacing: '0.05em' }}>
                         {generatedCode}
                       </code>
                       <button 
@@ -537,10 +537,10 @@ export default function SalesAdminModule({ state }) {
                       accept=".csv,.txt,.xls,.xlsx"
                     />
                     <span style={{ fontSize: '1.5rem', marginBottom: '0.35rem' }}>📂</span>
-                    <span style={{ fontSize: '0.76rem', color: '#ffffff', fontWeight: '700' }}>
+                    <span style={{ fontSize: '0.76rem', color: 'var(--color-text-primary)', fontWeight: '700' }}>
                       Drag & Drop CSV / XLS list here
                     </span>
-                    <span style={{ fontSize: '0.62rem', color: '#a3a3a3', marginTop: '0.2rem' }}>
+                    <span style={{ fontSize: '0.62rem', color: 'var(--color-text-secondary)', marginTop: '0.2rem' }}>
                       or click to browse local storage files
                     </span>
                   </div>
@@ -603,7 +603,7 @@ export default function SalesAdminModule({ state }) {
 
           {/* Bottom Table: Registered Users Audit & Maintenance Ledger */}
           <div className="glass-panel" style={{ ...styles.card, padding: '2rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
               <div>
                 <h3 style={styles.cardTitle}>👥 Ecosystem Accounts Ledger & Maintenance Console</h3>
                 <p style={styles.cardDesc}>
@@ -657,11 +657,11 @@ export default function SalesAdminModule({ state }) {
                               </div>
                             )}
                             <div>
-                              <div style={{ fontWeight: '800', color: '#ffffff', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                              <div style={{ fontWeight: '800', color: 'var(--color-text-primary)', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                                 <span>{member.first_name} {member.last_name}</span>
                                 {isCurrentUser && <span style={{ fontSize: '0.62rem', color: '#8b5cf6', background: 'rgba(139,92,246,0.1)', padding: '0.05rem 0.25rem', borderRadius: '4px' }}>Me</span>}
                               </div>
-                              <span style={{ fontSize: '0.68rem', color: '#a3a3a3' }}>{member.email}</span>
+                              <span style={{ fontSize: '0.68rem', color: 'var(--color-text-secondary)' }}>{member.email}</span>
                             </div>
                           </div>
                         </td>
@@ -669,7 +669,7 @@ export default function SalesAdminModule({ state }) {
                         <td style={styles.tableCell}>
                           <div style={{ display: 'flex', gap: '0.25rem', flexWrap: 'wrap' }}>
                             {member.role_flags?.map(r => (
-                              <span key={r} className="badge" style={{ fontSize: '0.58rem', padding: '0.08rem 0.35rem', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)', color: '#ffffff', fontWeight: '700' }}>
+                              <span key={r} className="badge" style={{ fontSize: '0.58rem', padding: '0.08rem 0.35rem', background: 'var(--bg-primary)', border: '1px solid var(--border-color)', color: 'var(--color-text-primary)', fontWeight: '700' }}>
                                 {r}
                               </span>
                             ))}
@@ -682,9 +682,9 @@ export default function SalesAdminModule({ state }) {
                             padding: '0.1rem 0.45rem',
                             borderRadius: '4px',
                             fontWeight: '700',
-                            background: member.subscription_tier === 'lender_pro' ? 'rgba(0, 242, 254, 0.08)' : member.subscription_tier === 'founder_pro' ? 'rgba(139, 92, 246, 0.08)' : 'rgba(255,255,255,0.02)',
+                            background: member.subscription_tier === 'lender_pro' ? 'rgba(0, 242, 254, 0.08)' : member.subscription_tier === 'founder_pro' ? 'rgba(139, 92, 246, 0.08)' : 'var(--border-color)',
                             color: member.subscription_tier === 'lender_pro' ? '#00f2fe' : member.subscription_tier === 'founder_pro' ? '#a78bfa' : '#737373',
-                            border: member.subscription_tier === 'lender_pro' ? '1px solid rgba(0, 242, 254, 0.2)' : member.subscription_tier === 'founder_pro' ? '1px solid rgba(139, 92, 246, 0.2)' : '1px solid rgba(255,255,255,0.06)'
+                            border: member.subscription_tier === 'lender_pro' ? '1px solid rgba(0, 242, 254, 0.2)' : member.subscription_tier === 'founder_pro' ? '1px solid rgba(139, 92, 246, 0.2)' : '1px solid var(--border-color)'
                           }}>
                             {member.subscription_tier === 'lender_pro' ? 'Lender Pro' : member.subscription_tier === 'founder_pro' ? 'Founder Pro' : 'Standard'}
                           </span>
@@ -701,7 +701,7 @@ export default function SalesAdminModule({ state }) {
                         </td>
 
                         <td style={styles.tableCell}>
-                          <span style={{ fontSize: '0.76rem', color: '#a3a3a3' }}>{audit.joined}</span>
+                          <span style={{ fontSize: '0.76rem', color: 'var(--color-text-secondary)' }}>{audit.joined}</span>
                         </td>
 
                         <td style={styles.tableCell}>
@@ -878,36 +878,36 @@ export default function SalesAdminModule({ state }) {
                             
                             {/* Left Column: FICO path */}
                             <div style={{
-                              background: 'rgba(255, 255, 255, 0.01)',
-                              border: '1px solid rgba(255,255,255,0.03)',
+                              background: 'var(--bg-primary)',
+                              border: '1px solid var(--border-color)',
                               borderRadius: '8px',
                               padding: '0.85rem',
                               display: 'flex',
                               flexDirection: 'column',
                               gap: '0.75rem'
                             }}>
-                              <span style={{ fontSize: '0.7rem', fontWeight: 'bold', color: '#737373', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.35rem' }}>TRADITIONAL CREDIT PATH (10% WT)</span>
+                              <span style={{ fontSize: '0.7rem', fontWeight: 'bold', color: 'var(--color-text-muted)', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.35rem' }}>TRADITIONAL CREDIT PATH (10% WT)</span>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem' }}>
-                                  <span style={{ color: '#a3a3a3' }}>Traditional Bureau FICO:</span>
+                                  <span style={{ color: 'var(--color-text-secondary)' }}>Traditional Bureau FICO:</span>
                                   <strong style={{ color: priDetails.layersBreakdown.layer1.bcsScore >= 660 ? '#10b981' : '#f43f5e' }}>{priDetails.layersBreakdown.layer1.bcsScore} / 850</strong>
                                 </div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem' }}>
-                                  <span style={{ color: '#a3a3a3' }}>Active Tradelines:</span>
+                                  <span style={{ color: 'var(--color-text-secondary)' }}>Active Tradelines:</span>
                                   <strong>{priDetails.layersBreakdown.layer1.tradelines}</strong>
                                 </div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem' }}>
-                                  <span style={{ color: '#a3a3a3' }}>Bureau Utilization:</span>
+                                  <span style={{ color: 'var(--color-text-secondary)' }}>Bureau Utilization:</span>
                                   <strong style={{ color: parseFloat(priDetails.layersBreakdown.layer1.utilization) > 60 ? '#f43f5e' : '#10b981' }}>{priDetails.layersBreakdown.layer1.utilization}</strong>
                                 </div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem' }}>
-                                  <span style={{ color: '#a3a3a3' }}>Payment Reliability:</span>
+                                  <span style={{ color: 'var(--color-text-secondary)' }}>Payment Reliability:</span>
                                   <strong>{priDetails.layersBreakdown.layer2.onTimePaymentRatio}</strong>
                                 </div>
                               </div>
                               <div style={{
                                 fontSize: '0.62rem',
-                                color: '#737373',
+                                color: 'var(--color-text-muted)',
                                 padding: '0.5rem',
                                 background: 'rgba(0,0,0,0.15)',
                                 borderRadius: '4px',
@@ -919,50 +919,50 @@ export default function SalesAdminModule({ state }) {
 
                             {/* Right Column: Modern Cash Flow Path */}
                             <div style={{
-                              background: 'rgba(255, 255, 255, 0.02)',
-                              border: '1px solid rgba(255,255,255,0.05)',
+                              background: 'var(--bg-primary)',
+                              border: '1px solid var(--border-color)',
                               borderRadius: '8px',
                               padding: '0.85rem',
                               display: 'flex',
                               flexDirection: 'column',
                               gap: '0.75rem'
                             }}>
-                              <span style={{ fontSize: '0.7rem', fontWeight: 'bold', color: '#10b981', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.35rem' }}>MODERN CASH-FLOW PATH (90% WT)</span>
+                              <span style={{ fontSize: '0.7rem', fontWeight: 'bold', color: '#10b981', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.35rem' }}>MODERN CASH-FLOW PATH (90% WT)</span>
                               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                  <span style={{ fontSize: '0.58rem', color: '#737373' }}>VERIFIED ANNUAL GROSS (ADP)</span>
-                                  <strong style={{ fontSize: '0.85rem', color: '#fff' }}>${priDetails.layersBreakdown.layer2.grossIncome.toLocaleString()}</strong>
+                                  <span style={{ fontSize: '0.58rem', color: 'var(--color-text-muted)' }}>VERIFIED ANNUAL GROSS (ADP)</span>
+                                  <strong style={{ fontSize: '0.85rem', color: 'var(--color-text-primary)' }}>${priDetails.layersBreakdown.layer2.grossIncome.toLocaleString()}</strong>
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                  <span style={{ fontSize: '0.58rem', color: '#737373' }}>MONTHLY NET TAKE-HOME</span>
-                                  <strong style={{ fontSize: '0.85rem', color: '#fff' }}>${priDetails.layersBreakdown.layer2.netPaycheck.toLocaleString()}/mo</strong>
+                                  <span style={{ fontSize: '0.58rem', color: 'var(--color-text-muted)' }}>MONTHLY NET TAKE-HOME</span>
+                                  <strong style={{ fontSize: '0.85rem', color: 'var(--color-text-primary)' }}>${priDetails.layersBreakdown.layer2.netPaycheck.toLocaleString()}/mo</strong>
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                  <span style={{ fontSize: '0.58rem', color: '#737373' }}>PRE-TAX RETIREMENT SAVINGS</span>
-                                  <strong style={{ fontSize: '0.75rem', color: '#a3a3a3' }}>${priDetails.layersBreakdown.layer2.taxSavings.toLocaleString()}/mo</strong>
+                                  <span style={{ fontSize: '0.58rem', color: 'var(--color-text-muted)' }}>PRE-TAX RETIREMENT SAVINGS</span>
+                                  <strong style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>${priDetails.layersBreakdown.layer2.taxSavings.toLocaleString()}/mo</strong>
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                  <span style={{ fontSize: '0.58rem', color: '#737373' }}>MONTHLY TAX WITHHOLDING</span>
+                                  <span style={{ fontSize: '0.58rem', color: 'var(--color-text-muted)' }}>MONTHLY TAX WITHHOLDING</span>
                                   <strong style={{ fontSize: '0.75rem', color: '#f43f5e' }}>${priDetails.layersBreakdown.layer2.withholdings.toLocaleString()}/mo</strong>
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                  <span style={{ fontSize: '0.58rem', color: '#737373' }}>PLAID MANDATORY OBLIGATIONS</span>
-                                  <strong style={{ fontSize: '0.75rem', color: '#fff' }}>${priDetails.layersBreakdown.layer2.mandatorySpend.toLocaleString()}/mo</strong>
+                                  <span style={{ fontSize: '0.58rem', color: 'var(--color-text-muted)' }}>PLAID MANDATORY OBLIGATIONS</span>
+                                  <strong style={{ fontSize: '0.75rem', color: 'var(--color-text-primary)' }}>${priDetails.layersBreakdown.layer2.mandatorySpend.toLocaleString()}/mo</strong>
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                  <span style={{ fontSize: '0.58rem', color: '#737373' }}>PLAID DISCRETIONARY SPEND</span>
+                                  <span style={{ fontSize: '0.58rem', color: 'var(--color-text-muted)' }}>PLAID DISCRETIONARY SPEND</span>
                                   <strong style={{ fontSize: '0.75rem', color: priDetails.layersBreakdown.layer2.discretionarySpend > priDetails.layersBreakdown.layer2.netPaycheck * 0.4 ? '#f43f5e' : '#fff' }}>
                                     ${priDetails.layersBreakdown.layer2.discretionarySpend.toLocaleString()}/mo
                                   </strong>
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                  <span style={{ fontSize: '0.58rem', color: '#737373' }}>TRUE NET MONTHLY SAVINGS</span>
+                                  <span style={{ fontSize: '0.58rem', color: 'var(--color-text-muted)' }}>TRUE NET MONTHLY SAVINGS</span>
                                   <strong style={{ fontSize: '0.85rem', color: priDetails.layersBreakdown.layer2.monthlySavings > 0 ? '#10b981' : '#f43f5e' }}>
                                     ${Math.round(priDetails.layersBreakdown.layer2.monthlySavings).toLocaleString()}/mo
                                   </strong>
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                  <span style={{ fontSize: '0.58rem', color: '#737373' }}>VERIFIED SAVINGS RATE</span>
+                                  <span style={{ fontSize: '0.58rem', color: 'var(--color-text-muted)' }}>VERIFIED SAVINGS RATE</span>
                                   <strong style={{ fontSize: '0.85rem', color: parseFloat(priDetails.layersBreakdown.layer2.savingsRate) >= 25 ? '#10b981' : '#f43f5e' }}>
                                     {priDetails.layersBreakdown.layer2.savingsRate}
                                   </strong>
@@ -1050,13 +1050,13 @@ export default function SalesAdminModule({ state }) {
                         </div>
                         <div style={styles.auditSpecBox}>
                           <span style={styles.specLabel}>Vetting Rule Applied</span>
-                          <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.78rem', color: '#ffffff', lineHeight: '1.4' }}>
+                          <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.78rem', color: 'var(--color-text-primary)', lineHeight: '1.4' }}>
                             {priDetails.layersBreakdown.layer3.ruleApplied}
                           </p>
                         </div>
                         <div style={styles.auditSpecBox}>
                           <span style={styles.specLabel}>Watchlist Records Details</span>
-                          <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.74rem', color: '#a3a3a3' }}>
+                          <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.74rem', color: 'var(--color-text-secondary)' }}>
                             {priDetails.layersBreakdown.layer3.details}
                           </p>
                         </div>
@@ -1071,7 +1071,7 @@ export default function SalesAdminModule({ state }) {
             <div style={styles.riskRightCol}>
               {/* Summary Dashboard Card */}
               <div className="glass-panel glow-accent-border" style={styles.priCockpitCard}>
-                <h3 style={{ ...styles.cardTitle, textAlign: 'center', fontSize: '0.85rem', color: '#a3a3a3', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+                <h3 style={{ ...styles.cardTitle, textAlign: 'center', fontSize: '0.85rem', color: 'var(--color-text-secondary)', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
                   Proprietary Risk Index Dashboard
                 </h3>
                 
@@ -1106,21 +1106,21 @@ export default function SalesAdminModule({ state }) {
 
                 {/* Underwriting recommendations limits */}
                 <div style={styles.recomTermsSection}>
-                  <span style={{ ...styles.specLabel, display: 'block', marginBottom: '0.5rem', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.25rem' }}>
+                  <span style={{ ...styles.specLabel, display: 'block', marginBottom: '0.5rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.25rem' }}>
                     Recommended Underwriting Limits
                   </span>
                   <div style={styles.recomTermsGrid}>
                     <div style={styles.recomBox}>
                       <span style={styles.specLabel}>Max Principal</span>
-                      <strong style={{ fontSize: '1rem', color: '#ffffff' }}>${priDetails.recommendedTerms.maxAmount.toLocaleString()}</strong>
+                      <strong style={{ fontSize: '1rem', color: 'var(--color-text-primary)' }}>${priDetails.recommendedTerms.maxAmount.toLocaleString()}</strong>
                     </div>
                     <div style={styles.recomBox}>
                       <span style={styles.specLabel}>Max Tenor</span>
-                      <strong style={{ fontSize: '1rem', color: '#ffffff' }}>{priDetails.recommendedTerms.maxTenor} months</strong>
+                      <strong style={{ fontSize: '1rem', color: 'var(--color-text-primary)' }}>{priDetails.recommendedTerms.maxTenor} months</strong>
                     </div>
                     <div style={styles.recomBox}>
                       <span style={styles.specLabel}>APR Bands</span>
-                      <strong style={{ fontSize: '1rem', color: '#ffffff' }}>{priDetails.recommendedTerms.aprRange}</strong>
+                      <strong style={{ fontSize: '1rem', color: 'var(--color-text-primary)' }}>{priDetails.recommendedTerms.aprRange}</strong>
                     </div>
                   </div>
                 </div>
@@ -1157,7 +1157,7 @@ export default function SalesAdminModule({ state }) {
                           }}>
                             {driver.type.toUpperCase()}
                           </span>
-                          <span style={{ fontSize: '0.74rem', color: '#ffffff', fontWeight: '500' }}>
+                          <span style={{ fontSize: '0.74rem', color: 'var(--color-text-primary)', fontWeight: '500' }}>
                             {driver.text}
                           </span>
                         </div>
@@ -1173,10 +1173,10 @@ export default function SalesAdminModule({ state }) {
           <div className="glass-panel" style={styles.actionsBarCard}>
             <div style={styles.actionsBarHeader}>
               <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <h4 style={{ margin: 0, fontSize: '0.9rem', color: '#ffffff', fontWeight: '800' }}>
+                <h4 style={{ margin: 0, fontSize: '0.9rem', color: 'var(--color-text-primary)', fontWeight: '800' }}>
                   Decisions Committee Action Deck
                 </h4>
-                <span style={{ fontSize: '0.7rem', color: '#737373' }}>
+                <span style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)' }}>
                   Decisions lock immediately and update ecosystem directory registers.
                 </span>
               </div>
@@ -1208,7 +1208,7 @@ export default function SalesAdminModule({ state }) {
                   <div style={styles.sliderBox}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem' }}>
                       <span style={styles.specLabel}>Custom Allocation Principal</span>
-                      <strong style={{ color: '#ffffff' }}>${customLimit.toLocaleString()}</strong>
+                      <strong style={{ color: 'var(--color-text-primary)' }}>${customLimit.toLocaleString()}</strong>
                     </div>
                     <input 
                       type="range" 
@@ -1219,7 +1219,7 @@ export default function SalesAdminModule({ state }) {
                       onChange={(e) => setCustomLimit(parseInt(e.target.value))}
                       style={styles.sliderInput} 
                     />
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.62rem', color: '#737373' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.62rem', color: 'var(--color-text-muted)' }}>
                       <span>Min: $500</span>
                       <span>Max recommended: ${priDetails.recommendedTerms.maxAmount.toLocaleString()}</span>
                     </div>
@@ -1228,7 +1228,7 @@ export default function SalesAdminModule({ state }) {
                   <div style={styles.sliderBox}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem' }}>
                       <span style={styles.specLabel}>Custom Payback Tenor</span>
-                      <strong style={{ color: '#ffffff' }}>{customTenor} Months</strong>
+                      <strong style={{ color: 'var(--color-text-primary)' }}>{customTenor} Months</strong>
                     </div>
                     <input 
                       type="range" 
@@ -1239,7 +1239,7 @@ export default function SalesAdminModule({ state }) {
                       onChange={(e) => setCustomTenor(parseInt(e.target.value))}
                       style={styles.sliderInput} 
                     />
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.62rem', color: '#737373' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.62rem', color: 'var(--color-text-muted)' }}>
                       <span>Min: 6m</span>
                       <span>Max recommended: {priDetails.recommendedTerms.maxTenor}m</span>
                     </div>
@@ -1310,10 +1310,10 @@ export default function SalesAdminModule({ state }) {
               <div style={styles.chartCanvas}>
                 <svg viewBox="0 0 400 200" style={{ width: '100%', height: '200px' }}>
                   {/* Grid Lines */}
-                  <line x1="40" y1="20" x2="380" y2="20" stroke="rgba(255,255,255,0.04)" strokeDasharray="3" />
-                  <line x1="40" y1="70" x2="380" y2="70" stroke="rgba(255,255,255,0.04)" strokeDasharray="3" />
-                  <line x1="40" y1="120" x2="380" y2="120" stroke="rgba(255,255,255,0.04)" strokeDasharray="3" />
-                  <line x1="40" y1="170" x2="380" y2="170" stroke="rgba(255,255,255,0.08)" />
+                  <line x1="40" y1="20" x2="380" y2="20" stroke="var(--border-color)" strokeDasharray="3" />
+                  <line x1="40" y1="70" x2="380" y2="70" stroke="var(--border-color)" strokeDasharray="3" />
+                  <line x1="40" y1="120" x2="380" y2="120" stroke="var(--border-color)" strokeDasharray="3" />
+                  <line x1="40" y1="170" x2="380" y2="170" stroke="var(--border-color)" />
 
                   {/* Bars (P1 to P5) */}
                   {/* P1: $245k */}
@@ -1354,10 +1354,10 @@ export default function SalesAdminModule({ state }) {
               <div style={styles.chartCanvas}>
                 <svg viewBox="0 0 400 200" style={{ width: '100%', height: '200px' }}>
                   {/* Grid Lines */}
-                  <line x1="40" y1="20" x2="380" y2="20" stroke="rgba(255,255,255,0.04)" strokeDasharray="3" />
-                  <line x1="40" y1="70" x2="380" y2="70" stroke="rgba(255,255,255,0.04)" strokeDasharray="3" />
-                  <line x1="40" y1="120" x2="380" y2="120" stroke="rgba(255,255,255,0.04)" strokeDasharray="3" />
-                  <line x1="40" y1="170" x2="380" y2="170" stroke="rgba(255,255,255,0.08)" />
+                  <line x1="40" y1="20" x2="380" y2="20" stroke="var(--border-color)" strokeDasharray="3" />
+                  <line x1="40" y1="70" x2="380" y2="70" stroke="var(--border-color)" strokeDasharray="3" />
+                  <line x1="40" y1="120" x2="380" y2="120" stroke="var(--border-color)" strokeDasharray="3" />
+                  <line x1="40" y1="170" x2="380" y2="170" stroke="var(--border-color)" />
 
                   {/* Curve 1: Expected PD (Blue) */}
                   <path d="M50,165 Q120,150 200,90 T350,30" fill="none" stroke="#00f2fe" strokeWidth="2.5" />
@@ -1393,10 +1393,10 @@ export default function SalesAdminModule({ state }) {
               <div style={styles.chartCanvas}>
                 <svg viewBox="0 0 800 200" style={{ width: '100%', height: '200px' }}>
                   {/* Grid Lines */}
-                  <line x1="40" y1="20" x2="760" y2="20" stroke="rgba(255,255,255,0.03)" strokeDasharray="3" />
-                  <line x1="40" y1="70" x2="760" y2="70" stroke="rgba(255,255,255,0.03)" strokeDasharray="3" />
-                  <line x1="40" y1="120" x2="760" y2="120" stroke="rgba(255,255,255,0.03)" strokeDasharray="3" />
-                  <line x1="40" y1="170" x2="760" y2="170" stroke="rgba(255,255,255,0.08)" />
+                  <line x1="40" y1="20" x2="760" y2="20" stroke="var(--border-color)" strokeDasharray="3" />
+                  <line x1="40" y1="70" x2="760" y2="70" stroke="var(--border-color)" strokeDasharray="3" />
+                  <line x1="40" y1="120" x2="760" y2="120" stroke="var(--border-color)" strokeDasharray="3" />
+                  <line x1="40" y1="170" x2="760" y2="170" stroke="var(--border-color)" />
 
                   {/* Vintage 2024 Cumulative Loss Area (crimson) */}
                   <path d="M40,170 Q140,165 240,150 T440,120 T640,95 T760,90 L760,170 Z" fill="rgba(239, 68, 68, 0.05)" stroke="#ef4444" strokeWidth="1.5" />
@@ -1617,22 +1617,22 @@ const styles = {
     gap: '1.75rem',
   },
   headerTitleRow: {
-    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+    borderBottom: '1px solid var(--border-color)',
     paddingBottom: '1rem',
   },
   mainTitle: {
     fontSize: '1.45rem',
     fontWeight: '850',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     margin: 0,
   },
   subTitle: {
     fontSize: '0.8rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     marginTop: '0.2rem',
   },
   segmentedTabWrapper: {
-    borderBottom: '1px solid rgba(255,255,255,0.06)',
+    borderBottom: '1px solid var(--border-color)',
     marginTop: '-0.5rem',
   },
   tabContainer: {
@@ -1670,7 +1670,7 @@ const styles = {
   },
   metricLabel: {
     fontSize: '0.72rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     textTransform: 'uppercase',
     fontWeight: '700',
     letterSpacing: '0.03em',
@@ -1678,7 +1678,7 @@ const styles = {
   metricVal: {
     fontSize: '1.85rem',
     fontWeight: '800',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
   },
   grid: {
     display: 'flex',
@@ -1701,12 +1701,12 @@ const styles = {
   cardTitle: {
     fontSize: '1.05rem',
     fontWeight: '800',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     margin: 0,
   },
   cardDesc: {
     fontSize: '0.76rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     lineHeight: '1.35',
   },
   form: {
@@ -1722,22 +1722,22 @@ const styles = {
   label: {
     fontSize: '0.68rem',
     fontWeight: '700',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     textTransform: 'uppercase',
   },
   input: {
     width: '100%',
     background: 'rgba(0, 0, 0, 0.25)',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
+    border: '1px solid var(--border-color)',
     borderRadius: '8px',
     padding: '0.65rem 0.85rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '0.85rem',
     outline: 'none',
     transition: 'all 0.2s',
   },
   dragZone: {
-    border: '2px dashed rgba(255,255,255,0.08)',
+    border: '2px dashed var(--border-color)',
     borderRadius: '8px',
     padding: '1.25rem 1rem',
     textAlign: 'center',
@@ -1750,10 +1750,10 @@ const styles = {
   textarea: {
     width: '100%',
     background: 'rgba(0, 0, 0, 0.25)',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
+    border: '1px solid var(--border-color)',
     borderRadius: '8px',
     padding: '0.65rem 0.85rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '0.85rem',
     outline: 'none',
     resize: 'none',
@@ -1762,11 +1762,11 @@ const styles = {
   },
   select: {
     width: '100%',
-    background: 'rgba(10, 10, 10, 0.95)',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
+    background: 'var(--bg-secondary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '8px',
     padding: '0.65rem 0.85rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '0.85rem',
     outline: 'none',
     cursor: 'pointer',
@@ -1795,8 +1795,8 @@ const styles = {
     paddingRight: '0.4rem',
   },
   inviteLogItem: {
-    background: 'rgba(255, 255, 255, 0.01)',
-    border: '1px solid rgba(255, 255, 255, 0.04)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '8px',
     padding: '1rem',
     display: 'flex',
@@ -1815,13 +1815,13 @@ const styles = {
   },
   logUses: {
     fontSize: '0.7rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
   },
   logBody: {
     fontSize: '0.74rem',
   },
   logMeta: {
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     margin: 0,
     marginBottom: '0.35rem',
   },
@@ -1845,12 +1845,12 @@ const styles = {
     gap: '0.15rem',
   },
   li: {
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     fontSize: '0.68rem',
     lineHeight: '1.2'
   },
   emptyLog: {
-    color: '#525252',
+    color: 'var(--color-text-muted)',
     fontStyle: 'italic',
     margin: 0,
     fontSize: '0.68rem',
@@ -1872,18 +1872,18 @@ const styles = {
     fontSize: '0.8rem',
   },
   tableHeaderRow: {
-    borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+    borderBottom: '1px solid var(--border-color)',
   },
   tableHeaderCell: {
     padding: '0.75rem 1rem',
     fontWeight: '800',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     fontSize: '0.7rem',
     textTransform: 'uppercase',
     letterSpacing: '0.04em',
   },
   tableRow: {
-    borderBottom: '1px solid rgba(255, 255, 255, 0.03)',
+    borderBottom: '1px solid var(--border-color)',
     transition: 'background 0.2s',
   },
   tableCell: {
@@ -1895,7 +1895,7 @@ const styles = {
     height: '32px',
     borderRadius: '50%',
     objectFit: 'cover',
-    border: '1.5px solid rgba(255,255,255,0.1)'
+    border: '1.5px solid var(--border-color)'
   },
   avatarInitials: {
     width: '32px',
@@ -1925,10 +1925,10 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    border: '1px solid rgba(255,255,255,0.08)',
+    border: '1px solid var(--border-color)',
     cursor: 'pointer',
-    background: 'rgba(255,255,255,0.02)',
-    color: '#ffffff'
+    background: 'var(--bg-primary)',
+    color: 'var(--color-text-primary)'
   },
 
   // Risk Console Styles
@@ -1953,7 +1953,7 @@ const styles = {
   applicationIdLabel: {
     fontSize: '1rem',
     fontWeight: '900',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     letterSpacing: '0.02em',
   },
   candidateSelectorRow: {
@@ -1963,12 +1963,12 @@ const styles = {
   },
   candidateLabel: {
     fontSize: '0.74rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
   },
   candidateSelect: {
-    background: '#000000',
-    border: '1px solid rgba(255,255,255,0.1)',
-    color: '#ffffff',
+    background: 'var(--bg-secondary)',
+    border: '1px solid var(--border-color)',
+    color: 'var(--color-text-primary)',
     fontSize: '0.78rem',
     padding: '0.25rem 0.5rem',
     borderRadius: '4px',
@@ -1983,7 +1983,7 @@ const styles = {
   },
   riskTimestamp: {
     fontSize: '0.74rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
   },
   topHeaderBtnGroup: {
     display: 'flex',
@@ -2010,7 +2010,7 @@ const styles = {
     gap: '1.5rem',
   },
   auditLayersHeader: {
-    borderBottom: '1px solid rgba(255,255,255,0.06)',
+    borderBottom: '1px solid var(--border-color)',
     paddingBottom: '1rem',
     display: 'flex',
     flexDirection: 'column',
@@ -2024,7 +2024,7 @@ const styles = {
     padding: '0.35rem 0.75rem',
     fontSize: '0.72rem',
     fontWeight: '800',
-    border: '1px solid rgba(255,255,255,0.06)',
+    border: '1px solid var(--border-color)',
     borderRadius: '4px',
     cursor: 'pointer',
     transition: 'all 0.2s',
@@ -2050,8 +2050,8 @@ const styles = {
     gap: '1rem',
   },
   auditSpecBox: {
-    background: 'rgba(0,0,0,0.2)',
-    border: '1px solid rgba(255,255,255,0.03)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '6px',
     padding: '0.85rem',
     display: 'flex',
@@ -2060,13 +2060,13 @@ const styles = {
   },
   specLabel: {
     fontSize: '0.62rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     textTransform: 'uppercase',
     fontWeight: '700',
   },
   specVal: {
     fontSize: '0.82rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontWeight: '800',
   },
   auditAlertBanner: {
@@ -2075,11 +2075,11 @@ const styles = {
     padding: '0.65rem 0.85rem',
     borderRadius: '0 6px 6px 0',
     fontSize: '0.74rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
   },
   sparklineCard: {
-    background: 'rgba(0,0,0,0.2)',
-    border: '1px solid rgba(255,255,255,0.03)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '6px',
     padding: '1rem',
     display: 'flex',
@@ -2120,7 +2120,7 @@ const styles = {
   gaugeVal: {
     fontSize: '1.85rem',
     fontWeight: '900',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontFamily: 'monospace',
     lineHeight: '1',
   },
@@ -2152,8 +2152,8 @@ const styles = {
     gap: '0.5rem',
   },
   recomBox: {
-    background: 'rgba(255,255,255,0.01)',
-    border: '1px solid rgba(255,255,255,0.04)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '4px',
     padding: '0.65rem',
     textAlign: 'center',
@@ -2218,7 +2218,7 @@ const styles = {
   },
   adjustSlidersCard: {
     background: 'rgba(0,0,0,0.3)',
-    border: '1px solid rgba(255,255,255,0.05)',
+    border: '1px solid var(--border-color)',
     borderRadius: '8px',
     padding: '1.25rem',
     display: 'flex',
@@ -2253,19 +2253,19 @@ const styles = {
     justifyContent: 'space-between',
     fontSize: '0.74rem',
     paddingBottom: '0.5rem',
-    borderBottom: '1px solid rgba(255,255,255,0.03)',
+    borderBottom: '1px solid var(--border-color)',
   },
   trailUser: {
     fontWeight: '800',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     width: '180px',
   },
   trailAction: {
     flex: 1,
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
   },
   trailTime: {
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     fontSize: '0.68rem',
   },
 
@@ -2281,9 +2281,9 @@ const styles = {
     gap: '0.5rem',
   },
   filterSelect: {
-    background: '#000000',
-    border: '1px solid rgba(255,255,255,0.1)',
-    color: '#ffffff',
+    background: 'var(--bg-secondary)',
+    border: '1px solid var(--border-color)',
+    color: 'var(--color-text-primary)',
     fontSize: '0.78rem',
     padding: '0.25rem 0.5rem',
     borderRadius: '4px',
@@ -2302,8 +2302,8 @@ const styles = {
     gap: '1rem',
   },
   chartCanvas: {
-    background: 'rgba(0,0,0,0.2)',
-    border: '1px solid rgba(255,255,255,0.04)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '6px',
     padding: '1rem 0.5rem 0.5rem 0.5rem',
     marginTop: '0.5rem',

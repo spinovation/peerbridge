@@ -52,7 +52,7 @@ export default function SupportModule({ state }) {
       case 'resolved':
         return <span className="badge badge-verified">✓ Resolved</span>;
       case 'closed':
-        return <span className="badge" style={{ background: 'rgba(255,255,255,0.05)', color: '#737373' }}>Closed</span>;
+        return <span className="badge" style={{ background: 'var(--bg-primary)', color: 'var(--color-text-muted)' }}>Closed</span>;
       default:
         return <span className="badge">{status}</span>;
     }
@@ -179,8 +179,8 @@ export default function SupportModule({ state }) {
               <div 
                 key={index} 
                 style={{
-                  background: 'rgba(255,255,255,0.01)',
-                  border: '1px solid rgba(255,255,255,0.04)',
+                  background: 'var(--bg-primary)',
+                  border: '1px solid var(--border-color)',
                   borderRadius: '8px',
                   overflow: 'hidden',
                   transition: 'all 0.25s ease'
@@ -194,7 +194,7 @@ export default function SupportModule({ state }) {
                     border: 'none',
                     padding: '1.25rem',
                     textAlign: 'left',
-                    color: '#ffffff',
+                    color: 'var(--color-text-primary)',
                     fontWeight: '700',
                     fontSize: '0.92rem',
                     display: 'flex',
@@ -205,7 +205,7 @@ export default function SupportModule({ state }) {
                   }}
                 >
                   <span>{faq.q}</span>
-                  <span style={{ fontSize: '0.8rem', color: '#737373', transition: 'transform 0.2s', transform: isOpen ? 'rotate(90deg)' : 'rotate(0)' }}>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', transition: 'transform 0.2s', transform: isOpen ? 'rotate(90deg)' : 'rotate(0)' }}>
                     ▶
                   </span>
                 </button>
@@ -214,10 +214,10 @@ export default function SupportModule({ state }) {
                   <div 
                     style={{
                       padding: '0 1.25rem 1.25rem 1.25rem',
-                      color: '#a3a3a3',
+                      color: 'var(--color-text-secondary)',
                       fontSize: '0.86rem',
                       lineHeight: '1.6',
-                      borderTop: '1px solid rgba(255,255,255,0.03)',
+                      borderTop: '1px solid var(--border-color)',
                       whiteSpace: 'pre-line'
                     }}
                   >
@@ -248,13 +248,13 @@ const styles = {
   },
   sub: {
     fontSize: '0.9rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     marginTop: '0.25rem',
   },
   successToast: {
-    background: 'rgba(255, 255, 255, 0.05)',
-    border: '1px solid #ffffff',
-    color: '#ffffff',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-accent)',
+    color: 'var(--color-text-primary)',
     padding: '1rem',
     borderRadius: '6px',
     fontSize: '0.9rem',
@@ -289,7 +289,7 @@ const styles = {
   },
   cardDesc: {
     fontSize: '0.9rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     lineHeight: '1.4',
   },
   form: {
@@ -305,27 +305,27 @@ const styles = {
   label: {
     fontSize: '0.72rem',
     fontWeight: '700',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     textTransform: 'uppercase',
   },
   select: {
     width: '100%',
-    background: '#000000',
-    border: '1px solid rgba(255,255,255,0.08)',
+    background: 'var(--bg-secondary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '6px',
     padding: '0.7rem 1rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '0.9rem',
     outline: 'none',
     cursor: 'pointer',
   },
   textarea: {
     width: '100%',
-    background: 'rgba(255,255,255,0.03)',
-    border: '1px solid rgba(255,255,255,0.08)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '6px',
     padding: '0.75rem 1rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '0.9rem',
     outline: 'none',
     resize: 'none',
@@ -340,13 +340,13 @@ const styles = {
   emptyTickets: {
     padding: '3rem 1.5rem',
     textAlign: 'center',
-    color: '#525252',
+    color: 'var(--color-text-muted)',
     fontStyle: 'italic',
     fontSize: '0.85rem',
   },
   ticketItem: {
-    background: 'rgba(255,255,255,0.02)',
-    border: '1px solid rgba(255,255,255,0.04)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '8px',
     padding: '1.25rem',
     display: 'flex',
@@ -362,27 +362,27 @@ const styles = {
   },
   tktId: {
     fontSize: '0.95rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontFamily: 'monospace',
     display: 'block',
   },
   tktCategory: {
     fontSize: '0.75rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     display: 'block',
     marginTop: '0.15rem',
   },
   tktMsg: {
     fontSize: '0.85rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     lineHeight: '1.4',
-    background: 'rgba(255,255,255,0.01)',
+    background: 'var(--bg-primary)',
     padding: '0.5rem 0.75rem',
     borderRadius: '4px',
     borderLeft: '2px solid #ffffff',
   },
   tktFooter: {
     fontSize: '0.72rem',
-    color: '#525252',
+    color: 'var(--color-text-muted)',
   }
 };

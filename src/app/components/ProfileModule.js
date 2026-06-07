@@ -303,10 +303,10 @@ export default function ProfileModule({ state }) {
     const hasWealthVal = memberInv?.accreditation_status || false;
     const hasAddressAndSsn = memberBasic?.address?.trim()?.length > 3 && memberCustomer?.ssn?.trim()?.length > 0;
 
-    const colorId = hasId ? (hasAddressAndSsn ? '#d4af37' : '#00f2fe') : 'rgba(255,255,255,0.08)'; // Gold or Cyan
-    const colorJob = hasJobVal ? '#8f00ff' : 'rgba(255,255,255,0.08)'; // Purple
-    const colorAcad = hasAcadVal ? '#6366f1' : 'rgba(255,255,255,0.08)'; // Indigo
-    const colorWealth = hasWealthVal ? '#10b981' : 'rgba(255,255,255,0.08)'; // Emerald
+    const colorId = hasId ? (hasAddressAndSsn ? '#d4af37' : '#00f2fe') : 'var(--border-color)'; // Gold or Cyan
+    const colorJob = hasJobVal ? '#8f00ff' : 'var(--border-color)'; // Purple
+    const colorAcad = hasAcadVal ? '#6366f1' : 'var(--border-color)'; // Indigo
+    const colorWealth = hasWealthVal ? '#10b981' : 'var(--border-color)'; // Emerald
 
     const radius = 54;
     const perimeter = 2 * Math.PI * radius; // 339.29
@@ -314,7 +314,7 @@ export default function ProfileModule({ state }) {
 
     return (
       <svg width={size} height={size} viewBox="0 0 120 120" style={{ transform: 'rotate(-90deg)', position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
-        <circle cx="60" cy="60" r={radius} fill="none" stroke="rgba(255,255,255,0.02)" strokeWidth={ringWidth - 1} />
+        <circle cx="60" cy="60" r={radius} fill="none" stroke="var(--border-color)" strokeWidth={ringWidth - 1} />
         {/* Tier 1: Identity */}
         <circle cx="60" cy="60" r={radius} fill="none" stroke={colorId} strokeWidth={ringWidth} strokeDasharray="78 261" strokeDashoffset="0" strokeLinecap="round" />
         {/* Tier 4: Wealth */}
@@ -670,12 +670,12 @@ export default function ProfileModule({ state }) {
 
                     {/* Render current jobs ledger inside the edit form so users see changes in real-time */}
                     {experience.length > 0 && (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '0.75rem', background: 'rgba(255,255,255,0.01)', padding: '0.5rem', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.03)' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '0.75rem', background: 'var(--bg-primary)', padding: '0.5rem', borderRadius: '6px', border: '1px solid var(--border-color)' }}>
                         {experience.map((job, idx) => (
-                          <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.35rem 0.5rem', background: 'rgba(0,0,0,0.2)', borderRadius: '4px', fontSize: '0.74rem' }}>
+                          <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.35rem 0.5rem', background: 'var(--bg-primary)', borderRadius: '4px', fontSize: '0.74rem' }}>
                             <div>
-                              <strong style={{ color: '#ffffff' }}>{job.title}</strong> at <span style={{ color: '#00f2fe' }}>{job.company}</span>
-                              <div style={{ fontSize: '0.62rem', color: '#525252', marginTop: '0.05rem' }}>
+                              <strong style={{ color: 'var(--color-text-primary)' }}>{job.title}</strong> at <span style={{ color: '#00f2fe' }}>{job.company}</span>
+                              <div style={{ fontSize: '0.62rem', color: 'var(--color-text-muted)', marginTop: '0.05rem' }}>
                                 {job.start_date} • {job.current ? 'Present' : job.end_date}
                               </div>
                             </div>
@@ -723,7 +723,7 @@ export default function ProfileModule({ state }) {
                               onClick={() => setJobCurrent(!jobCurrent)} 
                               style={{ 
                                 fontSize: '0.78rem', 
-                                color: jobCurrent ? '#00f2fe' : 'rgba(255,255,255,0.4)', 
+                                color: jobCurrent ? '#00f2fe' : 'rgba(0, 0, 0, 0.06)', 
                                 cursor: 'pointer', 
                                 alignSelf: 'center',
                                 fontWeight: '700',
@@ -1266,7 +1266,7 @@ export default function ProfileModule({ state }) {
                               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '4px', width: '80px', height: '80px' }}>
                                 {Array.from({ length: 25 }).map((_, i) => (
                                   <div key={i} style={{ 
-                                    background: (i % 2 === 0 && i % 3 !== 0) || i === 0 || i === 4 || i === 20 || i === 24 ? '#ffffff' : 'transparent',
+                                    background: (i % 2 === 0 && i % 3 !== 0) || i === 0 || i === 4 || i === 20 || i === 24 ? 'var(--border-accent)' : 'transparent',
                                     borderRadius: '2px'
                                   }}></div>
                                 ))}
@@ -1527,7 +1527,7 @@ const styles = {
   coverBg: {
     height: '140px',
     background: 'linear-gradient(180deg, #1f1f1f 0%, #0a0a0a 100%)',
-    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+    borderBottom: '1px solid var(--border-color)',
   },
   profileSummaryRow: {
     display: 'flex',
@@ -1586,20 +1586,20 @@ const styles = {
   },
   titleSub: {
     fontSize: '0.92rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     marginTop: '0.2rem',
   },
   bioText: {
     fontSize: '0.9rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     marginTop: '0.75rem',
     fontStyle: 'italic',
     maxWidth: '700px',
   },
   successToast: {
-    background: 'rgba(255, 255, 255, 0.05)',
-    border: '1px solid #ffffff',
-    color: '#ffffff',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-accent)',
+    color: 'var(--color-text-primary)',
     padding: '1rem',
     borderRadius: '6px',
     fontSize: '0.9rem',
@@ -1628,7 +1628,7 @@ const styles = {
   },
   cardDesc: {
     fontSize: '0.85rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     lineHeight: '1.4',
   },
   editBtn: {
@@ -1641,13 +1641,13 @@ const styles = {
     gap: '1.5rem',
   },
   resumeSection: {
-    borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+    borderTop: '1px solid var(--border-color)',
     paddingTop: '1.25rem',
   },
   sectionHeader: {
     fontSize: '0.7rem',
     fontWeight: '700',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     textTransform: 'uppercase',
     letterSpacing: '0.05em',
     marginBottom: '0.5rem',
@@ -1655,11 +1655,11 @@ const styles = {
   resumeTitle: {
     fontSize: '1.05rem',
     fontWeight: '700',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
   },
   resumeText: {
     fontSize: '0.88rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     marginTop: '0.4rem',
     lineHeight: '1.5',
   },
@@ -1668,7 +1668,7 @@ const styles = {
     gridTemplateColumns: '1fr 1fr',
     gap: '0.75rem',
     fontSize: '0.88rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
   },
   experienceList: {
     display: 'flex',
@@ -1687,19 +1687,19 @@ const styles = {
   },
   jobTitleText: {
     fontSize: '0.95rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
   },
   jobDuration: {
     fontSize: '0.78rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
   },
   jobCompany: {
     fontSize: '0.82rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
   },
   jobDescText: {
     fontSize: '0.85rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     lineHeight: '1.4',
     marginTop: '0.2rem',
   },
@@ -1709,18 +1709,18 @@ const styles = {
     gap: '0.5rem',
   },
   skillTag: {
-    background: 'rgba(255,255,255,0.05)',
-    border: '1px solid rgba(255,255,255,0.1)',
-    color: '#ffffff',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
+    color: 'var(--color-text-primary)',
     padding: '0.3rem 0.65rem',
     borderRadius: '4px',
     fontSize: '0.78rem',
     fontWeight: '550',
   },
   skillTagEditable: {
-    background: 'rgba(255,255,255,0.05)',
-    border: '1px solid rgba(255,255,255,0.1)',
-    color: '#ffffff',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
+    color: 'var(--color-text-primary)',
     padding: '0.3rem 0.65rem',
     borderRadius: '4px',
     fontSize: '0.78rem',
@@ -1732,7 +1732,7 @@ const styles = {
   },
   emptyText: {
     fontSize: '0.85rem',
-    color: '#525252',
+    color: 'var(--color-text-muted)',
     fontStyle: 'italic',
   },
   form: {
@@ -1754,32 +1754,32 @@ const styles = {
   label: {
     fontSize: '0.72rem',
     fontWeight: '700',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     textTransform: 'uppercase',
   },
   input: {
     width: '100%',
-    background: 'rgba(255,255,255,0.03)',
-    border: '1px solid rgba(255,255,255,0.08)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '6px',
     padding: '0.7rem 1rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '0.9rem',
     outline: 'none',
   },
   textarea: {
     width: '100%',
-    background: 'rgba(255,255,255,0.03)',
-    border: '1px solid rgba(255,255,255,0.08)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '6px',
     padding: '0.7rem 1rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '0.9rem',
     outline: 'none',
     resize: 'vertical',
   },
   skillsEditSection: {
-    borderTop: '1px solid rgba(255,255,255,0.05)',
+    borderTop: '1px solid var(--border-color)',
     paddingTop: '1.25rem',
     display: 'flex',
     flexDirection: 'column',
@@ -1790,11 +1790,11 @@ const styles = {
     gap: '0.75rem',
   },
   smallInput: {
-    background: 'rgba(255,255,255,0.02)',
-    border: '1px solid rgba(255,255,255,0.06)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '4px',
     padding: '0.4rem 0.75rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '0.8rem',
     outline: 'none',
   },
@@ -1808,8 +1808,8 @@ const styles = {
     alignItems: 'center',
   },
   jobFormBox: {
-    background: 'rgba(255,255,255,0.01)',
-    border: '1px solid rgba(255,255,255,0.04)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '6px',
     padding: '1rem',
     display: 'flex',
@@ -1817,11 +1817,11 @@ const styles = {
     gap: '1rem',
   },
   smallTextarea: {
-    background: 'rgba(255,255,255,0.02)',
-    border: '1px solid rgba(255,255,255,0.06)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '4px',
     padding: '0.4rem 0.75rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '0.8rem',
     outline: 'none',
     resize: 'vertical',
@@ -1845,11 +1845,11 @@ const styles = {
   prefTitle: {
     fontSize: '0.88rem',
     fontWeight: '700',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
   },
   prefSub: {
     fontSize: '0.78rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     lineHeight: '1.3',
     marginTop: '0.15rem',
   },
@@ -1860,22 +1860,22 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+    borderTop: '1px solid var(--border-color)',
     paddingTop: '1rem',
     fontSize: '0.82rem',
   },
   prefLabel: {
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
   },
   prefVal: {
     fontWeight: '700',
   },
   miniSelect: {
-    background: 'rgba(255,255,255,0.03)',
-    border: '1px solid rgba(255,255,255,0.08)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '4px',
     padding: '0.35rem 0.65rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '0.78rem',
     outline: 'none',
     cursor: 'pointer',
@@ -1884,8 +1884,8 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    background: 'rgba(255,255,255,0.01)',
-    border: '1px solid rgba(255,255,255,0.04)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     padding: '1rem 1.25rem',
     borderRadius: '8px',
   },
@@ -1895,7 +1895,7 @@ const styles = {
   },
   securitySub: {
     fontSize: '0.78rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     marginTop: '0.2rem',
   },
   securityBtn: {
@@ -1909,8 +1909,8 @@ const styles = {
     marginTop: '0.25rem',
   },
   wizard: {
-    background: 'rgba(255,255,255,0.01)',
-    border: '1px solid rgba(255,255,255,0.04)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     padding: '1.5rem',
     borderRadius: '8px',
     display: 'flex',
@@ -1925,13 +1925,13 @@ const styles = {
     display: 'flex',
     gap: '1.25rem',
     alignItems: 'center',
-    background: 'rgba(255,255,255,0.02)',
+    background: 'var(--bg-primary)',
     padding: '1rem',
     borderRadius: '6px',
   },
   qrCode: {
-    background: '#000000',
-    border: '1px solid rgba(255,255,255,0.1)',
+    background: 'var(--bg-secondary)',
+    border: '1px solid var(--border-color)',
     padding: '0.5rem',
     borderRadius: '4px',
   },
@@ -1949,7 +1949,7 @@ const styles = {
   },
   secretLabel: {
     fontSize: '0.68rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     textTransform: 'uppercase',
     fontWeight: '700',
   },
@@ -1964,11 +1964,11 @@ const styles = {
     gap: '1rem',
   },
   totpInput: {
-    background: 'rgba(255,255,255,0.03)',
-    border: '1px solid rgba(255,255,255,0.1)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '6px',
     padding: '0.6rem 1rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '1.1rem',
     fontWeight: '700',
     letterSpacing: '0.15em',
@@ -1976,7 +1976,7 @@ const styles = {
     outline: 'none',
   },
   sectionDivider: {
-    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+    borderBottom: '1px solid var(--border-color)',
     paddingBottom: '0.5rem',
     marginTop: '0.5rem',
     display: 'flex',
@@ -1986,9 +1986,9 @@ const styles = {
     gap: '0.5rem',
   },
   tabActive: {
-    background: 'rgba(255,255,255,0.05)',
-    color: '#ffffff',
-    border: '1px solid rgba(255, 255, 255, 0.25)',
+    background: 'var(--bg-primary)',
+    color: 'var(--color-text-primary)',
+    border: '1px solid var(--border-color)',
     padding: '0.6rem 1.25rem',
     borderRadius: '6px',
     fontWeight: '600',
@@ -1997,7 +1997,7 @@ const styles = {
   },
   tabInactive: {
     background: 'transparent',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     border: '1px solid transparent',
     padding: '0.6rem 1.25rem',
     borderRadius: '6px',
@@ -2006,7 +2006,7 @@ const styles = {
     fontSize: '0.85rem',
     transition: 'all 0.2s ease',
     ':hover': {
-      color: '#ffffff'
+      color: 'var(--color-text-primary)'
     }
   },
   directoryContainer: {
@@ -2025,17 +2025,17 @@ const styles = {
   searchInput: {
     background: 'transparent',
     border: 'none',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '0.9rem',
     outline: 'none',
-    borderBottom: '1px solid rgba(255,255,255,0.1)',
+    borderBottom: '1px solid var(--border-color)',
     padding: '0.5rem 0',
   },
   filterSelect: {
-    background: 'rgba(255,255,255,0.02)',
-    border: '1px solid rgba(255,255,255,0.08)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '6px',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '0.82rem',
     padding: '0.5rem 1rem',
     outline: 'none',
@@ -2069,12 +2069,12 @@ const styles = {
   },
   dirMemberHeadline: {
     fontSize: '0.75rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     lineHeight: '1.3',
   },
   dirMemberBio: {
     fontSize: '0.8rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     lineHeight: '1.4',
     fontStyle: 'italic',
     flex: 1,
@@ -2083,7 +2083,7 @@ const styles = {
     display: 'flex',
     gap: '0.35rem',
     flexWrap: 'wrap',
-    borderTop: '1px solid rgba(255,255,255,0.05)',
+    borderTop: '1px solid var(--border-color)',
     paddingTop: '0.75rem',
   },
   emptyDirCard: {
@@ -2091,7 +2091,7 @@ const styles = {
     padding: '3rem',
     textAlign: 'center',
     fontSize: '0.9rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
   },
   modalBackdrop: {
     position: 'fixed',
@@ -2127,27 +2127,27 @@ const styles = {
   },
   modalMemberHeadline: {
     fontSize: '0.85rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     marginTop: '0.15rem',
   },
   closeModalBtn: {
     background: 'transparent',
     border: 'none',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     fontSize: '1.2rem',
     cursor: 'pointer',
     ':hover': {
-      color: '#ffffff'
+      color: 'var(--color-text-primary)'
     }
   },
   modalTabRow: {
     display: 'flex',
     gap: '0.5rem',
-    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+    borderBottom: '1px solid var(--border-color)',
     paddingBottom: '0.5rem',
   },
   modalTabActive: {
-    background: 'rgba(255,255,255,0.03)',
+    background: 'var(--bg-primary)',
     color: '#00f2fe',
     border: 'none',
     padding: '0.5rem 1rem',
@@ -2158,7 +2158,7 @@ const styles = {
   },
   modalTabInactive: {
     background: 'transparent',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     border: 'none',
     padding: '0.5rem 1rem',
     borderRadius: '4px',
@@ -2167,7 +2167,7 @@ const styles = {
     cursor: 'pointer',
     transition: 'all 0.2s ease',
     ':hover': {
-      color: '#ffffff'
+      color: 'var(--color-text-primary)'
     }
   },
   modalBody: {
@@ -2189,26 +2189,26 @@ const styles = {
   modalSecHeader: {
     fontSize: '0.7rem',
     fontWeight: '700',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     textTransform: 'uppercase',
     letterSpacing: '0.05em',
   },
   modalText: {
     fontSize: '0.88rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     lineHeight: '1.5',
   },
   modalEmptyText: {
     fontSize: '0.82rem',
-    color: '#525252',
+    color: 'var(--color-text-muted)',
     fontStyle: 'italic',
   },
   modalJobList: {
     display: 'flex',
     flexDirection: 'column',
     gap: '1rem',
-    background: 'rgba(255,255,255,0.01)',
-    border: '1px solid rgba(255,255,255,0.03)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     padding: '0.75rem 1rem',
     borderRadius: '6px',
   },
@@ -2221,20 +2221,20 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     fontSize: '0.85rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
   },
   modalJobCompany: {
     fontSize: '0.78rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
   },
   modalJobDesc: {
     fontSize: '0.78rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     lineHeight: '1.4',
     marginTop: '0.15rem',
   },
   modalEduItem: {
     fontSize: '0.82rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
   }
 };

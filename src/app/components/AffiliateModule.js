@@ -269,9 +269,9 @@ export default function AffiliateModule({ state }) {
                       onClick={() => setActiveResCategory(cat)}
                       style={{
                         ...styles.filterChip,
-                        background: activeResCategory === cat ? '#ffffff' : 'transparent',
-                        color: activeResCategory === cat ? '#000000' : '#ffffff',
-                        border: activeResCategory === cat ? '1px solid #ffffff' : '1px solid rgba(255,255,255,0.1)'
+                        background: activeResCategory === cat ? 'var(--border-accent)' : 'transparent',
+                        color: activeResCategory === cat ? '#ffffff' : 'var(--color-text-secondary)',
+                        border: activeResCategory === cat ? '1px solid var(--border-accent)' : '1px solid var(--border-color)'
                       }}
                     >
                       {cat.toUpperCase()}
@@ -445,7 +445,7 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+    borderBottom: '1px solid var(--border-color)',
     paddingBottom: '1rem',
   },
   tabButtons: {
@@ -453,9 +453,9 @@ const styles = {
     gap: '0.5rem',
   },
   tabActive: {
-    background: 'rgba(255,255,255,0.05)',
-    color: '#ffffff',
-    border: '1px solid rgba(255, 255, 255, 0.25)',
+    background: 'var(--bg-primary)',
+    color: 'var(--color-text-primary)',
+    border: '1px solid var(--border-color)',
     padding: '0.6rem 1.25rem',
     borderRadius: '6px',
     fontWeight: '600',
@@ -464,7 +464,7 @@ const styles = {
   },
   tabInactive: {
     background: 'transparent',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     border: '1px solid transparent',
     padding: '0.6rem 1.25rem',
     borderRadius: '6px',
@@ -473,13 +473,13 @@ const styles = {
     fontSize: '0.85rem',
     transition: 'all 0.2s ease',
     ':hover': {
-      color: '#ffffff'
+      color: 'var(--color-text-primary)'
     }
   },
   successToast: {
-    background: 'rgba(255, 255, 255, 0.05)',
-    border: '1px solid #ffffff',
-    color: '#ffffff',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-accent)',
+    color: 'var(--color-text-primary)',
     padding: '1rem',
     borderRadius: '6px',
     fontSize: '0.9rem',
@@ -491,7 +491,7 @@ const styles = {
   },
   sub: {
     fontSize: '0.9rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     marginTop: '0.25rem',
   },
   qaView: {
@@ -525,11 +525,11 @@ const styles = {
   },
   textarea: {
     width: '100%',
-    background: 'rgba(255,255,255,0.03)',
-    border: '1px solid rgba(255,255,255,0.08)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '6px',
     padding: '0.75rem 1rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '0.95rem',
     outline: 'none',
     resize: 'none',
@@ -570,35 +570,35 @@ const styles = {
   threadAuthorRole: {
     display: 'block',
     fontSize: '0.75rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     marginTop: '0.1rem',
   },
   threadQuestion: {
     fontSize: '0.95rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     lineHeight: '1.5',
-    background: 'rgba(255,255,255,0.01)',
+    background: 'var(--bg-primary)',
     padding: '1rem',
     borderRadius: '6px',
-    borderLeft: '2.5px solid #ffffff',
+    borderLeft: '2.5px solid var(--border-accent)',
   },
   answersSection: {
     marginTop: '0.5rem',
     display: 'flex',
     flexDirection: 'column',
     gap: '1rem',
-    borderTop: '1px solid rgba(255,255,255,0.05)',
+    borderTop: '1px solid var(--border-color)',
     paddingTop: '1.25rem',
   },
   answersCount: {
     fontSize: '0.75rem',
     fontWeight: '700',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     textTransform: 'uppercase',
   },
   answerItem: {
-    background: 'rgba(255,255,255,0.01)',
-    border: '1px solid rgba(255,255,255,0.03)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '6px',
     padding: '1.25rem',
     display: 'flex',
@@ -622,7 +622,7 @@ const styles = {
   },
   ansContent: {
     fontSize: '0.88rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     lineHeight: '1.5',
   },
   replyTriggerRow: {
@@ -639,11 +639,11 @@ const styles = {
   },
   input: {
     width: '100%',
-    background: 'rgba(255,255,255,0.03)',
-    border: '1px solid rgba(255,255,255,0.08)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '6px',
     padding: '0.75rem 1rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '0.9rem',
     outline: 'none',
     fontFamily: 'inherit',
@@ -672,7 +672,7 @@ const styles = {
   },
   quickCardText: {
     fontSize: '0.85rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     lineHeight: '1.5',
   },
   directoryView: {
@@ -702,7 +702,7 @@ const styles = {
     borderRadius: '8px',
     objectFit: 'cover',
     boxShadow: '0 4px 12px rgba(0,0,0,0.6)',
-    border: '1px solid rgba(255,255,255,0.08)',
+    border: '1px solid var(--border-color)',
   },
   affName: {
     fontSize: '1.25rem',
@@ -711,22 +711,22 @@ const styles = {
   affTitle: {
     display: 'block',
     fontSize: '0.8rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     marginTop: '0.15rem',
     fontWeight: '600',
   },
   affFirm: {
     fontSize: '0.8rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     marginTop: '0.1rem',
   },
   affSpecialtySection: {
     display: 'flex',
   },
   specialtyBadge: {
-    background: 'rgba(255,255,255,0.05)',
-    border: '1px solid rgba(255,255,255,0.1)',
-    color: '#ffffff',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
+    color: 'var(--color-text-primary)',
     padding: '0.3rem 0.65rem',
     borderRadius: '4px',
     fontSize: '0.75rem',
@@ -734,7 +734,7 @@ const styles = {
   },
   affBio: {
     fontSize: '0.88rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     lineHeight: '1.5',
     height: '66px',
     overflow: 'hidden',
@@ -743,7 +743,7 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderTop: '1px solid rgba(255,255,255,0.05)',
+    borderTop: '1px solid var(--border-color)',
     paddingTop: '1.25rem',
     marginTop: '0.5rem',
     flexWrap: 'wrap',
@@ -756,11 +756,11 @@ const styles = {
     fontSize: '0.85rem',
   },
   star: {
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '1.1rem',
   },
   reviews: {
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     fontSize: '0.75rem',
   },
   contactBtn: {
@@ -794,11 +794,11 @@ const styles = {
   },
   inputSearch: {
     width: '100%',
-    background: 'rgba(255,255,255,0.03)',
-    border: '1px solid rgba(255,255,255,0.08)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '6px',
     padding: '0.75rem 1rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '0.9rem',
     outline: 'none',
   },
@@ -835,8 +835,8 @@ const styles = {
   resDocIcon: {
     fontSize: '1.75rem',
     padding: '0.5rem',
-    background: 'rgba(255,255,255,0.02)',
-    border: '1px solid rgba(255,255,255,0.05)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '6px',
   },
   resMeta: {
@@ -847,11 +847,11 @@ const styles = {
   resCardTitleText: {
     fontSize: '1.05rem',
     fontWeight: '700',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
   },
   resCreatedBy: {
     fontSize: '0.75rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
   },
   resDocBtn: {
     padding: '0.5rem 1rem',
@@ -869,9 +869,9 @@ const styles = {
     fontSize: '0.72rem',
   },
   complianceBadgeLock: {
-    background: 'rgba(255,255,255,0.02)',
-    border: '1px dashed rgba(255,255,255,0.1)',
-    color: '#737373',
+    background: 'var(--bg-primary)',
+    border: '1px dashed var(--border-color)',
+    color: 'var(--color-text-muted)',
     padding: '1rem',
     borderRadius: '6px',
     fontSize: '0.78rem',
@@ -888,21 +888,21 @@ const styles = {
   },
   smallInput: {
     width: '100%',
-    background: '#000000',
-    border: '1px solid rgba(255,255,255,0.08)',
+    background: 'var(--bg-secondary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '6px',
     padding: '0.65rem 0.85rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '0.85rem',
     outline: 'none',
   },
   select: {
     width: '100%',
-    background: '#000000',
-    border: '1px solid rgba(255,255,255,0.08)',
+    background: 'var(--bg-secondary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '6px',
     padding: '0.65rem 0.85rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '0.85rem',
     outline: 'none',
     cursor: 'pointer',

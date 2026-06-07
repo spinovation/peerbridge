@@ -107,14 +107,14 @@ export default function OnboardingWizard({ state }) {
     // 4 equal sectors of stroke-length 78 and gap 6 = stroke-dasharray="78 261"
     
     // Dynamic glows based on verified state
-    const colorId = hasIdentity ? (hasAddressAndSsn ? '#d4af37' : '#00f2fe') : 'rgba(255,255,255,0.08)'; // Gold if address+SSN provided, Cyan if basic verified
-    const colorJob = hasJob ? '#8f00ff' : 'rgba(255,255,255,0.08)'; // Purple
-    const colorAcad = hasAcademic ? '#6366f1' : 'rgba(255,255,255,0.08)'; // Violet
-    const colorWealth = hasWealth ? '#10b981' : 'rgba(255,255,255,0.08)'; // Neon Emerald
+    const colorId = hasIdentity ? (hasAddressAndSsn ? '#d4af37' : '#00f2fe') : 'var(--border-color)'; // Gold if address+SSN provided, Cyan if basic verified
+    const colorJob = hasJob ? '#8f00ff' : 'var(--border-color)'; // Purple
+    const colorAcad = hasAcademic ? '#6366f1' : 'var(--border-color)'; // Violet
+    const colorWealth = hasWealth ? '#10b981' : 'var(--border-color)'; // Neon Emerald
 
     return (
       <svg width="120" height="120" viewBox="0 0 120 120" style={styles.svgRing}>
-        <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(255,255,255,0.02)" strokeWidth="4" />
+        <circle cx="60" cy="60" r="54" fill="none" stroke="var(--border-color)" strokeWidth="4" />
         
         {/* Quarter 1: Top-Right (Identity-Vetted) */}
         <circle 
@@ -468,20 +468,20 @@ export default function OnboardingWizard({ state }) {
               padding: '0.4rem 0.8rem', 
               fontSize: '0.75rem', 
               borderRadius: '6px', 
-              border: '1px solid rgba(255,255,255,0.15)', 
-              color: 'rgba(255,255,255,0.7)', 
+              border: '1px solid var(--border-color)', 
+              color: 'rgba(0, 0, 0, 0.105)', 
               cursor: 'pointer', 
               background: 'none',
               fontWeight: '600',
               transition: 'all 0.3s ease'
             }}
             onMouseOver={(e) => {
-              e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)';
+              e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.045)';
               e.currentTarget.style.color = '#ffffff';
             }}
             onMouseOut={(e) => {
-              e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)';
-              e.currentTarget.style.color = 'rgba(255,255,255,0.7)';
+              e.currentTarget.style.borderColor = 'var(--border-color)';
+              e.currentTarget.style.color = 'rgba(0, 0, 0, 0.105)';
             }}
           >
             Sign Out
@@ -554,19 +554,19 @@ export default function OnboardingWizard({ state }) {
 
                 <div style={styles.ringLegends}>
                   <div style={styles.legendItem}>
-                    <div style={{ ...styles.legendDot, background: hasIdentity ? (address.trim() && ssn ? '#d4af37' : '#00f2fe') : 'rgba(255,255,255,0.08)' }}></div>
+                    <div style={{ ...styles.legendDot, background: hasIdentity ? (address.trim() && ssn ? '#d4af37' : '#00f2fe') : 'var(--border-color)' }}></div>
                     <span style={styles.legendLabel}>Identity: {hasIdentity ? (address.trim() && ssn ? 'Gold Vetted' : 'Email Vetted') : 'Unverified'}</span>
                   </div>
                   <div style={styles.legendItem}>
-                    <div style={{ ...styles.legendDot, background: hasJob ? '#8f00ff' : 'rgba(255,255,255,0.08)' }}></div>
+                    <div style={{ ...styles.legendDot, background: hasJob ? '#8f00ff' : 'var(--border-color)' }}></div>
                     <span style={styles.legendLabel}>Professional: {hasJob ? 'Job Vetted' : 'No Experience Added'}</span>
                   </div>
                   <div style={styles.legendItem}>
-                    <div style={{ ...styles.legendDot, background: hasAcademic ? '#6366f1' : 'rgba(255,255,255,0.08)' }}></div>
+                    <div style={{ ...styles.legendDot, background: hasAcademic ? '#6366f1' : 'var(--border-color)' }}></div>
                     <span style={styles.legendLabel}>Academic: {hasAcademic ? 'Credentials Vetted' : 'No Education Added'}</span>
                   </div>
                   <div style={styles.legendItem}>
-                    <div style={{ ...styles.legendDot, background: hasWealth ? '#10b981' : 'rgba(255,255,255,0.08)' }}></div>
+                    <div style={{ ...styles.legendDot, background: hasWealth ? '#10b981' : 'var(--border-color)' }}></div>
                     <span style={styles.legendLabel}>Capital: {hasWealth ? 'Accredited Vetted' : 'Unaccredited'}</span>
                   </div>
                 </div>
@@ -1116,7 +1116,7 @@ const styles = {
   },
   logoSub: {
     fontSize: '0.65rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     fontWeight: '700',
     letterSpacing: '0.1em',
     marginTop: '0.2rem',
@@ -1130,12 +1130,12 @@ const styles = {
     alignItems: 'center',
     gap: '0.5rem',
     fontSize: '0.78rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     fontWeight: '600',
-    background: 'rgba(255,255,255,0.01)',
+    background: 'var(--bg-primary)',
     padding: '0.4rem 0.8rem',
     borderRadius: '20px',
-    border: '1px solid rgba(255,255,255,0.03)',
+    border: '1px solid var(--border-color)',
   },
   stepIndicatorActive: {
     display: 'flex',
@@ -1152,7 +1152,7 @@ const styles = {
   successToast: {
     background: 'rgba(16, 185, 129, 0.08)',
     border: '1px solid #10b981',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     padding: '1rem',
     borderRadius: '8px',
     fontSize: '0.9rem',
@@ -1172,7 +1172,7 @@ const styles = {
   },
   stepDesc: {
     fontSize: '0.9rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     lineHeight: '1.5',
   },
   inputGroup: {
@@ -1191,25 +1191,25 @@ const styles = {
   label: {
     fontSize: '0.72rem',
     fontWeight: '700',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     textTransform: 'uppercase',
   },
   input: {
     width: '100%',
-    background: 'rgba(255,255,255,0.03)',
-    border: '1px solid rgba(255,255,255,0.08)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '6px',
     padding: '0.7rem 1rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '0.9rem',
     outline: 'none',
   },
   otpInput: {
-    background: 'rgba(255,255,255,0.03)',
-    border: '1px solid rgba(255,255,255,0.15)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '8px',
     padding: '0.8rem 1.5rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '1.8rem',
     fontWeight: '900',
     letterSpacing: '0.2em',
@@ -1219,33 +1219,33 @@ const styles = {
   },
   select: {
     width: '100%',
-    background: 'rgba(255,255,255,0.03)',
-    border: '1px solid rgba(255,255,255,0.08)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '6px',
     padding: '0.7rem 1rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '0.9rem',
     outline: 'none',
     cursor: 'pointer',
   },
   textarea: {
     width: '100%',
-    background: 'rgba(255,255,255,0.03)',
-    border: '1px solid rgba(255,255,255,0.08)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '6px',
     padding: '0.7rem 1rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '0.9rem',
     outline: 'none',
     resize: 'vertical',
   },
   tipBox: {
-    background: 'rgba(255,255,255,0.02)',
-    border: '1px solid rgba(255,255,255,0.05)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '6px',
     padding: '0.75rem 1rem',
     fontSize: '0.82rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     lineHeight: '1.4',
   },
   centerBtn: {
@@ -1289,8 +1289,8 @@ const styles = {
   ringBadge: {
     position: 'absolute',
     bottom: '-10px',
-    background: '#000000',
-    border: '1px solid rgba(255,255,255,0.1)',
+    background: 'var(--bg-secondary)',
+    border: '1px solid var(--border-color)',
     padding: '0.15rem 0.5rem',
     borderRadius: '10px',
   },
@@ -1300,7 +1300,7 @@ const styles = {
     gap: '0.4rem',
     width: '100%',
     marginTop: '1.5rem',
-    borderTop: '1px solid rgba(255,255,255,0.05)',
+    borderTop: '1px solid var(--border-color)',
     paddingTop: '1rem',
   },
   legendItem: {
@@ -1315,7 +1315,7 @@ const styles = {
   },
   legendLabel: {
     fontSize: '0.7rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
     fontWeight: '550',
   },
   avatarSelectionRow: {
@@ -1349,14 +1349,14 @@ const styles = {
     gap: '1.5rem',
   },
   sectionDivider: {
-    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+    borderBottom: '1px solid var(--border-color)',
     paddingBottom: '0.5rem',
     marginTop: '0.5rem',
     display: 'flex',
   },
   sectionSubDesc: {
     fontSize: '0.8rem',
-    color: '#737373',
+    color: 'var(--color-text-muted)',
     lineHeight: '1.4',
     marginTop: '-0.75rem',
   },
@@ -1370,14 +1370,14 @@ const styles = {
     gap: '1rem',
     alignItems: 'flex-start',
     cursor: 'pointer',
-    background: 'rgba(255,255,255,0.01)',
-    border: '1px solid rgba(255,255,255,0.04)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     padding: '0.75rem 1rem',
     borderRadius: '8px',
     transition: 'all 0.2s ease',
     ':hover': {
-      background: 'rgba(255,255,255,0.02)',
-      borderColor: 'rgba(255,255,255,0.08)'
+      background: 'var(--bg-primary)',
+      borderColor: 'var(--border-color)'
     }
   },
   checkbox: {
@@ -1400,8 +1400,8 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     gap: '0.5rem',
-    background: 'rgba(255,255,255,0.01)',
-    border: '1px solid rgba(255,255,255,0.03)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '6px',
     padding: '0.75rem',
   },
@@ -1409,7 +1409,7 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     fontSize: '0.82rem',
-    color: '#a3a3a3',
+    color: 'var(--color-text-secondary)',
   },
   removeBtn: {
     background: 'transparent',
@@ -1422,17 +1422,17 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     gap: '0.75rem',
-    background: 'rgba(255,255,255,0.01)',
-    border: '1px solid rgba(255,255,255,0.04)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '6px',
     padding: '0.75rem',
   },
   smallInput: {
-    background: 'rgba(255,255,255,0.02)',
-    border: '1px solid rgba(255,255,255,0.06)',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '4px',
     padding: '0.4rem 0.75rem',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     fontSize: '0.8rem',
     outline: 'none',
     width: '100%',
@@ -1454,7 +1454,7 @@ const styles = {
   wizardFooter: {
     display: 'flex',
     justifyContent: 'space-between',
-    borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+    borderTop: '1px solid var(--border-color)',
     paddingTop: '1.5rem',
     marginTop: '1rem',
   },
@@ -1465,7 +1465,7 @@ const styles = {
   errorBox: {
     background: 'rgba(244, 63, 94, 0.08)',
     border: '1px solid #f43f5e',
-    color: '#ffffff',
+    color: 'var(--color-text-primary)',
     padding: '0.75rem 1rem',
     borderRadius: '6px',
     fontSize: '0.85rem',
