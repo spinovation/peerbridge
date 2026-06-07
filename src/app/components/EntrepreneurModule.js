@@ -513,7 +513,7 @@ export default function EntrepreneurModule({ state }) {
             {/* Right Column: Business Profile Editor (Table #4) & Founding Team */}
             <div style={styles.rightCol}>
               <div className="glass-panel" style={styles.card}>
-                <h3 style={styles.cardTitle}>🏢 Entrepreneur Profile (Table #4)</h3>
+                <h3 style={styles.cardTitle}>🏢 Entrepreneur Profile</h3>
                 <p style={styles.cardDesc}>Maintain cryptographic corporate records satisfying SEC exemptions criteria.</p>
 
                 {isEditingProfile ? (

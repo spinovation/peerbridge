@@ -81,7 +81,7 @@ export default function TaxModule({ state }) {
 
           {/* Compiled Tax Documents from DB Table #7 */}
           <div className="glass-panel" style={styles.card}>
-            <h3 style={styles.cardTitle}>📄 Compiled IRS Tax Documents (Table #7)</h3>
+            <h3 style={styles.cardTitle}>📄 Compiled IRS Tax Documents</h3>
             <p style={styles.cardDesc}>Download verified tax forms compiled from your Peer Bridge equity placements and P2P note repayments.</p>
 
             <div style={styles.docList}>

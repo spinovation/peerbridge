@@ -336,7 +336,7 @@ export default function DocumentModule({ state }) {
 
         {/* Document Vault List (Table #7) */}
         <div className="glass-panel" style={{ ...styles.card, flex: 0.8 }}>
-          <h3 style={styles.cardTitle}>📂 Secure Document Vault (Table #7)</h3>
+          <h3 style={styles.cardTitle}>📂 Secure Document Vault</h3>
           <p style={styles.cardDesc}>Compliance files and assets compiled under SEC Reg CF placement directives.</p>
 
           <div style={{

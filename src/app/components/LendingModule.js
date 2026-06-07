@@ -530,7 +530,7 @@ export default function LendingModule({ state }) {
 
       {activeSubTab === 'active_loans' && (
         <div style={styles.card} className="glass-panel animate-fade-in-up">
-          <h3 style={styles.cardTitle}>📁 Active Lending Portfolio (Table #10)</h3>
+          <h3 style={styles.cardTitle}>📁 Active Lending Portfolio</h3>
           <p style={styles.cardDesc}>Legally binding debt agreements cleared and servicing payments.</p>
 
           <div style={styles.loanList}>

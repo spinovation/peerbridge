@@ -267,7 +267,7 @@ export default function InvestorModule({ state }) {
             onClick={() => setSubTab('profile')}
             style={subTab === 'profile' ? styles.tabActive : styles.tabInactive}
           >
-            👤 Investor Profile (Table #5)
+            👤 Investor Profile
           </button>
           <button
             onClick={() => setSubTab('diligence')}
@@ -464,7 +464,7 @@ export default function InvestorModule({ state }) {
 
             {/* Portfolio Logs Table */}
             <div className="glass-panel" style={styles.investmentsTableCard}>
-              <h3 style={styles.panelTitle}>📄 Private Placements Portfolio Ledger (Table #6)</h3>
+              <h3 style={styles.panelTitle}>📄 Private Placements Portfolio Ledger</h3>
               
               {portfolio.length === 0 ? (
                 <div style={styles.emptyPortfolioBox}>
@@ -509,7 +509,7 @@ export default function InvestorModule({ state }) {
       {subTab === 'profile' && (
         <div style={styles.profileView} className="animate-fade-in-up">
           <div style={styles.introHeader}>
-            <h2 style={styles.title}>Investor Profile Sheet (Table #5)</h2>
+            <h2 style={styles.title}>Investor Profile Sheet</h2>
             <p style={styles.sub}>Configure your preferred industry filters, risk tolerances, and accreditation limits linked to your database records.</p>
           </div>
 

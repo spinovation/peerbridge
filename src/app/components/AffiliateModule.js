@@ -93,7 +93,7 @@ export default function AffiliateModule({ state }) {
             onClick={() => setSubTab('resources')}
             style={subTab === 'resources' ? styles.tabActive : styles.tabInactive}
           >
-            📚 Library Guides (Table #9)
+            📚 Library Guides
           </button>
           <button
             onClick={() => setSubTab('directory')}
@@ -380,7 +380,7 @@ export default function AffiliateModule({ state }) {
                       </div>
 
                       <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
-                        Publish & Notify Ecosystem (Table #9)
+                        Publish & Notify Ecosystem
                       </button>
                     </form>
                   )

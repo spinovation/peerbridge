@@ -130,14 +130,14 @@ export default function SupportModule({ state }) {
             </div>
 
             <button type="submit" className="btn-primary" style={{ alignSelf: 'flex-start' }}>
-              Submit Ticket (Table #11)
+              Submit Ticket
             </button>
           </form>
         </div>
 
         {/* Support Tickets Ledger */}
         <div className="glass-panel" style={{ ...styles.card, flex: 0.9 }}>
-          <h3 style={styles.cardTitle}>📜 Support Ledger (Table #11)</h3>
+          <h3 style={styles.cardTitle}>📜 Support Ledger</h3>
           <p style={styles.cardDesc}>Historical support ticket logs linked to your active Cognito customer account.</p>
 
           <div style={styles.ticketList}>
