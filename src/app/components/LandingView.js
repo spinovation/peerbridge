@@ -142,12 +142,12 @@ export default function LandingView({ state }) {
       <main style={styles.main}>
         {/* Full-width Title Section */}
         <div style={styles.heroHeaderBlock}>
-          <div style={styles.participantBadge}>
-            🤝 Marketplace for Entrepreneurs • Investors • Affiliates
-          </div>
           <h1 style={styles.heroTitle}>
             The Private Debt, Equity & <span style={styles.gradientText}>AI Brokerage Ecosystem</span>
           </h1>
+          <div style={styles.participantBadge}>
+            🤝 Marketplace for Entrepreneurs • Investors • Affiliates
+          </div>
         </div>
 
         {/* 2-Column Split Layout */}
@@ -865,7 +865,7 @@ const styles = {
     gap: '0.5rem',
   },
   heroTitle: {
-    fontSize: 'clamp(1.8rem, 2.8vw, 2.3rem)',
+    fontSize: 'clamp(2rem, 3.2vw, 2.8rem)',
     lineHeight: '1.2',
     fontWeight: '800',
     color: 'var(--color-text-primary)',
@@ -935,7 +935,7 @@ const styles = {
   gateSection: {
     display: 'flex',
     justifyContent: 'center',
-    paddingTop: '5.5rem',
+    paddingTop: '1.5rem',
   },
   gateCard: {
     width: '100%',

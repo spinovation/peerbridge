@@ -2954,10 +2954,10 @@ export default function Home() {
                   style={{
                     width: '100%',
                     padding: '0.42rem 0.75rem',
-                    borderRadius: '8px',
-                    background: 'linear-gradient(135deg, var(--border-color) 0%, var(--border-color) 100%)',
+                    borderRadius: '24px',
+                    background: 'transparent',
                     border: '1px solid var(--border-color)',
-                    color: 'var(--color-text-primary)',
+                    color: 'var(--color-text-secondary)',
                     fontSize: '0.74rem',
                     fontWeight: '700',
                     cursor: 'pointer',
@@ -2968,16 +2968,14 @@ export default function Home() {
                     gap: '0.35rem'
                   }}
                   onMouseOver={(e) => {
-                    e.currentTarget.style.background = '#ffffff';
-                    e.currentTarget.style.color = '#000000';
-                    e.currentTarget.style.border = '1px solid #ffffff';
-                    e.currentTarget.style.boxShadow = '0 4px 12px var(--border-color)';
+                    e.currentTarget.style.background = 'rgba(10, 102, 194, 0.06)';
+                    e.currentTarget.style.color = 'var(--border-accent)';
+                    e.currentTarget.style.border = '1px solid var(--border-accent)';
                   }}
                   onMouseOut={(e) => {
-                    e.currentTarget.style.background = 'linear-gradient(135deg, var(--border-color) 0%, var(--border-color) 100%)';
-                    e.currentTarget.style.color = '#ffffff';
+                    e.currentTarget.style.background = 'transparent';
+                    e.currentTarget.style.color = 'var(--color-text-secondary)';
                     e.currentTarget.style.border = '1px solid var(--border-color)';
-                    e.currentTarget.style.boxShadow = 'none';
                   }}
                 >
                   ⚙️ Edit Profile / Settings

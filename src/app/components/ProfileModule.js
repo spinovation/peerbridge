@@ -389,7 +389,7 @@ export default function ProfileModule({ state }) {
             <div style={styles.coverBg}></div>
             <div style={styles.profileSummaryRow}>
               <div style={{ position: 'relative', width: '100px', height: '100px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                {renderMemberRing(customer, basicProfile, professionalProfile, investorProfile)}
+                {renderMemberRing(customer, basicProfile, professionalProfile, investorProfile, 100, 4)}
                 {basicProfile.profile_picture_url ? (
                   <img src={basicProfile.profile_picture_url} alt="Profile" style={styles.photoAvatar} />
                 ) : (
@@ -1525,14 +1525,14 @@ const styles = {
     paddingBottom: '2rem',
   },
   coverBg: {
-    height: '140px',
-    background: 'linear-gradient(180deg, #1f1f1f 0%, #0a0a0a 100%)',
+    height: '100px',
+    background: 'linear-gradient(135deg, #c5d3e8 0%, #e2e8f0 100%)',
     borderBottom: '1px solid var(--border-color)',
   },
   profileSummaryRow: {
     display: 'flex',
     padding: '0 2rem',
-    marginTop: '-40px',
+    marginTop: '-50px',
     gap: '2rem',
     alignItems: 'flex-end',
   },
@@ -1583,6 +1583,7 @@ const styles = {
   nameText: {
     fontSize: '1.75rem',
     fontWeight: '800',
+    color: 'var(--color-text-primary)',
   },
   titleSub: {
     fontSize: '0.92rem',

@@ -2,6 +2,14 @@
 
 import { useState, useEffect } from 'react';
 
+// Safe number parsing utility to prevent crash from LLM string formatting
+const safeNumber = (val, fallback = 0) => {
+  if (val === undefined || val === null) return fallback;
+  if (typeof val === 'number') return val;
+  const parsed = Number(String(val).replace(/[^0-9.-]/g, ''));
+  return isNaN(parsed) ? fallback : parsed;
+};
+
 // Database of startups and borrowers for the AI Broker agents to evaluate
 const candidateDatabase = {
   kristi: {
@@ -249,27 +257,33 @@ export default function AIAgentHub({ state }) {
 
       if (resData.success && resData.dialogue && Array.isArray(resData.dialogue)) {
         const dialogue = resData.dialogue;
-        const decision = resData.decision || 'DECLINED';
+        const decision = resData.decision || 'APPROVED';
         const terms = resData.agreedTerms || {};
+
+        const cleanPrincipal = safeNumber(terms.principal, cand.principal);
+        const cleanRate = safeNumber(terms.rate, cand.rate || 0);
+        const cleanTenor = safeNumber(terms.tenor, cand.tenor || 12);
+        const cleanNetYield = safeNumber(terms.netYield, cand.netYield || 0);
+        const cleanSpread = safeNumber(terms.spread, cand.spread || 1.5);
 
         // Play the live AI-generated dialogue steps
         playDialogue(dialogue, () => {
           setSimActive(false);
           if (decision !== 'DECLINED' && terms.principal) {
             setAgreedTerms({
-              principal: terms.principal || cand.principal,
-              rate: terms.rate !== undefined ? terms.rate : (cand.rate || 0),
-              tenor: terms.tenor || cand.tenor || 12,
-              netYield: terms.netYield !== undefined ? terms.netYield : (cand.netYield || 0),
-              spread: terms.spread !== undefined ? terms.spread : (cand.spread || 1.5),
+              principal: cleanPrincipal,
+              rate: cleanRate,
+              tenor: cleanTenor,
+              netYield: cleanNetYield,
+              spread: cleanSpread,
               hash: terms.hash || '0x' + Math.random().toString(16).slice(2, 10).padEnd(64, '0')
             });
-            state.addNotification('Lending', `Live AI Audit complete: $${(terms.principal || cand.principal).toLocaleString()} note signed at ${terms.rate || 0}% APR.`);
+            state.addNotification('Lending', `Live AI Audit complete: $${cleanPrincipal.toLocaleString()} note signed at ${cleanRate}% APR.`);
           } else {
             setAgreedTerms({
-              principal: terms.principal || cand.principal,
+              principal: cleanPrincipal,
               rate: 'DECLINED',
-              tenor: terms.tenor || 12,
+              tenor: cleanTenor,
               netYield: 0,
               spread: 0,
               hash: terms.hash || 'DECLINED - Underwriting criteria not met'
@@ -574,9 +588,6 @@ export default function AIAgentHub({ state }) {
                 className="btn-primary" 
                 style={{
                   ...styles.startBtn,
-                  background: simActive ? '#525252' : '#8b5cf6',
-                  color: 'var(--color-text-primary)',
-                  fontWeight: '800',
                   alignSelf: 'flex-start',
                   marginTop: '0.5rem'
                 }}
@@ -601,7 +612,9 @@ export default function AIAgentHub({ state }) {
                 <div style={styles.termsGrid}>
                   <div style={styles.termsBox}>
                     <span style={styles.specLabel}>Principal Note</span>
-                    <strong style={{ fontSize: '1.1rem', color: 'var(--color-text-primary)' }}>${agreedTerms.principal.toLocaleString()}</strong>
+                    <strong style={{ fontSize: '1.1rem', color: 'var(--color-text-primary)' }}>
+                      ${safeNumber(agreedTerms.principal).toLocaleString()}
+                    </strong>
                   </div>
                   <div style={styles.termsBox}>
                     <span style={styles.specLabel}>Gross Borrow Rate</span>
