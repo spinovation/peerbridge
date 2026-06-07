@@ -851,7 +851,7 @@ const styles = {
     gap: '0.5rem',
   },
   heroTitle: {
-    fontSize: '3.5rem',
+    fontSize: '2.5rem',
     lineHeight: '1.1',
     fontWeight: '800',
   },
