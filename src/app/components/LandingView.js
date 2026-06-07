@@ -140,16 +140,20 @@ export default function LandingView({ state }) {
 
       {/* Main Section */}
       <main style={styles.main}>
-        <section style={styles.heroSection}>
+        {/* Full-width Title Section */}
+        <div style={styles.heroHeaderBlock}>
           <div style={styles.participantBadge}>
             🤝 Marketplace for Entrepreneurs • Investors • Affiliates
           </div>
           <h1 style={styles.heroTitle}>
-            The Private Debt, Equity <br/>
-            & <br/>
-            <span style={styles.gradientText}>AI Brokerage Ecosystem</span>
+            The Private Debt, Equity & <span style={styles.gradientText}>AI Brokerage Ecosystem</span>
           </h1>
-          <p style={styles.heroSub}>
+        </div>
+
+        {/* 2-Column Split Layout */}
+        <div style={styles.heroSplitGrid}>
+          <section style={styles.heroSection}>
+            <p style={styles.heroSub}>
             The private capital marketplace connecting Entrepreneurs, Investors, and Professional Affiliates. We combine SEC-compliant Reg CF/D Equity campaigns, P2P Commercial Debt syndicates with ADP & Plaid underwriting bypass, and autonomous AI-agent brokerages securing real-time contract negotiations.
           </p>
 
@@ -398,8 +402,9 @@ export default function LandingView({ state }) {
                 </button>
               </form>
             )}
-          </div>
-        </section>
+            </div>
+          </section>
+        </div>
       </main>
 
       {/* Featured Offerings Section */}
@@ -821,13 +826,22 @@ const styles = {
   },
   main: {
     flex: '1',
+    maxWidth: '1200px',
+    margin: '0 auto',
+    width: '100%',
+    padding: '2.5rem 0 3rem 0',
+  },
+  heroHeaderBlock: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1rem',
+    marginBottom: '2rem',
+  },
+  heroSplitGrid: {
     display: 'grid',
     gridTemplateColumns: '1.2fr 1fr',
     gap: '4rem',
-    alignItems: 'center',
-    padding: '1rem 0 2rem 0',
-    maxWidth: '1200px',
-    margin: '0 auto',
+    alignItems: 'start',
   },
   heroSection: {
     display: 'flex',
@@ -851,12 +865,14 @@ const styles = {
     gap: '0.5rem',
   },
   heroTitle: {
-    fontSize: '2.5rem',
-    lineHeight: '1.1',
+    fontSize: 'clamp(1.8rem, 2.8vw, 2.3rem)',
+    lineHeight: '1.2',
     fontWeight: '800',
+    color: 'var(--color-text-primary)',
+    letterSpacing: '-0.02em',
   },
   gradientText: {
-    background: 'linear-gradient(135deg, #00f2fe 0%, #4facfe 100%)',
+    background: 'linear-gradient(135deg, #0a66c2 0%, #004182 100%)',
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
     display: 'inline-block',
@@ -919,6 +935,7 @@ const styles = {
   gateSection: {
     display: 'flex',
     justifyContent: 'center',
+    paddingTop: '5.5rem',
   },
   gateCard: {
     width: '100%',
