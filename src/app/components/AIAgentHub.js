@@ -10,6 +10,17 @@ const safeNumber = (val, fallback = 0) => {
   return isNaN(parsed) ? fallback : parsed;
 };
 
+// Map dark mode neon colors to high-contrast premium light mode colors
+const mapLogColor = (color) => {
+  if (!color) return 'var(--color-text-secondary)';
+  const c = color.toLowerCase().trim();
+  if (c === '#a78bfa' || c === 'purple') return '#6366f1'; // Premium Indigo
+  if (c === '#00f2fe' || c === 'cyan') return '#0a66c2'; // Premium LinkedIn Blue
+  if (c === '#10b981' || c === 'emerald') return '#057642'; // Premium Dark Green
+  if (c === '#ef4444' || c === 'red') return '#cc1016'; // Premium Crimson Red
+  return color;
+};
+
 // Database of startups and borrowers for the AI Broker agents to evaluate
 const candidateDatabase = {
   kristi: {
@@ -356,7 +367,7 @@ export default function AIAgentHub({ state }) {
               ...styles.tabBtn, 
               color: activeTab === 'agents_console' ? 'var(--border-accent)' : 'var(--color-text-secondary)',
               background: activeTab === 'agents_console' ? 'var(--border-color)' : 'transparent',
-              borderBottom: activeTab === 'agents_console' ? '2px solid #00f2fe' : 'none'
+              borderBottom: activeTab === 'agents_console' ? '2px solid var(--border-accent)' : 'none'
             }}
           >
             ⚙️ AI Agents Control Deck
@@ -367,7 +378,7 @@ export default function AIAgentHub({ state }) {
               ...styles.tabBtn, 
               color: activeTab === 'simulator' ? 'var(--border-accent)' : 'var(--color-text-secondary)',
               background: activeTab === 'simulator' ? 'var(--border-color)' : 'transparent',
-              borderBottom: activeTab === 'simulator' ? '2px solid #a78bfa' : 'none'
+              borderBottom: activeTab === 'simulator' ? '2px solid #6366f1' : 'none'
             }}
           >
             📊 Conversational Negotiation Simulator
@@ -379,7 +390,7 @@ export default function AIAgentHub({ state }) {
       {activeTab === 'agents_console' && (
         <div style={styles.agentsGrid}>
           {/* 1. CapitalAgent */}
-          <div className="glass-panel" style={{ ...styles.agentCard, borderLeft: '4px solid #00f2fe' }}>
+          <div className="glass-panel" style={{ ...styles.agentCard, borderLeft: '4px solid var(--border-accent)' }}>
             <div style={styles.agentCardHeader}>
               <div>
                 <h3 style={styles.agentTitle}>{agents.capitalAgent.name}</h3>
@@ -418,7 +429,7 @@ export default function AIAgentHub({ state }) {
           </div>
 
           {/* 2. FounderAgent */}
-          <div className="glass-panel" style={{ ...styles.agentCard, borderLeft: '4px solid #a78bfa' }}>
+          <div className="glass-panel" style={{ ...styles.agentCard, borderLeft: '4px solid #6366f1' }}>
             <div style={styles.agentCardHeader}>
               <div>
                 <h3 style={styles.agentTitle}>{agents.founderAgent.name}</h3>
@@ -619,7 +630,7 @@ export default function AIAgentHub({ state }) {
                   </div>
                   <div style={styles.termsBox}>
                     <span style={styles.specLabel}>Gross Borrow Rate</span>
-                    <strong style={{ fontSize: '1.1rem', color: agreedTerms.rate === 'DECLINED' ? '#ef4444' : '#a78bfa' }}>
+                    <strong style={{ fontSize: '1.1rem', color: agreedTerms.rate === 'DECLINED' ? '#cc1016' : '#6366f1' }}>
                       {agreedTerms.rate === 'DECLINED' ? 'DECLINED' : `${agreedTerms.rate}% APR`}
                     </strong>
                   </div>
@@ -629,9 +640,15 @@ export default function AIAgentHub({ state }) {
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', background: 'var(--bg-primary)', padding: '0.75rem', borderRadius: '6px', border: '1px solid var(--border-color)' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', background: 'var(--bg-primary)', padding: '0.75rem', borderRadius: '6px', border: '1px solid var(--border-color)', minWidth: 0 }}>
                   <span style={styles.specLabel}>Session Result Hash</span>
-                  <code style={{ fontSize: '0.74rem', color: agreedTerms.rate === 'DECLINED' ? '#ef4444' : '#00f2fe', fontFamily: 'monospace', overflowX: 'auto', whiteSpace: 'nowrap' }}>
+                  <code style={{ 
+                    fontSize: '0.74rem', 
+                    color: agreedTerms.rate === 'DECLINED' ? '#cc1016' : 'var(--border-accent)', 
+                    fontFamily: 'monospace', 
+                    wordBreak: 'break-all', 
+                    whiteSpace: 'pre-wrap' 
+                  }}>
                     {agreedTerms.hash}
                   </code>
                 </div>
@@ -652,17 +669,22 @@ export default function AIAgentHub({ state }) {
               ) : (
                 simLogs.map((log, index) => {
                   if (!log) return null;
+                  const resolvedColor = mapLogColor(log.color);
                   return (
                     <div key={index} className="animate-fade-in-up" style={{
                       ...styles.logItem,
-                      borderLeftColor: log.color || 'var(--border-color)',
-                      background: `var(--border-color)`
+                      borderLeftColor: resolvedColor,
+                      background: 'var(--bg-secondary)',
+                      border: '1px solid var(--border-color)',
+                      borderLeftWidth: '4px',
+                      borderLeftStyle: 'solid',
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.03)'
                     }}>
                       <span style={{
-                        fontSize: '0.62rem',
+                        fontSize: '0.66rem',
                         fontWeight: '850',
                         textTransform: 'uppercase',
-                        color: log.color || 'var(--color-text-secondary)',
+                        color: resolvedColor,
                         display: 'block'
                       }}>
                         {log.sender || 'System'}
@@ -797,13 +819,14 @@ const styles = {
   // Simulator tab
   simulatorWrapper: {
     display: 'grid',
-    gridTemplateColumns: '1.1fr 1fr',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
     gap: '1.5rem',
   },
   simulatorLeft: {
     display: 'flex',
     flexDirection: 'column',
     gap: '1.5rem',
+    minWidth: 0,
   },
   simulatorCard: {
     padding: '2rem',
@@ -869,11 +892,12 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     gap: '1.25rem',
+    minWidth: 0,
   },
   dialogLogsBox: {
     flex: 1,
     minHeight: '340px',
-    background: 'rgba(0,0,0,0.3)',
+    background: 'var(--bg-primary)',
     border: '1px solid var(--border-color)',
     borderRadius: '8px',
     padding: '1.25rem',
@@ -896,8 +920,6 @@ const styles = {
   },
   logItem: {
     padding: '0.75rem',
-    borderLeftWidth: '3px',
-    borderLeftStyle: 'solid',
     borderRadius: '0 6px 6px 0',
     display: 'flex',
     flexDirection: 'column',
@@ -905,7 +927,7 @@ const styles = {
   },
   typingIndicator: {
     fontSize: '0.74rem',
-    color: '#a78bfa',
+    color: '#6366f1',
     fontStyle: 'italic',
     paddingLeft: '0.5rem',
   }

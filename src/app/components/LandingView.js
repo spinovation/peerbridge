@@ -130,6 +130,11 @@ export default function LandingView({ state }) {
 
   return (
     <div style={styles.container}>
+      {/* Membership Disclaimer Promo Announcement Banner */}
+      <div style={styles.promoBanner}>
+        <span>✨ <strong>Early Member Offer:</strong> Membership is complementary until June 2027. Thereafter, it will transition to a subscription model for Entrepreneurs, Investors, and Affiliates.</span>
+      </div>
+
       {/* Hero Header */}
       <header style={styles.header}>
         <div style={styles.logoContainer}>
@@ -402,6 +407,13 @@ export default function LandingView({ state }) {
                 </button>
               </form>
             )}
+
+            {/* Membership Pricing Disclosure */}
+            <div style={styles.gatePromoBox}>
+              <span style={{ fontSize: '0.74rem', color: 'var(--color-text-secondary)', lineHeight: '1.45' }}>
+                ℹ️ <strong>Membership Note:</strong> Complementary access for Entrepreneurs, Investors, and Affiliates runs until June 2027. Thereafter, a standard subscription model will apply.
+              </span>
+            </div>
             </div>
           </section>
         </div>
@@ -786,6 +798,29 @@ const styles = {
     flexDirection: 'column',
     background: 'var(--bg-primary)',
     padding: '0 2rem',
+  },
+  promoBanner: {
+    background: 'rgba(10, 102, 194, 0.05)',
+    borderBottom: '1px solid rgba(10, 102, 194, 0.12)',
+    padding: '0.65rem 1rem',
+    textAlign: 'center',
+    fontSize: '0.78rem',
+    fontWeight: '600',
+    color: 'var(--border-accent)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '0.5rem',
+    margin: '0 -2rem', // Bleeds to the page edges past the parent padding
+  },
+  gatePromoBox: {
+    marginTop: '1.25rem',
+    padding: '0.85rem',
+    background: 'rgba(10, 102, 194, 0.03)',
+    border: '1px solid var(--border-color)',
+    borderRadius: '6px',
+    display: 'flex',
+    gap: '0.5rem',
   },
   header: {
     height: '80px',
@@ -1213,7 +1248,7 @@ const styles = {
   modalOverlay: {
     position: 'fixed',
     inset: 0,
-    background: 'rgba(0, 0, 0, 0.75)',
+    background: 'rgba(0, 0, 0, 0.5)',
     backdropFilter: 'blur(8px)',
     display: 'flex',
     alignItems: 'center',
@@ -1222,7 +1257,7 @@ const styles = {
     padding: '1.5rem',
   },
   modalContent: {
-    background: '#0b0f1a',
+    background: 'var(--bg-secondary)',
     border: '1px solid var(--border-color)',
     borderRadius: '16px',
     width: '100%',
@@ -1231,7 +1266,7 @@ const styles = {
     overflowY: 'auto',
     display: 'flex',
     flexDirection: 'column',
-    boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5)',
+    boxShadow: '0 20px 50px rgba(0, 0, 0, 0.08), 0 10px 30px rgba(0, 0, 0, 0.05)',
   },
   modalHeader: {
     display: 'flex',

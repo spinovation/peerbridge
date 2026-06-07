@@ -37,6 +37,8 @@ export default function Home() {
   const [showNetWorthVettingModal, setShowNetWorthVettingModal] = useState(false);
   const [showVettingCenter, setShowVettingCenter] = useState(false);
   const [showAllResources, setShowAllResources] = useState(false);
+  const [leftSidebarCollapsed, setLeftSidebarCollapsed] = useState(false);
+  const [rightSidebarCollapsed, setRightSidebarCollapsed] = useState(false);
 
   // Auto-collapse right sidebar Vetting Center card when navigating away from Documents module
   useEffect(() => {
@@ -2879,9 +2881,62 @@ export default function Home() {
           </main>
         </div>
       ) : (
-        <div className="main-layout-responsive" style={styles.mainLayout}>
+        <div className="main-layout-responsive" style={{
+          ...styles.mainLayout,
+          gridTemplateColumns: `${leftSidebarCollapsed ? '0px' : '260px'} minmax(0, 1fr) ${rightSidebarCollapsed ? '0px' : '300px'}`,
+          gap: `${(leftSidebarCollapsed && rightSidebarCollapsed) ? '0px' : (leftSidebarCollapsed || rightSidebarCollapsed ? '1rem' : '2rem')}`,
+          '--left-sidebar-width': leftSidebarCollapsed ? '0px' : '260px',
+          '--right-sidebar-width': rightSidebarCollapsed ? '0px' : '300px',
+          '--main-layout-gap': `${(leftSidebarCollapsed && rightSidebarCollapsed) ? '0px' : (leftSidebarCollapsed || rightSidebarCollapsed ? '1rem' : '2rem')}`
+        }}>
         {/* Left Sidebar Menu (Sleek Modular Cards like LinkedIn) */}
-        <aside className="left-sidebar-responsive" style={styles.sidebar}>
+        <aside className="left-sidebar-responsive" style={{
+          ...styles.sidebar,
+          width: leftSidebarCollapsed ? '0px' : '260px',
+          overflow: leftSidebarCollapsed ? 'hidden' : 'visible',
+          opacity: leftSidebarCollapsed ? 0 : 1,
+          pointerEvents: leftSidebarCollapsed ? 'none' : 'auto',
+          transition: 'all 0.2s ease',
+          zIndex: 10
+        }}>
+          {!leftSidebarCollapsed && (
+            <button
+              onClick={() => setLeftSidebarCollapsed(true)}
+              style={{
+                position: 'absolute',
+                top: '12px',
+                right: '-13px',
+                width: '26px',
+                height: '26px',
+                borderRadius: '50%',
+                background: 'var(--bg-primary)',
+                border: '1px solid var(--border-color)',
+                boxShadow: '0 2px 5px rgba(0, 0, 0, 0.08)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                zIndex: 999,
+                fontSize: '0.75rem',
+                color: 'var(--color-text-secondary)',
+                transition: 'all 0.2s ease',
+                outline: 'none'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.color = 'var(--border-accent)';
+                e.currentTarget.style.borderColor = 'var(--border-accent)';
+                e.currentTarget.style.transform = 'scale(1.1)';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.color = 'var(--color-text-secondary)';
+                e.currentTarget.style.borderColor = 'var(--border-color)';
+                e.currentTarget.style.transform = 'scale(1)';
+              }}
+              title="Collapse Left Sidebar"
+            >
+              ❮
+            </button>
+          )}
           
           {/* Card 1: User Profile Card */}
           <div className="glass-panel" style={{ 
@@ -3191,12 +3246,138 @@ export default function Home() {
         </aside>
 
         {/* Dynamic Center Work Area */}
-        <main style={styles.workspace}>
+        <main style={{ ...styles.workspace, overflow: 'visible', position: 'relative' }}>
+          {/* Expand Left Sidebar Handle */}
+          {leftSidebarCollapsed && (
+            <button
+              onClick={() => setLeftSidebarCollapsed(false)}
+              style={{
+                position: 'absolute',
+                top: '12px',
+                left: '0px',
+                width: '26px',
+                height: '26px',
+                borderRadius: '50%',
+                background: 'var(--bg-primary)',
+                border: '1px solid var(--border-color)',
+                boxShadow: '0 2px 5px rgba(0, 0, 0, 0.08)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                zIndex: 999,
+                fontSize: '0.75rem',
+                color: 'var(--color-text-secondary)',
+                transition: 'all 0.2s ease',
+                outline: 'none'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.color = 'var(--border-accent)';
+                e.currentTarget.style.borderColor = 'var(--border-accent)';
+                e.currentTarget.style.transform = 'scale(1.1)';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.color = 'var(--color-text-secondary)';
+                e.currentTarget.style.borderColor = 'var(--border-color)';
+                e.currentTarget.style.transform = 'scale(1)';
+              }}
+              title="Expand Left Sidebar"
+            >
+              ❯
+            </button>
+          )}
+
+          {/* Expand Right Sidebar Handle */}
+          {rightSidebarCollapsed && (
+            <button
+              onClick={() => setRightSidebarCollapsed(false)}
+              style={{
+                position: 'absolute',
+                top: '12px',
+                right: '0px',
+                width: '26px',
+                height: '26px',
+                borderRadius: '50%',
+                background: 'var(--bg-primary)',
+                border: '1px solid var(--border-color)',
+                boxShadow: '0 2px 5px rgba(0, 0, 0, 0.08)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                zIndex: 999,
+                fontSize: '0.75rem',
+                color: 'var(--color-text-secondary)',
+                transition: 'all 0.2s ease',
+                outline: 'none'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.color = 'var(--border-accent)';
+                e.currentTarget.style.borderColor = 'var(--border-accent)';
+                e.currentTarget.style.transform = 'scale(1.1)';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.color = 'var(--color-text-secondary)';
+                e.currentTarget.style.borderColor = 'var(--border-color)';
+                e.currentTarget.style.transform = 'scale(1)';
+              }}
+              title="Expand Right Cockpit"
+            >
+              ❮
+            </button>
+          )}
+
           {renderActiveModule()}
         </main>
 
         {/* Right Sidebar (LinkedIn-Style Cockpit Panels) */}
-        <aside className="right-sidebar-responsive" style={styles.rightSidebar}>
+        <aside className="right-sidebar-responsive" style={{
+          ...styles.rightSidebar,
+          width: rightSidebarCollapsed ? '0px' : '300px',
+          overflow: rightSidebarCollapsed ? 'hidden' : 'visible',
+          opacity: rightSidebarCollapsed ? 0 : 1,
+          pointerEvents: rightSidebarCollapsed ? 'none' : 'auto',
+          transition: 'all 0.2s ease',
+          zIndex: 10
+        }}>
+          {!rightSidebarCollapsed && (
+            <button
+              onClick={() => setRightSidebarCollapsed(true)}
+              style={{
+                position: 'absolute',
+                top: '12px',
+                left: '-13px',
+                width: '26px',
+                height: '26px',
+                borderRadius: '50%',
+                background: 'var(--bg-primary)',
+                border: '1px solid var(--border-color)',
+                boxShadow: '0 2px 5px rgba(0, 0, 0, 0.08)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                zIndex: 999,
+                fontSize: '0.75rem',
+                color: 'var(--color-text-secondary)',
+                transition: 'all 0.2s ease',
+                outline: 'none'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.color = 'var(--border-accent)';
+                e.currentTarget.style.borderColor = 'var(--border-accent)';
+                e.currentTarget.style.transform = 'scale(1.1)';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.color = 'var(--color-text-secondary)';
+                e.currentTarget.style.borderColor = 'var(--border-color)';
+                e.currentTarget.style.transform = 'scale(1)';
+              }}
+              title="Collapse Right Cockpit"
+            >
+              ❯
+            </button>
+          )}
           {/* Panel 0: Node Vetting Center */}
           {showVettingCenter && state.activeModule === 'documents' && (() => {
             const cust = state.customer || {};

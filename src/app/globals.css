@@ -275,8 +275,8 @@ a:hover {
 /* 1. Large Laptops / Desktops (up to 1400px) */
 @media (max-width: 1400px) {
   .main-layout-responsive {
-    grid-template-columns: 240px minmax(0, 1fr) 280px !important;
-    gap: 1.5rem !important;
+    grid-template-columns: var(--left-sidebar-width, 240px) minmax(0, 1fr) var(--right-sidebar-width, 280px) !important;
+    gap: var(--main-layout-gap, 1.5rem) !important;
     padding: 1.5rem 1rem !important;
   }
   .search-bar-container-responsive {
@@ -290,8 +290,8 @@ a:hover {
 /* 2. Small Laptops / Tablets Landscape (up to 1200px) */
 @media (max-width: 1200px) {
   .main-layout-responsive {
-    grid-template-columns: 240px minmax(0, 1fr) !important;
-    gap: 1.5rem !important;
+    grid-template-columns: var(--left-sidebar-width, 240px) minmax(0, 1fr) !important;
+    gap: var(--main-layout-gap, 1.5rem) !important;
   }
   .right-sidebar-responsive {
     display: none !important;
