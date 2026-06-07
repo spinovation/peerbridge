@@ -2394,18 +2394,7 @@ export default function Home() {
             <img src="/logo.png" alt="PeerBridge" style={{ height: '36px', objectFit: 'contain' }} />
           </div>
 
-          {/* Quick Home Access adjacent to Logo */}
-          {state.customer?.email !== 'salesadmin@peerbridge.ai' && (
-            <button 
-              onClick={() => state.setActiveModule('portfolio')} 
-              style={state.activeModule === 'portfolio' ? styles.homeBtnActive : styles.homeBtn}
-              title="Go to Ecosystem Home Feed"
-            >
-              🏠 Home
-            </button>
-          )}
-
-          {/* Sleek Global Search Bar next to Logo/Home */}
+          {/* Sleek Global Search Bar next to Logo */}
           {state.customer?.email !== 'salesadmin@peerbridge.ai' && (
             <div className="search-bar-container-responsive" style={styles.searchBarContainer}>
               <span style={styles.searchIcon}>🔍</span>
@@ -2433,6 +2422,16 @@ export default function Home() {
         {/* Column 2: Center Ecosystem Horizontal Navigation */}
         {state.customer?.email !== 'salesadmin@peerbridge.ai' && (
           <nav className="header-nav-responsive" style={styles.headerNav}>
+            <button
+              onClick={() => state.setActiveModule('portfolio')}
+              className="header-nav-btn-responsive"
+              style={state.activeModule === 'portfolio' ? styles.headerNavBtnActive : styles.headerNavBtn}
+            >
+              <span>🏠</span>
+              <span>Home</span>
+              {state.activeModule === 'portfolio' && <div style={styles.activeIndicator} />}
+            </button>
+
             <button
               onClick={() => state.setActiveModule('entrepreneur')}
               className="header-nav-btn-responsive"
