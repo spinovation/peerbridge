@@ -311,7 +311,7 @@ export default function InvestorModule({ state }) {
               onClick={() => setOfferingTypeFilter('equity')}
               style={{
                 background: offeringTypeFilter === 'equity' ? 'var(--border-accent)' : 'transparent',
-                color: offeringTypeFilter === 'equity' ? '#000000' : '#a3a3a3',
+                color: offeringTypeFilter === 'equity' ? '#ffffff' : 'var(--color-text-secondary)',
                 border: 'none',
                 padding: '0.5rem 1.25rem',
                 borderRadius: '25px',
@@ -327,7 +327,7 @@ export default function InvestorModule({ state }) {
               onClick={() => setOfferingTypeFilter('debt')}
               style={{
                 background: offeringTypeFilter === 'debt' ? 'var(--border-accent)' : 'transparent',
-                color: offeringTypeFilter === 'debt' ? '#000000' : '#a3a3a3',
+                color: offeringTypeFilter === 'debt' ? '#ffffff' : 'var(--color-text-secondary)',
                 border: 'none',
                 padding: '0.5rem 1.25rem',
                 borderRadius: '25px',

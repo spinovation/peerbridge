@@ -723,7 +723,7 @@ export default function ProfileModule({ state }) {
                               onClick={() => setJobCurrent(!jobCurrent)} 
                               style={{ 
                                 fontSize: '0.78rem', 
-                                color: jobCurrent ? '#00f2fe' : 'rgba(0, 0, 0, 0.06)', 
+                                color: jobCurrent ? 'var(--border-accent)' : 'var(--color-text-secondary)', 
                                 cursor: 'pointer', 
                                 alignSelf: 'center',
                                 fontWeight: '700',

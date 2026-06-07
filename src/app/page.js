@@ -2933,7 +2933,7 @@ export default function Home() {
               
               <span style={{ 
                 fontSize: '0.7rem', 
-                color: 'rgba(0, 0, 0, 0.06)', 
+                color: 'var(--color-text-secondary)', 
                 display: 'block', 
                 margin: '0.25rem 0 0.65rem 0',
                 lineHeight: '1.25',
@@ -3173,11 +3173,11 @@ export default function Home() {
                 borderTop: '1px solid var(--border-color)',
                 marginTop: '0.2rem',
                 paddingTop: '0.5rem',
-                color: 'rgba(0, 0, 0, 0.06)',
+                color: 'var(--color-text-secondary)',
                 cursor: 'pointer'
               }}
-              onMouseOver={(e) => e.currentTarget.style.color = '#ffffff'}
-              onMouseOut={(e) => e.currentTarget.style.color = 'rgba(0, 0, 0, 0.06)'}
+              onMouseOver={(e) => e.currentTarget.style.color = 'var(--border-accent)'}
+              onMouseOut={(e) => e.currentTarget.style.color = 'var(--color-text-secondary)'}
             >
               <span style={{ fontSize: '0.7rem', fontWeight: '700' }}>
                 {showAllResources ? 'Show Less ▴' : 'Show More ▾'}
