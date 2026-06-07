@@ -3865,7 +3865,7 @@ const styles = {
   adminBtnActive: {
     background: 'var(--border-accent)',
     border: '1px solid var(--border-accent)',
-    color: 'var(--color-text-primary)',
+    color: '#ffffff',
     padding: '0.4rem 0.75rem',
     borderRadius: '6px',
     fontSize: '0.72rem',
