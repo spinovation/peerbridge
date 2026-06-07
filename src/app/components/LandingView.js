@@ -145,7 +145,8 @@ export default function LandingView({ state }) {
             🤝 Marketplace for Entrepreneurs • Investors • Affiliates
           </div>
           <h1 style={styles.heroTitle}>
-            The Private Debt, Equity & <br/>
+            The Private Debt, Equity <br/>
+            & <br/>
             <span style={styles.gradientText}>AI Brokerage Ecosystem</span>
           </h1>
           <p style={styles.heroSub}>
