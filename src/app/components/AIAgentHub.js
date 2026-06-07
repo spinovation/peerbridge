@@ -223,7 +223,8 @@ export default function AIAgentHub({ state }) {
     let currentStep = 0;
     const interval = setInterval(() => {
       if (currentStep < steps.length) {
-        setSimLogs(prev => [...prev, steps[currentStep]]);
+        const nextLog = steps[currentStep];
+        setSimLogs(prev => [...prev, nextLog]);
         currentStep++;
       } else {
         clearInterval(interval);
@@ -649,26 +650,29 @@ export default function AIAgentHub({ state }) {
                   <span>Click 'Initialize' to witness autonomous note negotiations in conversational sandbox logs.</span>
                 </div>
               ) : (
-                simLogs.map((log, index) => (
-                  <div key={index} className="animate-fade-in-up" style={{
-                    ...styles.logItem,
-                    borderLeftColor: log.color,
-                    background: `var(--border-color)`
-                  }}>
-                    <span style={{
-                      fontSize: '0.62rem',
-                      fontWeight: '850',
-                      textTransform: 'uppercase',
-                      color: log.color,
-                      display: 'block'
+                simLogs.map((log, index) => {
+                  if (!log) return null;
+                  return (
+                    <div key={index} className="animate-fade-in-up" style={{
+                      ...styles.logItem,
+                      borderLeftColor: log.color || 'var(--border-color)',
+                      background: `var(--border-color)`
                     }}>
-                      {log.sender}
-                    </span>
-                    <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.78rem', color: 'var(--color-text-primary)', lineHeight: '1.45' }}>
-                      {log.message}
-                    </p>
-                  </div>
-                ))
+                      <span style={{
+                        fontSize: '0.62rem',
+                        fontWeight: '850',
+                        textTransform: 'uppercase',
+                        color: log.color || 'var(--color-text-secondary)',
+                        display: 'block'
+                      }}>
+                        {log.sender || 'System'}
+                      </span>
+                      <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.78rem', color: 'var(--color-text-primary)', lineHeight: '1.45' }}>
+                        {log.message || ''}
+                      </p>
+                    </div>
+                  );
+                })
               )}
               {simActive && (
                 <div style={styles.typingIndicator} className="animate-pulse">
