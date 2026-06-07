@@ -79,6 +79,9 @@ export default function LandingView({ state }) {
   const [email, setEmail] = useState('');
   const [role, setRole] = useState('Investor');
 
+  // FAQ state variable
+  const [activeFaqIndex, setActiveFaqIndex] = useState(null);
+
   const handleVerifyCode = (e) => {
     e.preventDefault();
     if (!inviteCode.trim()) {
@@ -565,6 +568,114 @@ export default function LandingView({ state }) {
           </div>
         </div>
       </section>
+
+      {/* FAQ Section (AEO, GEO & LLMO Optimized) */}
+      <section style={styles.faqSection}>
+        <div style={styles.sectionHeader}>
+          <h2 style={styles.sectionTitle}>Frequently Asked Questions</h2>
+          <p style={styles.sectionSub}>Find direct answers regarding the Peer Bridge underwriting engine, security, and membership.</p>
+        </div>
+
+        <div style={styles.faqContainer}>
+          {[
+            {
+              q: "How does Peer Bridge verify borrower credit risk without traditional credit bureaus?",
+              a: "Peer Bridge uses a dual-path underwriting system that connects ADP/Paychex payroll data and Plaid transaction telemetry. This weights modern cash flow (Behavioral Risk Score - BRS) at 90% and credit bureaus (FICO) at 10%, allowing credit-thin founders to qualify based on verified liquid savings rather than lagging historical reports."
+            },
+            {
+              q: "What are the membership subscription costs for the Peer Bridge network?",
+              a: "Currently, all memberships are complementary until June 2027. Thereafter, the platform will transition to a subscription model for Entrepreneurs, Investors, and Affiliates."
+            },
+            {
+              q: "What is the difference between Private Debt Notes and SAFE Equity Campaigns?",
+              a: "Private Debt Notes are short-term, payroll-deducted debt agreements carrying fixed APY interest payouts. SAFE Venture Campaigns represent Regulation Crowdfunding equity placements that allow investors to acquire future equity shares in scaling startups."
+            },
+            {
+              q: "Are Peer Bridge investment debt notes FDIC insured?",
+              a: "No. Investments in P2P commercial debt notes and early-stage startup SAFEs are private placements. They are speculative, carry risk of default, and are not FDIC insured. Investors should review risk disclosures before committing capital."
+            },
+            {
+              q: "How do the Autonomous AI Broker agents facilitate loan agreements?",
+              a: "Peer Bridge deploys sandbox AI agent nodes (CapitalAgent and FounderAgent) that autonomously negotiate note yield terms based on BRS credit risk ratings. Upon agreement, the nodes compile a promissory note and sign it with a SHA-256 cryptographic vault hash."
+            }
+          ].map((faq, idx) => {
+            const isOpen = activeFaqIndex === idx;
+            return (
+              <div key={idx} className="glass-panel" style={styles.faqItem}>
+                <button
+                  type="button"
+                  onClick={() => setActiveFaqIndex(isOpen ? null : idx)}
+                  style={styles.faqHeaderBtn}
+                >
+                  <span style={styles.faqQuestionText}>{faq.q}</span>
+                  <span style={styles.faqArrow}>{isOpen ? '▴' : '▾'}</span>
+                </button>
+                <div style={{
+                  ...styles.faqAnswerContainer,
+                  maxHeight: isOpen ? '160px' : '0',
+                  opacity: isOpen ? 1 : 0,
+                  paddingTop: isOpen ? '0.75rem' : '0',
+                }}>
+                  <p style={styles.faqAnswerText}>{faq.a}</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* JSON-LD Structured Data Schema for Search Engines (AEO, GEO & LLMO) */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "How does Peer Bridge verify borrower credit risk without traditional credit bureaus?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Peer Bridge uses a dual-path underwriting system that connects ADP/Paychex payroll data and Plaid transaction telemetry. This weights modern cash flow (Behavioral Risk Score - BRS) at 90% and credit bureaus (FICO) at 10%, allowing credit-thin founders to qualify based on verified liquid savings rather than lagging historical reports."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "What are the membership subscription costs for the Peer Bridge network?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Currently, all memberships are complementary until June 2027. Thereafter, the platform will transition to a subscription model for Entrepreneurs, Investors, and Affiliates."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "What is the difference between Private Debt Notes and SAFE Equity Campaigns?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Private Debt Notes are short-term, payroll-deducted debt agreements carrying fixed APY interest payouts. SAFE Venture Campaigns represent Regulation Crowdfunding equity placements that allow investors to acquire future equity shares in scaling startups."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Are Peer Bridge investment debt notes FDIC insured?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "No. Investments in P2P commercial debt notes and early-stage startup SAFEs are private placements. They are speculative, carry risk of default, and are not FDIC insured. Investors should review risk disclosures before committing capital."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "How do the Autonomous AI Broker agents facilitate loan agreements?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Peer Bridge deploys sandbox AI agent nodes (CapitalAgent and FounderAgent) that autonomously negotiate note yield terms based on BRS credit risk ratings. Upon agreement, the nodes compile a promissory note and sign it with a SHA-256 cryptographic vault hash."
+                }
+              }
+            ]
+          }).replace(/</g, '\\u003c')
+        }}
+      />
 
       {/* Expanded Landing Footer */}
       <footer style={styles.footerContainer}>
@@ -1505,6 +1616,62 @@ const styles = {
     fontSize: '0.82rem',
     color: 'var(--color-text-secondary)',
     lineHeight: '1.5',
+    margin: 0,
+  },
+  faqSection: {
+    maxWidth: '1200px',
+    margin: '0 auto',
+    width: '100%',
+    padding: '2rem 0 3rem 0',
+    borderTop: '1px solid var(--border-color)',
+  },
+  faqContainer: {
+    maxWidth: '800px',
+    margin: '1.5rem auto 0 auto',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.75rem',
+  },
+  faqItem: {
+    padding: '1.15rem 1.5rem',
+    borderRadius: '12px',
+    background: 'var(--bg-secondary)',
+    border: '1px solid var(--border-color)',
+    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.02)',
+    transition: 'all 0.2s ease',
+  },
+  faqHeaderBtn: {
+    width: '100%',
+    background: 'none',
+    border: 'none',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    textAlign: 'left',
+    cursor: 'pointer',
+    padding: 0,
+    outline: 'none',
+  },
+  faqQuestionText: {
+    fontSize: '0.94rem',
+    fontWeight: '700',
+    color: 'var(--color-text-primary)',
+    lineHeight: '1.35',
+    paddingRight: '1rem',
+  },
+  faqArrow: {
+    fontSize: '1rem',
+    color: 'var(--color-text-secondary)',
+    transition: 'transform 0.2s ease',
+  },
+  faqAnswerContainer: {
+    overflow: 'hidden',
+    transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+  },
+  faqAnswerText: {
+    fontSize: '0.86rem',
+    color: 'var(--color-text-secondary)',
+    lineHeight: '1.55',
     margin: 0,
   }
 };
