@@ -2393,7 +2393,7 @@ export default function Home() {
             }} 
             title={state.customer?.email === 'salesadmin@peerbridge.ai' ? undefined : "Return to Ecosystem Home"}
           >
-            <img src="/logo.png" alt="PeerBridge" style={{ height: '36px', objectFit: 'contain' }} />
+            <img src="/logo-icon.png" alt="PB" style={{ height: '42px', objectFit: 'contain' }} />
           </div>
 
           {/* Sleek Global Search Bar next to Logo */}
