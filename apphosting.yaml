@@ -1,0 +1,13 @@
+# apphosting.yaml
+# App Hosting configuration file for Next.js SSR
+
+headers:
+  - glob: "**/*.@(js|css|png|jpg|jpeg|gif|svg|ico|webmanifest)"
+    headers:
+      - key: Cache-Control
+        value: public, max-age=604800, immutable
+
+# Secrets are securely injected from Google Cloud Secret Manager at build/runtime
+secrets:
+  - name: GEMINI_API_KEY
+    secret: gemini_api_key_secret
