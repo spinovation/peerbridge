@@ -141,7 +141,7 @@ export default function LandingView({ state }) {
       {/* Hero Header */}
       <header style={styles.header}>
         <div style={styles.logoContainer}>
-          <img src="/logo.png" alt="PeerBridge" style={{ height: '52px', objectFit: 'contain' }} />
+          <img src="/logo.png" alt="PeerBridge" style={{ height: '56px', objectFit: 'contain' }} />
         </div>
         <div style={styles.inviteBadge}>🔒 MEMBERS ONLY</div>
       </header>
