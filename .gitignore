@@ -42,6 +42,7 @@ next-env.d.ts
 
 # Peerbridge Private Strategic Documents (For Your Eyes Only)
 peerbridge_confidential_master_strategy.md
+private_docs/
 
 # Presentations & Office Documents (Investor/Technical Decks)
 *.pptx
