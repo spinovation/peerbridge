@@ -341,7 +341,7 @@ export default function InvestorModule({ state }) {
             </button>
           </div>
 
-          <div style={styles.grid}>
+          <div className="responsive-grid-2" style={styles.grid}>
             {campaigns
               .filter(c => {
                 if (offeringTypeFilter === 'debt') {
@@ -378,7 +378,7 @@ export default function InvestorModule({ state }) {
                       </div>
                     </div>
 
-                    <div style={styles.cardInfoGrid}>
+                    <div className="responsive-info-grid" style={styles.cardInfoGrid}>
                       <div style={styles.infoCol}>
                         <span style={styles.infoLabel}>{isDebt ? 'Annual Rate' : 'Share Value'}</span>
                         <span style={styles.infoVal}>{isDebt ? `${camp.interest_rate}%` : `$${camp.sharePrice.toFixed(2)}`}</span>
@@ -432,7 +432,7 @@ export default function InvestorModule({ state }) {
             <p style={styles.sub}>Analyze your private equity acquisitions, wallet distributions, and annual ROI calculations.</p>
           </div>
 
-          <div style={styles.portfolioGrid}>
+          <div className="responsive-portfolio-grid" style={styles.portfolioGrid}>
             {/* Visual Allocation Card */}
             <div className="glass-panel" style={styles.visualAllocationCard}>
               <h3 style={styles.panelTitle}>📊 Capital Allocation</h3>

@@ -446,3 +446,91 @@ a:hover {
 }
 
 
+/* ==========================================
+   Responsive Grid & Layout Utilities
+   ========================================== */
+
+/* Left Sidebar Collapse State on Mobile/Tablet */
+@media (max-width: 992px) {
+  .left-sidebar-responsive.collapsed {
+    width: 0 !important;
+    height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+    opacity: 0 !important;
+    display: none !important;
+  }
+}
+
+/* Responsive Grid Overrides */
+@media (max-width: 992px) {
+  .responsive-split-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 2rem !important;
+  }
+  .responsive-portfolio-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .responsive-grid-3,
+  .responsive-grid-2 {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 1.25rem !important;
+  }
+  
+  /* Landing page grids & adjustments */
+  .landing-offerings-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.25rem !important;
+  }
+  .how-step-line {
+    display: none !important;
+  }
+  .landing-container {
+    padding: 0 1rem !important;
+  }
+  .landing-main {
+    padding: 1.5rem 0 2rem 0 !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .landing-metrics-grid {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)) !important;
+    gap: 1rem !important;
+    margin-top: 1.5rem !important;
+  }
+  .landing-features-grid {
+    grid-template-columns: 1fr !important;
+    margin-top: 1.5rem !important;
+  }
+  .landing-offering-footer {
+    grid-template-columns: 1fr !important;
+    gap: 0.5rem !important;
+  }
+  .how-tabs-container {
+    flex-wrap: wrap !important;
+    gap: 0.5rem !important;
+  }
+  .how-tab, .how-tab-active {
+    padding: 0.6rem 1.25rem !important;
+    font-size: 0.82rem !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .responsive-wizard-card {
+    padding: 1.5rem !important;
+  }
+  .responsive-progress-header {
+    padding: 1rem 1.5rem !important;
+  }
+}
+

@@ -56,11 +56,11 @@ export default function TaxModule({ state }) {
         <p style={styles.sub}>Access annual 1099 forms, dividend ledgers, and satisfy IRS Reg D/Reg CF reporting criteria.</p>
       </div>
 
-      <div style={styles.grid}>
+      <div className="responsive-split-grid" style={styles.grid}>
         {/* Tax stats and document list */}
         <div style={styles.leftCol}>
           {/* Summary Cards */}
-          <div style={styles.statsRow}>
+          <div className="responsive-grid-3" style={styles.statsRow}>
             <div className="glass-panel" style={styles.statCard}>
               <span style={styles.statLabel}>Placed Capital Balance</span>
               <span style={styles.statVal}>${totalPlacedCapital.toLocaleString()}</span>
@@ -170,7 +170,7 @@ export default function TaxModule({ state }) {
             {/* IRS Grid */}
             {selectedTaxDoc.doc_type === 'tax_1099_int' ? (
               /* IRS Form 1099-INT Grid */
-              <div style={styles.irsGrid}>
+              <div className="responsive-grid-3" style={styles.irsGrid}>
                 <div style={{ ...styles.irsBox, gridColumn: 'span 2' }}>
                   <span style={styles.boxLabel}>PAYER’S name, street address, city or town, state or province, country, and ZIP</span>
                   <strong style={styles.boxVal}>
@@ -222,7 +222,7 @@ export default function TaxModule({ state }) {
               </div>
             ) : (
               /* IRS Form 1099-DIV Grid */
-              <div style={styles.irsGrid}>
+              <div className="responsive-grid-3" style={styles.irsGrid}>
                 <div style={{ ...styles.irsBox, gridColumn: 'span 2' }}>
                   <span style={styles.boxLabel}>PAYER’S name, street address, city or town, state or province, country, and ZIP</span>
                   <strong style={styles.boxVal}>

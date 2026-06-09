@@ -71,7 +71,7 @@ export default function BankingModule({ state }) {
       )}
 
       {/* Main Grid */}
-      <div style={styles.grid}>
+      <div className="responsive-split-grid" style={styles.grid}>
         {/* Wallet Controls */}
         <div style={styles.controlsCol}>
           {/* Internal Wallet */}

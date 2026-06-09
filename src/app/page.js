@@ -2890,7 +2890,7 @@ export default function Home() {
           '--main-layout-gap': `${(leftSidebarCollapsed && rightSidebarCollapsed) ? '0px' : (leftSidebarCollapsed || rightSidebarCollapsed ? '1rem' : '2rem')}`
         }}>
         {/* Left Sidebar Menu (Sleek Modular Cards like LinkedIn) */}
-        <aside className="left-sidebar-responsive" style={{
+        <aside className={`left-sidebar-responsive ${leftSidebarCollapsed ? 'collapsed' : ''}`} style={{
           ...styles.sidebar,
           width: leftSidebarCollapsed ? '0px' : '260px',
           overflow: leftSidebarCollapsed ? 'hidden' : 'visible',

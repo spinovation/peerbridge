@@ -118,7 +118,7 @@ export default function AffiliateModule({ state }) {
             <p style={styles.sub}>Entrepreneurs post structuring and tax questions; vetted professional affiliates reply to establish client leads.</p>
           </div>
 
-          <div style={styles.qaGrid}>
+          <div className="responsive-split-grid" style={styles.qaGrid}>
             {/* Left Column: Q&A Thread Lists */}
             <div style={styles.qaThreadsCol}>
               {/* Ask Question form */}
@@ -250,7 +250,7 @@ export default function AffiliateModule({ state }) {
             <p style={styles.sub}>Vetted legal documentation and tools shared by professional partners to establish capital compliance structures.</p>
           </div>
 
-          <div style={styles.resourcesGrid}>
+          <div className="responsive-split-grid" style={styles.resourcesGrid}>
             {/* Left Main Pane: Filter and Search list */}
             <div style={styles.resourcesLeftCol}>
               <div style={styles.filterSearchRow}>
@@ -398,7 +398,7 @@ export default function AffiliateModule({ state }) {
             <p style={styles.sub}>Link directly with accredited service providers. Schedule regulatory structuring and tax audit audits.</p>
           </div>
 
-          <div style={styles.affiliateGrid}>
+          <div className="responsive-grid-2" style={styles.affiliateGrid}>
             {affiliates.map((aff) => (
               <div key={aff.id} className="glass-panel" style={styles.affCard}>
                 <div style={styles.affCardHeader}>

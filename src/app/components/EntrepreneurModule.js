@@ -330,7 +330,7 @@ export default function EntrepreneurModule({ state }) {
                 Configure seed equity SAFEs or secured peer-to-peer debt notes mapped instantly to directory syndicates.
               </p>
 
-              <form onSubmit={handleLaunchRound} style={styles.formGrid}>
+              <form onSubmit={handleLaunchRound} className="responsive-grid-2" style={styles.formGrid}>
                 {/* Offering Type Selector Pills */}
                 <div style={styles.fullWidth}>
                   <label style={styles.label}>Offering Security Type</label>
@@ -447,7 +447,7 @@ export default function EntrepreneurModule({ state }) {
           )}
 
           {/* Double Column Grid: Left is Company Campaigns + Cap Tables, Right is Business Profile & Team */}
-          <div style={styles.doubleGrid}>
+          <div className="responsive-split-grid" style={styles.doubleGrid}>
             
             {/* Left Column: Campaigns & Cap Table */}
             <div style={styles.leftCol}>
@@ -466,7 +466,7 @@ export default function EntrepreneurModule({ state }) {
                       <span className="badge badge-primary">{camp.status} Round</span>
                     </div>
 
-                    <div style={styles.specsLine}>
+                    <div className="responsive-grid-3" style={styles.specsLine}>
                       <div>
                         <span style={styles.specLabel}>Category:</span>
                         <strong style={styles.specVal}>{camp.category}</strong>
@@ -675,7 +675,7 @@ export default function EntrepreneurModule({ state }) {
             /* Full Founder Pro Automations Suite Dashboard */
             <div className="animate-fade-in-up" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
               
-              <div style={styles.proTopGrid}>
+              <div className="responsive-split-grid" style={styles.proTopGrid}>
                 {/* 1. Accounts Payable Bill Pay Dashboard */}
                 <div className="glass-panel" style={styles.card}>
                   <h3 style={styles.cardTitle}>🏛️ Automated Accounts Payable (Bill Pay)</h3>

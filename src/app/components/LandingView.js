@@ -132,7 +132,7 @@ export default function LandingView({ state }) {
   };
 
   return (
-    <div style={styles.container}>
+    <div className="landing-container" style={styles.container}>
       {/* Membership Disclaimer Promo Announcement Banner */}
       <div style={styles.promoBanner}>
         <span>✨ <strong>Early Member Offer:</strong> Membership is complementary until June 2027. Thereafter, it will transition to a subscription model for Entrepreneurs, Investors, and Affiliates.</span>
@@ -147,7 +147,7 @@ export default function LandingView({ state }) {
       </header>
 
       {/* Main Section */}
-      <main style={styles.main}>
+      <main className="landing-main" style={styles.main}>
         {/* Full-width Title Section */}
         <div style={styles.heroHeaderBlock}>
           <h1 style={styles.heroTitle}>
@@ -159,14 +159,14 @@ export default function LandingView({ state }) {
         </div>
 
         {/* 2-Column Split Layout */}
-        <div style={styles.heroSplitGrid}>
+        <div className="landing-hero-grid responsive-split-grid" style={styles.heroSplitGrid}>
           <section style={styles.heroSection}>
             <p style={styles.heroSub}>
             The private capital marketplace connecting Entrepreneurs, Investors, and Professional Affiliates. We combine SEC-compliant Reg CF/D Equity campaigns, P2P Commercial Debt syndicates with ADP & Plaid underwriting bypass, and autonomous AI-agent brokerages securing real-time contract negotiations.
           </p>
 
           {/* Quick Metrics */}
-          <div style={styles.metricsContainer}>
+          <div className="landing-metrics-grid" style={styles.metricsContainer}>
             <div style={styles.metricCard}>
               <span style={styles.metricVal}>$42M+</span>
               <span style={styles.metricLabel}>Capital Processed</span>
@@ -182,7 +182,7 @@ export default function LandingView({ state }) {
           </div>
 
           {/* Feature Grid */}
-          <div style={styles.featureGrid}>
+          <div className="landing-features-grid" style={styles.featureGrid}>
             <div className="feature-pill-interactive" style={styles.featurePill}>
               <span style={styles.featureIcon}>🏛️</span>
               <span>P2P Commercial Debt Notes</span>
@@ -428,7 +428,7 @@ export default function LandingView({ state }) {
           <p style={styles.sectionSub}>Explore live capital campaigns scaling in our private ecosystem.</p>
         </div>
 
-        <div style={styles.cardGrid}>
+        <div className="landing-offerings-grid" style={styles.cardGrid}>
           {state.campaigns.map((camp) => {
             const pct = Math.min(100, Math.round((camp.raised / camp.target) * 100));
             return (
@@ -450,7 +450,7 @@ export default function LandingView({ state }) {
                   </div>
                 </div>
 
-                <div style={styles.offeringFooter}>
+                <div className="landing-offering-footer" style={styles.offeringFooter}>
                   {camp.offering_type === 'debt' ? (
                     <>
                       <div>
@@ -501,7 +501,7 @@ export default function LandingView({ state }) {
         </div>
 
         {/* Role Tabs */}
-        <div style={styles.howTabsContainer}>
+        <div className="how-tabs-container" style={styles.howTabsContainer}>
           <button 
             type="button"
             onClick={() => setHowRole('entrepreneur')}
@@ -558,7 +558,7 @@ export default function LandingView({ state }) {
               <div key={idx} style={styles.howStepCard}>
                 <div style={styles.howStepHeader}>
                   <span style={styles.howStepNumber}>{step.step}</span>
-                  <div style={styles.howStepLine} />
+                  <div className="how-step-line" style={styles.howStepLine} />
                 </div>
                 <h4 style={styles.howStepTitle}>{step.title}</h4>
                 <p style={styles.howStepText}>{step.text}</p>

@@ -429,7 +429,7 @@ export default function OnboardingWizard({ state }) {
   return (
     <div style={styles.container} className="animate-fade-in-up">
       {/* Visual Onboarding Progress header */}
-      <div className="glass-panel" style={styles.progressHeader}>
+      <div className="glass-panel responsive-progress-header" style={styles.progressHeader}>
         <div style={styles.logoBox}>
           <h2 style={styles.logoText}>PEER BRIDGE</h2>
           <span style={styles.logoSub}>FINTECH CREDENTIAL OVERVIEW</span>
@@ -496,7 +496,7 @@ export default function OnboardingWizard({ state }) {
       )}
 
       {/* Dynamic onboarding form steps */}
-      <div className="glass-panel" style={styles.wizardCard}>
+      <div className="glass-panel responsive-wizard-card" style={styles.wizardCard}>
         {currentStep === 0 && (
           <form onSubmit={handleVerifyOtp} style={styles.stepForm}>
             <h3 style={styles.stepTitle}>🔒 Step 1: Email Verification Gate</h3>
@@ -535,7 +535,7 @@ export default function OnboardingWizard({ state }) {
               Complete your standard professional profile. Your credential status ring updates dynamically as you fill out optional documents, previous work ledger history, and accredited tags.
             </p>
 
-            <div style={styles.basicLayoutGrid}>
+            <div className="responsive-split-grid" style={styles.basicLayoutGrid}>
               {/* Left Column: Interactive photo and credentials */}
               <div style={styles.avatarCol}>
                 <div style={styles.photoRingContainer}>
@@ -668,7 +668,7 @@ export default function OnboardingWizard({ state }) {
                   Providing your physical address and SSN triggers our simulated Cognito background check, giving you a gold highlighted badge in the networking directory.
                 </p>
 
-                <div style={styles.formRow2Col}>
+                <div className="responsive-grid-2" style={styles.formRow2Col}>
                   <div style={styles.inputGroup}>
                     <label style={styles.label}>Physical Address</label>
                     <input
@@ -710,7 +710,7 @@ export default function OnboardingWizard({ state }) {
                 )}
 
                 <div style={styles.addItemForm}>
-                  <div style={styles.formRow2Col}>
+                  <div className="responsive-grid-2" style={styles.formRow2Col}>
                     <input
                       type="text"
                       placeholder="Job Title"
@@ -726,7 +726,7 @@ export default function OnboardingWizard({ state }) {
                       style={styles.smallInput}
                     />
                   </div>
-                  <div style={styles.formRow2Col}>
+                  <div className="responsive-grid-2" style={styles.formRow2Col}>
                     <input
                       type="month"
                       value={newStart}
@@ -756,7 +756,7 @@ export default function OnboardingWizard({ state }) {
                 )}
 
                 <div style={styles.addItemForm}>
-                  <div style={styles.formRow2Col}>
+                  <div className="responsive-grid-2" style={styles.formRow2Col}>
                     <input
                       type="text"
                       placeholder="Degree / Certificate"
@@ -772,7 +772,7 @@ export default function OnboardingWizard({ state }) {
                       style={styles.smallInput}
                     />
                   </div>
-                  <div style={styles.formRow2Col}>
+                  <div className="responsive-grid-2" style={styles.formRow2Col}>
                     <input
                       type="number"
                       placeholder="Graduation Year"
@@ -805,7 +805,7 @@ export default function OnboardingWizard({ state }) {
               Setup your primary company raising details. This information will represent your startup profile and feed our live Cap Table engine.
             </p>
 
-            <div style={styles.formRow2Col}>
+            <div className="responsive-grid-2" style={styles.formRow2Col}>
               <div style={styles.inputGroup}>
                 <label style={styles.label}>Company Legal Name</label>
                 <input
@@ -834,7 +834,7 @@ export default function OnboardingWizard({ state }) {
               </div>
             </div>
 
-            <div style={styles.formRow2Col}>
+            <div className="responsive-grid-2" style={styles.formRow2Col}>
               <div style={styles.inputGroup}>
                 <label style={styles.label}>Target Capital Goal ($)</label>
                 <input
@@ -858,7 +858,7 @@ export default function OnboardingWizard({ state }) {
               </div>
             </div>
 
-            <div style={styles.formRow2Col}>
+            <div className="responsive-grid-2" style={styles.formRow2Col}>
               <div style={styles.inputGroup}>
                 <label style={styles.label}>Industry Segment</label>
                 <select
@@ -917,7 +917,7 @@ export default function OnboardingWizard({ state }) {
               Configure your risk levels, investment range capacities, and declare your regulatory accreditation.
             </p>
 
-            <div style={styles.formRow2Col}>
+            <div className="responsive-grid-2" style={styles.formRow2Col}>
               <div style={styles.inputGroup}>
                 <label style={styles.label}>Investor Classification</label>
                 <select
@@ -946,7 +946,7 @@ export default function OnboardingWizard({ state }) {
               </div>
             </div>
 
-            <div style={styles.formRow2Col}>
+            <div className="responsive-grid-2" style={styles.formRow2Col}>
               <div style={styles.inputGroup}>
                 <label style={styles.label}>Minimum Investment Range ($)</label>
                 <input
@@ -1012,7 +1012,7 @@ export default function OnboardingWizard({ state }) {
               Configure your professional consulting credentials so early stage founders can source your legal, accounting, or bank services in the catalog.
             </p>
 
-            <div style={styles.formRow2Col}>
+            <div className="responsive-grid-2" style={styles.formRow2Col}>
               <div style={styles.inputGroup}>
                 <label style={styles.label}>Affiliate Category</label>
                 <select

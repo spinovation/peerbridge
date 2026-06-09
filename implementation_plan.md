@@ -1,100 +1,113 @@
-# Implementation Plan: Connections, Notifications, P2P Chat, & Real Database Path
+# Implementation Plan: Vercel to Firebase App Hosting Migration
 
-This implementation plan details the frontend interactive features (Connections filter, P2P Connect button, Notifications Dropdown, and floating LinkedIn-style Chat widget) and lays out the transition path to a real backend database (Firebase Cloud Firestore).
-
----
-
-## 1. Immediate Interactive P2P Features (Frontend)
-
-We will modify `usePeerBridge.js`, `page.js`, and `src/app/components/ProfileModule.js` to implement these systems with responsive client-side persistence in local storage first, ensuring everything works dynamically.
-
-### Component-Level Adjustments
-
-#### 1. A. Global State Changes ([usePeerBridge.js](file:///Users/sridhargs/Documents/Antigravity/peer-bridge/src/app/usePeerBridge.js))
-* **Directory Filters**: Add `directoryRoleFilter` and `setDirectoryRoleFilter` state (default `'All'`).
-* **Connection Storage**: Update the `toggleConnectionNode` action to save the updated `connections` array using the `sync` utility (writing `pb_connections` to local storage). Read this state on mount so connections persist across page reloads.
-* **Initial Notifications**: Seed `notifications` with 3 highly realistic start-up/regulatory alerts (SEC Form C sync, Biometrics vetting, Connection accepted by Marcus Vance).
-* **Unread Notifications Badge**: Add an unread notification count.
-
-#### 1. B. Network Directory & Global Search Connect Buttons ([ProfileModule.js](file:///Users/sridhargs/Documents/Antigravity/peer-bridge/src/app/components/ProfileModule.js) & [page.js](file:///Users/sridhargs/Documents/Antigravity/peer-bridge/src/app/page.js))
-* **Dropdown Option**: Add `"🤝 My Connections Only"` filter to the directory dropdown.
-* **Connection Filtering**: In the Network Directory tab, filter members based on `directoryRoleFilter`. If the filter is `'Connections'`, filter out members whose `customer_id` is NOT in `state.connections`.
-* **Connect Toggle**: Place a `Connect` / `Connected` toggle button in both:
-  * Directory Member Cards (`ProfileModule.js`)
-  * Search Results Cards (`page.js`)
-* Clicking this button adds/removes the member from the connections array, updates the left sidebar count in real-time, and triggers an in-app biometrics notification.
-
-#### 1. C. Header Notifications Center ([page.js](file:///Users/sridhargs/Documents/Antigravity/peer-bridge/src/app/page.js))
-* **Notifications Bell 🔔**: Place a bell icon in the top header next to the Wallet. Render a red numeric badge displaying the number of unread notifications.
-* **Notifications Dropdown**: Toggling the bell opens a sleek glassmorphic overlay (`styles.notificationDropdown`) listing the chronological notifications. Clicking `✕` clears a specific alert, and a button allows clearing all alerts.
-
-#### 1. D. LinkedIn-Style Floating Messaging Hub ([page.js](file:///Users/sridhargs/Documents/Antigravity/peer-bridge/src/app/page.js))
-* **Floating Widget**: Render a fixed floating bar at `bottom: 0`, `right: 30px`, `z-index: 9999` with a minimized title: `💬 P2P Messaging Hub`.
-* Clicking the title expands the widget to a height of `420px`.
-* **Active Connections Selector**: Inside the expanded chat, display your active connection nodes (e.g. Marcus Vance, Dr. Evelyn Chen, Sarah Jenkins, Esq.).
-* Clicking any node opens a P2P messaging interface with:
-  * Scrollable chat bubble list
-  * Message input box and Send button
-* **Smart Automated AI Responders**: When a message is sent, display it in the bubble list, and trigger a `setTimeout` response after **1 second** simulating an instant response from that node based on their professional background:
-  * **Marcus Vance**: Responds to capital structures, SEC Form C compliance, and investor cap tables.
-  * **Dr. Evelyn Chen**: Responds to bio-engineered photo-bioreactor sleeve engineering, carbon offset scaling, and CleanTech.
-  * **Sarah Jenkins, Esq.**: Responds to securities placements, Crowd SPV limits, and Reg CF legal boundaries.
-* Store conversation threads in local state and synchronize them to local storage under `pb_chats` so they persist!
+This plan details the steps required to migrate **peerbridge.ai** (Next.js SSR application) from Vercel hosting to **Firebase App Hosting**. Firebase App Hosting is Google's serverless solution designed specifically for SSR frameworks, provisioning serverless Cloud Run containers that scale down to zero when inactive.
 
 ---
 
-## 2. Path to a Real Database (Firebase Firestore)
+## User Review Required
 
-To support real-time multi-user operations (e.g., when Elina logs in and sends a connection request, Sarah Connor sees it immediately on her own machine), we propose implementing a **real-time backend database**. 
+> [!IMPORTANT]
+> **Firebase Project & GCP Billing (Blaze Plan) Requirement:**
+> Because Firebase App Hosting utilizes enterprise-grade Google Cloud resources (Cloud Run, Cloud Build, and Secret Manager) behind the scenes, it requires your Firebase project to be on the pay-as-you-go **Blaze Plan** (with credit billing enabled).
+> * **Expected Cost:** Under 50 users, your usage will fall entirely within the GCP/Firebase free tier limits, meaning your actual monthly cost will be **$0.00**.
+> * **Access:** You will need owner permissions on the Google Cloud / Firebase console to link your GitHub repository.
 
-### Why Firebase Cloud Firestore?
-1. **Serverless Architecture**: Cloud Firestore can be queried directly from client-side Next.js code using the Firebase Client SDK.
-2. **Real-time Synchronization**: Firestore listeners (`onSnapshot`) push updates in real-time—ideal for P2P notifications and instant messaging.
-3. **Seamless Integration**: We can easily refactor our `sync` function in `usePeerBridge.js` to write to Firestore collections instead of local storage.
+---
 
-### Proposed Database Schema
+## Open Questions
 
-We will structure Firestore with 11 primary collections matching the app's tables:
-1. `customers` (customer profile metadata)
-2. `basic_profiles` (DOB, address, bio, profile photo)
-3. `professional_profiles` (Headline, experience, education, skills)
-4. `investor_profiles` (Investor type, range, preferred industries)
-5. `entrepreneur_profiles` (Company name, funding goal, valuation, summary)
-6. `campaigns` (Active deal-flow rounds, amount raised, cap table)
-7. `portfolio` (Holds active equity share investments)
-8. `connections` (Mapping arrays of customer IDs representing linked nodes)
-9. `notifications` (System, compliance, and P2P connection alerts)
-10. `chats` (P2P DMs, subcollection `messages` structured chronologically)
-11. `help_tickets` (Support requests)
+> [!IMPORTANT]
+> Please review the following details before approving:
+> 1. **Firebase Project ID:** What is your active Firebase Project ID? (e.g., `peer-bridge-production` or similar). We will need this to initialize the backend configuration.
+> 2. **GCP Billing/Blaze Plan:** Is your Firebase Project already upgraded to the Blaze Plan? If not, we will need to pause during the setup to let you enable billing.
+> 3. **Secret Manager Setup:** Since API keys (like `GEMINI_API_KEY`) must be secured via GCP Secret Manager for App Hosting, do you have your Gemini API key ready to paste into the Secret Manager console?
 
-### Step-by-Step Database Migration Plan
+---
+
+## Proposed Changes
+
+We will introduce a new configuration file and verify Next.js parameters before initiating the deployment hooks.
+
+### Configuration Layer
+
+#### [NEW] [apphosting.yaml](file:///Users/sridhargs/Documents/Antigravity/peer-bridge/apphosting.yaml)
+Create a new file in the root directory to define the build environment, static cache headers, and runtime secrets:
+
+```yaml
+# apphosting.yaml
+# App Hosting configuration file for Next.js SSR
+
+headers:
+  - glob: "**/*.@(js|css|png|jpg|jpeg|gif|svg|ico|webmanifest)"
+    headers:
+      - key: Cache-Control
+        value: public, max-age=604800, immutable
+
+# Secrets are securely injected from Google Cloud Secret Manager at build/runtime
+secrets:
+  - name: GEMINI_API_KEY
+    secret: gemini_api_key_secret
+```
+
+#### [MODIFY] [next.config.mjs](file:///Users/sridhargs/Documents/Antigravity/peer-bridge/next.config.mjs)
+Ensure that the Next.js config does **NOT** contain `output: 'export'`, as Firebase App Hosting must build standard Server-Side Rendering (SSR) bundles.
+
+---
+
+## Deployment & Setup Pipeline
+
+Once the plan is approved, we will execute the migration along the following workflow:
 
 ```mermaid
 graph TD
-    A[Create Firebase Project on Console] --> B[Install firebase npm dependencies]
-    B --> C[Configure .env.local Credentials]
-    C --> D[Initialize firebase.js Client SDK]
-    D --> E[Refactor sync function in usePeerBridge.js]
-    E --> F[Deploy Firestore Security Rules]
-    F --> G[End-to-End Multi-user Testing]
+    A[Step 1: Create apphosting.yaml] --> B[Step 2: Add secrets in GCP Secret Manager]
+    B --> C[Step 3: Grant Secret Manager Accessor Role]
+    C --> D[Step 4: Create App Hosting Backend via CLI/Console]
+    D --> E[Step 5: Route Custom Domain peerbridge.ai]
 ```
 
-> [!NOTE]
-> Setting up the database requires credentials. You will need to create a free project at [Firebase Console](https://console.firebase.google.com/) and provide us with the configuration object (or place it in a `.env.local` file).
+### Step 1: Create `apphosting.yaml`
+Write the config file to the root workspace.
+
+### Step 2: Set Up Secrets in Google Cloud Secret Manager
+1. Open the [Google Cloud Console](https://console.cloud.google.com/) for your project.
+2. Go to **Security ➔ Secret Manager**.
+3. Create a new secret named `gemini_api_key_secret`.
+4. Add a new version containing your actual **Gemini API Key** as the value.
+
+### Step 3: Grant IAM Access to App Hosting Service Account
+During build time, the Firebase App Hosting service account needs permission to read the secret we just created:
+1. Identify the default App Hosting service account name. It typically looks like:
+   `firebase-app-hosting@<PROJECT_ID>.iam.gserviceaccount.com`
+2. Under Secret Manager, select the `gemini_api_key_secret` checkbox.
+3. Click **Show Info Panel ➔ Add Principal**.
+4. Paste the service account address.
+5. Select the role **Secret Manager Secret Accessor** (`roles/secretmanager.secretAccessor`) and click **Save**.
+
+### Step 4: Create the App Hosting Backend
+We can set this up via the Firebase Console Web UI:
+1. Go to the [Firebase Console](https://console.firebase.google.com/).
+2. Select your project and click **Build ➔ App Hosting**.
+3. Click **Get Started** and connect your GitHub account.
+4. Select the `peer-bridge` repository and choose the `main` branch.
+5. Complete the setup to create the backend. Firebase will automatically install GitHub webhooks, triggering a new build on every subsequent `git push`.
+
+### Step 5: Transition the DNS Records (peerbridge.ai)
+Once the build is complete:
+1. In the Firebase App Hosting dashboard, click **Connect Custom Domain**.
+2. Add `peerbridge.ai` (and `www.peerbridge.ai`).
+3. Firebase will provide new DNS records (A/TXT).
+4. Go to your domain registrar (GoDaddy, Namecheap, etc.) and replace your old Vercel A/CNAME records with the new Firebase configurations.
+5. Within 1-2 hours, Firebase will auto-provision a new SSL certificate, and your site will be live!
 
 ---
 
-## 3. Verification Plan
+## Verification Plan
 
-### Automated Verification
-* Run `npm run build` locally to ensure a 100% successful Next.js build compilation with zero warnings or errors.
+### Automated Checks
+* Run `npm run build` locally to confirm the project builds without Next.js compile errors.
 
-### Manual Verification Flow
-1. **Connections Filtering**: Click "Connections" in the sidebar. Verify the Network Directory dropdown is set to "My Connections Only" and displays exactly your connections.
-2. **Connect Actions**: Run a search for a member. Click `➕ Connect`. Verify:
-   * The sidebar Connections count increments instantly.
-   * A Biometrics notification triggers.
-   * The button label changes to `🤝 Connected`.
-   * Clicking `🤝 Connected` disconnects them and updates the count.
-3. **Notifications Center**: Toggle the Bell 🔔. Clear an individual notification or clear all alerts.
-4. **Messaging Hub**: Open the bottom-right chat, click Marcus Vance, and send: *"Hi Marcus, what is the SEC crowdfunding SPV limit?"*. Verify your message appears, and Marcus replies with a realistic SEC limit explanation after 1 second.
+### Manual Verification
+* Access the generated Firebase deployment URL (e.g., `https://backend-id.us-central1.run.app` or `<app-name>.web.app`).
+* Test the **AI Negotiation Simulator** to confirm that the serverless API routes correctly fetch the `GEMINI_API_KEY` secret from GCP Secret Manager and communicate with the Gemini model successfully.
+* Verify that static assets (like the bull logo icon) and custom fonts render immediately with cache-control headers active.

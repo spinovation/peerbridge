@@ -425,7 +425,7 @@ export default function ProfileModule({ state }) {
           )}
 
           {/* Main Column Framework */}
-          <div style={styles.grid}>
+          <div className="responsive-split-grid" style={styles.grid}>
             {/* Left Column containing Profile Cards */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
               {/* Profile Details & Form Resume */}
@@ -465,7 +465,7 @@ export default function ProfileModule({ state }) {
                   {/* Core Demographics & Credentials */}
                   <div style={styles.resumeSection}>
                     <h4 style={styles.sectionHeader}>demographics & credentials</h4>
-                    <div style={styles.demographicsGrid}>
+                    <div className="responsive-grid-2" style={styles.demographicsGrid}>
                       <p><strong>DOB:</strong> {basicProfile.dob || 'Not set'}</p>
                       <p><strong>Nationality:</strong> {basicProfile.nationality}</p>
                       <p><strong>Phone:</strong> {customer.phone || 'Not set'}</p>
@@ -513,7 +513,7 @@ export default function ProfileModule({ state }) {
                 </div>
               ) : (
                 <form onSubmit={handleSaveProfile} style={styles.form}>
-                  <div style={styles.formRow2Col}>
+                  <div className="responsive-grid-2" style={styles.formRow2Col}>
                     <div style={styles.inputGroup}>
                       <label style={styles.label}>First Name</label>
                       <input
@@ -536,7 +536,7 @@ export default function ProfileModule({ state }) {
                     </div>
                   </div>
 
-                  <div style={styles.formRow2Col}>
+                  <div className="responsive-grid-2" style={styles.formRow2Col}>
                     <div style={styles.inputGroup}>
                       <label style={styles.label}>Email (Unique Cognito ID)</label>
                       <input
@@ -558,7 +558,7 @@ export default function ProfileModule({ state }) {
                     </div>
                   </div>
 
-                  <div style={styles.formRow2Col}>
+                  <div className="responsive-grid-2" style={styles.formRow2Col}>
                     <div style={styles.inputGroup}>
                       <label style={styles.label}>Date of Birth</label>
                       <input
@@ -603,7 +603,7 @@ export default function ProfileModule({ state }) {
                     <span>🛡 OPTIONAL CREDENTIALS (GOLD TIER OVERLAY)</span>
                   </div>
 
-                  <div style={styles.formRow2Col}>
+                  <div className="responsive-grid-2" style={styles.formRow2Col}>
                     <div style={styles.inputGroup}>
                       <label style={styles.label}>Physical Address</label>
                       <input
@@ -694,7 +694,7 @@ export default function ProfileModule({ state }) {
 
                     {showExpForm && (
                       <div style={styles.jobFormBox}>
-                        <div style={styles.formRow2Col}>
+                        <div className="responsive-grid-2" style={styles.formRow2Col}>
                           <input
                             type="text"
                             placeholder="Job Title"
@@ -710,7 +710,7 @@ export default function ProfileModule({ state }) {
                             style={styles.smallInput}
                           />
                         </div>
-                        <div style={styles.formRow2Col}>
+                        <div className="responsive-grid-2" style={styles.formRow2Col}>
                           <input
                             type="month"
                             value={jobStart}
@@ -813,7 +813,7 @@ export default function ProfileModule({ state }) {
                   </div>
                 ) : (
                   <form onSubmit={handleSaveFounderProfile} style={styles.form}>
-                    <div style={styles.formRow2Col}>
+                    <div className="responsive-grid-2" style={styles.formRow2Col}>
                       <div style={styles.inputGroup}>
                         <label style={styles.label}>Company Name</label>
                         <input
@@ -840,7 +840,7 @@ export default function ProfileModule({ state }) {
                       </div>
                     </div>
 
-                    <div style={styles.formRow2Col}>
+                    <div className="responsive-grid-2" style={styles.formRow2Col}>
                       <div style={styles.inputGroup}>
                         <label style={styles.label}>Industry / Sector</label>
                         <input
@@ -862,7 +862,7 @@ export default function ProfileModule({ state }) {
                       </div>
                     </div>
 
-                    <div style={styles.formRow2Col}>
+                    <div className="responsive-grid-2" style={styles.formRow2Col}>
                       <div style={styles.inputGroup}>
                         <label style={styles.label}>Valuation Target ($)</label>
                         <input
@@ -949,7 +949,7 @@ export default function ProfileModule({ state }) {
                   </div>
                 ) : (
                   <form onSubmit={handleSaveInvestorProfile} style={styles.form}>
-                    <div style={styles.formRow2Col}>
+                    <div className="responsive-grid-2" style={styles.formRow2Col}>
                       <div style={styles.inputGroup}>
                         <label style={styles.label}>Investor Type</label>
                         <select
@@ -977,7 +977,7 @@ export default function ProfileModule({ state }) {
                       </div>
                     </div>
 
-                    <div style={styles.formRow2Col}>
+                    <div className="responsive-grid-2" style={styles.formRow2Col}>
                       <div style={styles.inputGroup}>
                         <label style={styles.label}>Min Investment Allocation ($)</label>
                         <input
@@ -998,7 +998,7 @@ export default function ProfileModule({ state }) {
                       </div>
                     </div>
 
-                    <div style={styles.formRow2Col}>
+                    <div className="responsive-grid-2" style={styles.formRow2Col}>
                       <div style={styles.inputGroup}>
                         <label style={styles.label}>Ecosystem Portfolio Size ($)</label>
                         <input
@@ -1086,7 +1086,7 @@ export default function ProfileModule({ state }) {
                   </div>
                 ) : (
                   <form onSubmit={handleSaveAffiliateProfile} style={styles.form}>
-                    <div style={styles.formRow2Col}>
+                    <div className="responsive-grid-2" style={styles.formRow2Col}>
                       <div style={styles.inputGroup}>
                         <label style={styles.label}>Entity Type</label>
                         <select
