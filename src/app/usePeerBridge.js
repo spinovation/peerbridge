@@ -2303,11 +2303,45 @@ export function usePeerBridge() {
     const selectedCode = invites.find(inv => inv.code === codeToAssign);
     if (!selectedCode) return { success: false, error: 'Selected invite code does not exist.' };
 
+    // Dispatched actual email delivery to API route in background
+    fetch('/api/invite', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ emails, code: codeToAssign })
+    })
+    .then(res => res.json())
+    .then(data => {
+      console.log("Email dispatch response:", data);
+      if (!data.success) {
+        setInvites(prevInvites => prevInvites.map(inv => {
+          if (inv.code === codeToAssign) {
+            return {
+              ...inv,
+              logs: [...inv.logs, `⚠️ Email Delivery Failed to [${emails.join(', ')}]: ${data.error}`]
+            };
+          }
+          return inv;
+        }));
+      }
+    })
+    .catch(err => {
+      console.error("Email dispatch failed:", err);
+      setInvites(prevInvites => prevInvites.map(inv => {
+        if (inv.code === codeToAssign) {
+          return {
+            ...inv,
+            logs: [...inv.logs, `⚠️ Email Dispatch Connection Error: ${err.message}`]
+          };
+        }
+        return inv;
+      }));
+    });
+
     const updatedInvites = invites.map(inv => {
       if (inv.code === codeToAssign) {
         return {
           ...inv,
-          logs: [...inv.logs, `Bulk invitation emailed to: [${emails.join(', ')}] on ${new Date().toLocaleDateString()}`]
+          logs: [...inv.logs, `Bulk invitation email queued for: [${emails.join(', ')}] on ${new Date().toLocaleDateString()}`]
         };
       }
       return inv;
