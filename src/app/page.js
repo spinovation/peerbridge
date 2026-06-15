@@ -61,6 +61,7 @@ export default function Home() {
 
   // Automatically logout if the current user gets blocked or deleted in database/directory
   useEffect(() => {
+    if (!state.isLoaded) return;
     if (state.isAuthenticated && state.customer?.customer_id) {
       // Find current user in directory to see if they were blocked/deleted
       const currentInDir = state.directory.find(m => m.customer_id === state.customer.customer_id);
@@ -123,6 +124,14 @@ export default function Home() {
       }, 0);
     }
   }, [state.inspectedCustomer]);
+
+  if (!state.isLoaded) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: '#0a0a0c', color: '#ffffff' }}>
+        <div className="animate-spin" style={{ width: '40px', height: '40px', border: '2px solid rgba(0, 242, 254, 0.1)', borderTopColor: '#00f2fe', borderRadius: '50%' }}></div>
+      </div>
+    );
+  }
 
   if (!state.isAuthenticated) {
     return <LandingView state={state} />;

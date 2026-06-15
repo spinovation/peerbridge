@@ -746,9 +746,19 @@ const generateRandomLargeId = (prefix) => {
 };
 
 export function usePeerBridge() {
+  const [isLoaded, setIsLoaded] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [activeTab, setActiveTab] = useState('landing');
-  const [activeModule, setActiveModule] = useState('portfolio');
+  const [activeModuleState, setActiveModuleState] = useState('portfolio');
+
+  const setActiveModule = (moduleName) => {
+    setActiveModuleState(moduleName);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('pb_active_module', JSON.stringify(moduleName));
+    }
+  };
+
+  const activeModule = activeModuleState;
   const [globalSearchQuery, setGlobalSearchQuery] = useState('');
   const [inspectedCustomer, setInspectedCustomer] = useState(null);
   const [targetCampaignId, setTargetCampaignId] = useState(null);
@@ -1062,7 +1072,16 @@ export function usePeerBridge() {
         return;
       }
 
-      if (!customer || !customer.customer_id) return;
+      let userId = null;
+      if (key === 'pb_cust' && val && val.customer_id) {
+        userId = val.customer_id;
+      } else if (val && typeof val === 'object' && val.customer_id) {
+        userId = val.customer_id;
+      } else {
+        userId = customer?.customer_id;
+      }
+
+      if (!userId) return;
 
       const collectionMap = {
         'pb_cust': 'customers',
@@ -1086,7 +1105,7 @@ export function usePeerBridge() {
 
       const collectionName = collectionMap[key];
       if (collectionName) {
-        const docRef = doc(db, collectionName, customer.customer_id);
+        const docRef = doc(db, collectionName, userId);
         const dataToSave = (Array.isArray(val) || typeof val !== 'object' || val === null) ? { value: val } : val;
         await setDoc(docRef, dataToSave);
       }
@@ -1201,6 +1220,7 @@ export function usePeerBridge() {
 
       const storedCust = localStorage.getItem('pb_cust');
       const authVal = safeParse('pb_auth', false);
+      const activeModuleVal = safeParse('pb_active_module', null);
       const custVal = safeParse('pb_cust', INITIAL_CUSTOMERS);
       const basicVal = safeParse('pb_basic', INITIAL_BASIC_PROFILE);
       const profVal = safeParse('pb_prof', INITIAL_PROFESSIONAL_PROFILE);
@@ -1237,6 +1257,14 @@ export function usePeerBridge() {
       const warrantsVal = safeParse('pb_warrants', []);
 
       setTimeout(() => {
+        let moduleToSet = 'portfolio';
+        if (activeModuleVal) {
+          moduleToSet = activeModuleVal;
+        } else if (custVal && custVal.role_flags?.includes('Sales Admin')) {
+          moduleToSet = 'admin';
+        }
+        setActiveModuleState(moduleToSet);
+
         setIsAuthenticated(authVal);
         setCustomer(custVal);
         setBasicProfile(basicVal);
@@ -1275,6 +1303,7 @@ export function usePeerBridge() {
         setConnections(resolvedConns);
         setDirectoryRoleFilter(dirFilterVal);
         setConnectionRequests(requestsVal);
+        setIsLoaded(true);
       }, 0);
 
       // Trigger asynchronous live Firestore data recovery to fetch most up-to-date cloud records!
@@ -1297,25 +1326,48 @@ export function usePeerBridge() {
                 // Self-healing merge with INITIAL_DIRECTORY (prevents stale Firestore overrides)
                 const mergedMembers = [...dirData.members];
                 let healed = false;
-                INITIAL_DIRECTORY.forEach(initMember => {
-                  const exists = mergedMembers.some(m => m.email.toLowerCase() === initMember.email.toLowerCase());
-                  if (!exists) {
-                    mergedMembers.push(initMember);
-                    healed = true;
-                  }
-                });
-                setDirectory(mergedMembers);
-                localStorage.setItem('pb_directory', JSON.stringify(mergedMembers));
-                
-                // If healed, proactively write back to Firestore to update the database
-                if (healed) {
-                  try {
-                    await setDoc(dirRef, { members: mergedMembers }, { merge: true });
-                    console.log("Successfully healed global directory in Firestore with missing members!");
-                  } catch (e) {
-                    console.warn("Failed to write healed directory to Firestore:", e);
-                  }
-                }
+                 INITIAL_DIRECTORY.forEach(initMember => {
+                   const exists = mergedMembers.some(m => m.email.toLowerCase() === initMember.email.toLowerCase());
+                   if (!exists) {
+                     mergedMembers.push(initMember);
+                     healed = true;
+                   }
+                 });
+                 if (custVal && custVal.customer_id) {
+                   const activeCustExists = mergedMembers.some(m => m.customer_id === custVal.customer_id);
+                   if (!activeCustExists) {
+                     const activeCustDirItem = {
+                       customer_id: custVal.customer_id,
+                       email: custVal.email,
+                       first_name: custVal.first_name,
+                       last_name: custVal.last_name,
+                       phone: custVal.phone || '',
+                       role_flags: custVal.role_flags || [],
+                       status: custVal.status || 'active',
+                       isOnboarded: custVal.isOnboarded || false,
+                       ssn: custVal.ssn || '',
+                       basicProfile: basicVal,
+                       professionalProfile: profVal,
+                       entrepreneurProfile: entVal,
+                       investorProfile: invVal,
+                       affiliateProfile: affVal
+                     };
+                     mergedMembers.push(activeCustDirItem);
+                     healed = true;
+                   }
+                 }
+                 setDirectory(mergedMembers);
+                 localStorage.setItem('pb_directory', JSON.stringify(mergedMembers));
+                 
+                 // If healed, proactively write back to Firestore to update the database
+                 if (healed) {
+                   try {
+                     await setDoc(dirRef, { members: mergedMembers }, { merge: true });
+                     console.log("Successfully healed global directory in Firestore with missing members!");
+                   } catch (e) {
+                     console.warn("Failed to write healed directory to Firestore:", e);
+                   }
+                 }
               }
             }
           } catch (err) {
@@ -2300,9 +2352,6 @@ export function usePeerBridge() {
     
     if (emails.length === 0) return { success: false, error: 'No valid email addresses provided.' };
 
-    const selectedCode = invites.find(inv => inv.code === codeToAssign);
-    if (!selectedCode) return { success: false, error: 'Selected invite code does not exist.' };
-
     // Dispatched actual email delivery to API route in background
     fetch('/api/invite', {
       method: 'POST',
@@ -2313,40 +2362,93 @@ export function usePeerBridge() {
     .then(data => {
       console.log("Email dispatch response:", data);
       if (!data.success) {
-        setInvites(prevInvites => prevInvites.map(inv => {
-          if (inv.code === codeToAssign) {
-            return {
-              ...inv,
-              logs: [...inv.logs, `⚠️ Email Delivery Failed to [${emails.join(', ')}]: ${data.error}`]
-            };
+        setInvites(prevInvites => {
+          const updated = prevInvites.map(inv => {
+            if (inv.code === codeToAssign) {
+              return {
+                ...inv,
+                logs: [...inv.logs, `⚠️ Email Delivery Failed to [${emails.join(', ')}]: ${data.error}`]
+              };
+            }
+            return inv;
+          });
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('pb_invites', JSON.stringify(updated));
           }
-          return inv;
-        }));
+          return updated;
+        });
+      } else if (data.simulated) {
+        setInvites(prevInvites => {
+          const updated = prevInvites.map(inv => {
+            if (inv.code === codeToAssign) {
+              return {
+                ...inv,
+                logs: [...inv.logs, `ℹ️ Email Delivery Simulated to [${emails.join(', ')}]`]
+              };
+            }
+            return inv;
+          });
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('pb_invites', JSON.stringify(updated));
+          }
+          return updated;
+        });
+      } else {
+        setInvites(prevInvites => {
+          const updated = prevInvites.map(inv => {
+            if (inv.code === codeToAssign) {
+              return {
+                ...inv,
+                logs: [...inv.logs, `✅ Email Delivered Successfully to [${emails.join(', ')}] (ID: ${data.id})`]
+              };
+            }
+            return inv;
+          });
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('pb_invites', JSON.stringify(updated));
+          }
+          return updated;
+        });
       }
     })
     .catch(err => {
       console.error("Email dispatch failed:", err);
-      setInvites(prevInvites => prevInvites.map(inv => {
+      setInvites(prevInvites => {
+        const updated = prevInvites.map(inv => {
+          if (inv.code === codeToAssign) {
+            return {
+              ...inv,
+              logs: [...inv.logs, `⚠️ Email Dispatch Connection Error: ${err.message}`]
+            };
+          }
+          return inv;
+        });
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('pb_invites', JSON.stringify(updated));
+        }
+        return updated;
+      });
+    });
+
+    // Queue the invitation log entry asynchronously to handle both batching and normal cases
+    setInvites(prevInvites => {
+      const updated = prevInvites.map(inv => {
         if (inv.code === codeToAssign) {
+          const queueMsg = `Bulk invitation email queued for: [${emails.join(', ')}] on ${new Date().toLocaleDateString()}`;
+          if (inv.logs.includes(queueMsg)) return inv;
           return {
             ...inv,
-            logs: [...inv.logs, `⚠️ Email Dispatch Connection Error: ${err.message}`]
+            logs: [...inv.logs, queueMsg]
           };
         }
         return inv;
-      }));
+      });
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('pb_invites', JSON.stringify(updated));
+      }
+      return updated;
     });
 
-    const updatedInvites = invites.map(inv => {
-      if (inv.code === codeToAssign) {
-        return {
-          ...inv,
-          logs: [...inv.logs, `Bulk invitation email queued for: [${emails.join(', ')}] on ${new Date().toLocaleDateString()}`]
-        };
-      }
-      return inv;
-    });
-    sync('pb_invites', updatedInvites, setInvites);
     return { success: true, count: emails.length };
   };
 
@@ -2716,6 +2818,7 @@ export function usePeerBridge() {
   };
 
   return {
+    isLoaded,
     isAuthenticated,
     activeTab,
     activeModule,
