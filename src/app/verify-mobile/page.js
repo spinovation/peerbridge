@@ -24,6 +24,7 @@ function VerifyMobileContent() {
   const [licenseBackName, setLicenseBackName] = useState('');
   const [selfie, setSelfie] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [consent, setConsent] = useState(false);
 
   // Load customer details from Firestore
   useEffect(() => {
@@ -215,130 +216,160 @@ function VerifyMobileContent() {
         </p>
 
         <form onSubmit={handleSubmit} style={styles.form}>
-          {/* Step A: Select ID Type */}
-          <div style={styles.sectionHeader}>
-            <span style={styles.stepNum}>A</span> Select Government ID Document
-          </div>
-
-          <div style={styles.tabContainer}>
-            <button
-              type="button"
-              onClick={() => setIdType('passport')}
-              style={idType === 'passport' ? styles.tabActive : styles.tab}
-            >
-              🛂 Passport (Page 1)
-            </button>
-            <button
-              type="button"
-              onClick={() => setIdType('license')}
-              style={idType === 'license' ? styles.tabActive : styles.tab}
-            >
-              💳 Driver's License
-            </button>
-          </div>
-
-          {/* Step B: Upload Files */}
-          <div style={styles.sectionHeader}>
-            <span style={styles.stepNum}>B</span> Upload Scanned Document
-          </div>
-
-          {idType === 'passport' ? (
-            <div style={styles.fileInputGroup}>
-              <label style={styles.fileInputLabel}>
-                📁 Upload Passport Bio Page (First Page Scan)
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => handleFileChange(e, setPassportFile, setPassportFileName)}
-                  style={styles.fileInput}
-                  required
-                />
+          {/* Consent Section */}
+          <div style={{ background: 'rgba(10, 102, 194, 0.03)', border: '1px solid rgba(10, 102, 194, 0.1)', borderRadius: '8px', padding: '12px', marginBottom: '8px' }}>
+            <h4 style={{ margin: '0 0 6px 0', fontSize: '12px', fontWeight: '800', color: '#0a66c2', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+              ⚖️ Biometric Vetting & Privacy Agreement
+            </h4>
+            <p style={{ margin: '0 0 10px 0', fontSize: '11px', color: '#5c6670', lineHeight: '1.4', textAlign: 'left' }}>
+              We require your explicit consent under biometric privacy regulations (including BIPA and CCPA) before capturing document photos and selfie facial coordinates. We use this data solely to match your physical document with your live face and delete all biometric details immediately after verification.
+            </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <input 
+                type="checkbox" 
+                id="mobileConsentChk"
+                checked={consent}
+                onChange={(e) => setConsent(e.target.checked)}
+                style={{ width: '16px', height: '16px', cursor: 'pointer' }}
+              />
+              <label htmlFor="mobileConsentChk" style={{ fontSize: '12px', fontWeight: '700', color: '#1f2937', cursor: 'pointer', userSelect: 'none' }}>
+                I agree to the Biometric Vetting terms
               </label>
-              {passportFileName && <span style={styles.fileName}>✓ {passportFileName}</span>}
-              <p style={styles.fieldTip}>Ensure all numbers, photo, and details are clearly readable.</p>
             </div>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <div style={styles.fileInputGroup}>
-                <label style={styles.fileInputLabel}>
-                  📁 Upload License FRONT Side Scan
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => handleFileChange(e, setLicenseFront, setLicenseFrontName)}
-                    style={styles.fileInput}
-                    required
-                  />
-                </label>
-                {licenseFrontName && <span style={styles.fileName}>✓ {licenseFrontName}</span>}
+          </div>
+
+          {consent ? (
+            <>
+              {/* Step A: Select ID Type */}
+              <div style={styles.sectionHeader}>
+                <span style={styles.stepNum}>A</span> Select Government ID Document
               </div>
 
-              <div style={styles.fileInputGroup}>
-                <label style={styles.fileInputLabel}>
-                  📁 Upload License BACK Side Scan
+              <div style={styles.tabContainer}>
+                <button
+                  type="button"
+                  onClick={() => setIdType('passport')}
+                  style={idType === 'passport' ? styles.tabActive : styles.tab}
+                >
+                  🛂 Passport (Page 1)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIdType('license')}
+                  style={idType === 'license' ? styles.tabActive : styles.tab}
+                >
+                  💳 Driver's License
+                </button>
+              </div>
+
+              {/* Step B: Upload Files */}
+              <div style={styles.sectionHeader}>
+                <span style={styles.stepNum}>B</span> Upload Scanned Document
+              </div>
+
+              {idType === 'passport' ? (
+                <div style={styles.fileInputGroup}>
+                  <label style={styles.fileInputLabel}>
+                    📁 Upload Passport Bio Page (First Page Scan)
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleFileChange(e, setPassportFile, setPassportFileName)}
+                      style={styles.fileInput}
+                      required
+                    />
+                  </label>
+                  {passportFileName && <span style={styles.fileName}>✓ {passportFileName}</span>}
+                  <p style={styles.fieldTip}>Ensure all numbers, photo, and details are clearly readable.</p>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div style={styles.fileInputGroup}>
+                    <label style={styles.fileInputLabel}>
+                      📁 Upload License FRONT Side Scan
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleFileChange(e, setLicenseFront, setLicenseFrontName)}
+                        style={styles.fileInput}
+                        required
+                      />
+                    </label>
+                    {licenseFrontName && <span style={styles.fileName}>✓ {licenseFrontName}</span>}
+                  </div>
+
+                  <div style={styles.fileInputGroup}>
+                    <label style={styles.fileInputLabel}>
+                      📁 Upload License BACK Side Scan
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleFileChange(e, setLicenseBack, setLicenseBackName)}
+                        style={styles.fileInput}
+                        required
+                      />
+                    </label>
+                    {licenseBackName && <span style={styles.fileName}>✓ {licenseBackName}</span>}
+                  </div>
+                  <p style={styles.fieldTip}>Ensure front photo and back barcode details are clean.</p>
+                </div>
+              )}
+
+              {/* Step C: Selfie Biometrics */}
+              <div style={styles.sectionHeader}>
+                <span style={styles.stepNum}>C</span> Biometric Selfie Match
+              </div>
+              <p style={styles.cardDesc}>
+                Tap the camera circle below to open your phone camera and capture a live selfie to match your ID scan.
+              </p>
+
+              <div style={styles.selfieAlignContainer}>
+                <label style={styles.selfieCircleLabel}>
                   <input
                     type="file"
                     accept="image/*"
-                    onChange={(e) => handleFileChange(e, setLicenseBack, setLicenseBackName)}
+                    capture="user"
+                    onChange={handleSelfieChange}
                     style={styles.fileInput}
                     required
                   />
+                  {selfie ? (
+                    <img src={selfie} alt="Selfie Preview" style={styles.selfiePreviewImage} />
+                  ) : (
+                    <div style={styles.selfieEmptyIcon}>📸</div>
+                  )}
                 </label>
-                {licenseBackName && <span style={styles.fileName}>✓ {licenseBackName}</span>}
+                <span style={{ fontSize: '13px', fontWeight: '700', color: selfie ? '#057642' : '#0a66c2' }}>
+                  {selfie ? '✓ Selfie Captured Successfully' : 'Tap to Open Selfie Camera'}
+                </span>
               </div>
-              <p style={styles.fieldTip}>Ensure front photo and back barcode details are clean.</p>
+
+              <button
+                type="submit"
+                disabled={submitting}
+                className="btn-primary"
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  borderRadius: '30px',
+                  backgroundColor: '#0a66c2',
+                  color: '#ffffff',
+                  border: 'none',
+                  fontWeight: '700',
+                  fontSize: '15px',
+                  cursor: submitting ? 'not-allowed' : 'pointer',
+                  marginTop: '24px',
+                  boxShadow: '0 2px 4px rgba(10,102,194,0.25)'
+                }}
+              >
+                {submitting ? 'Encrypting & Vaulting Documents...' : 'Submit Identity Verification →'}
+              </button>
+            </>
+          ) : (
+            <div style={{ textAlign: 'center', padding: '16px 0', color: '#64748b', fontSize: '12.5px', lineHeight: '1.4' }}>
+              Please check the box above to accept the Biometric Vetting terms and enable camera ID scanning.
             </div>
           )}
-
-          {/* Step C: Selfie Biometrics */}
-          <div style={styles.sectionHeader}>
-            <span style={styles.stepNum}>C</span> Biometric Selfie Match
-          </div>
-          <p style={styles.cardDesc}>
-            Tap the camera circle below to open your phone camera and capture a live selfie to match your ID scan.
-          </p>
-
-          <div style={styles.selfieAlignContainer}>
-            <label style={styles.selfieCircleLabel}>
-              <input
-                type="file"
-                accept="image/*"
-                capture="user"
-                onChange={handleSelfieChange}
-                style={styles.fileInput}
-                required
-              />
-              {selfie ? (
-                <img src={selfie} alt="Selfie Preview" style={styles.selfiePreviewImage} />
-              ) : (
-                <div style={styles.selfieEmptyIcon}>📸</div>
-              )}
-            </label>
-            <span style={{ fontSize: '13px', fontWeight: '700', color: selfie ? '#057642' : '#0a66c2' }}>
-              {selfie ? '✓ Selfie Captured Successfully' : 'Tap to Open Selfie Camera'}
-            </span>
-          </div>
-
-          <button
-            type="submit"
-            disabled={submitting}
-            className="btn-primary"
-            style={{
-              width: '100%',
-              padding: '12px',
-              borderRadius: '30px',
-              backgroundColor: '#0a66c2',
-              color: '#ffffff',
-              border: 'none',
-              fontWeight: '700',
-              fontSize: '15px',
-              cursor: submitting ? 'not-allowed' : 'pointer',
-              marginTop: '24px',
-              boxShadow: '0 2px 4px rgba(10,102,194,0.25)'
-            }}
-          >
-            {submitting ? 'Encrypting & Vaulting Documents...' : 'Submit Identity Verification →'}
-          </button>
         </form>
       </div>
     </div>

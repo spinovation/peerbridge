@@ -97,6 +97,12 @@ export default function OnboardingWizard({ state }) {
   const [headline, setHeadline] = useState(professionalProfile.headline || '');
   const [summary, setSummary] = useState(professionalProfile.summary || '');
   const [address, setAddress] = useState(basicProfile.address || '');
+  const [streetAddress, setStreetAddress] = useState(basicProfile.street_address || '');
+  const [city, setCity] = useState(basicProfile.city || '');
+  const [stateProvince, setStateProvince] = useState(basicProfile.state_province || '');
+  const [postalCode, setPostalCode] = useState(basicProfile.postal_code || '');
+  const [country, setCountry] = useState(basicProfile.country || 'United States');
+  const [biometricConsent, setBiometricConsent] = useState(false);
   const [ssn, setSsn] = useState(customer.ssn || '');
   
   // Dynamic role checkboxes
@@ -445,9 +451,18 @@ export default function OnboardingWizard({ state }) {
     if (wantsEntrepreneur) roleFlags.push('Entrepreneur');
     if (wantsAffiliate) roleFlags.push('Affiliate');
 
+    const finalAddress = streetAddress ? `${streetAddress}, ${city}, ${stateProvince} ${postalCode}, ${country}` : address;
     updateProfiles(
       { first_name: customer.first_name, last_name: customer.last_name, role_flags: roleFlags, ssn },
-      { address, profile_picture_url: selectedAvatar },
+      { 
+        address: finalAddress,
+        street_address: streetAddress,
+        city,
+        state_province: stateProvince,
+        postal_code: postalCode,
+        country,
+        profile_picture_url: selectedAvatar 
+      },
       { headline, summary, experience: jobs, education: schools }
     );
 
@@ -562,10 +577,16 @@ export default function OnboardingWizard({ state }) {
       ssn
     };
 
+    const finalAddress = streetAddress ? `${streetAddress}, ${city}, ${stateProvince} ${postalCode}, ${country}` : address;
     const finalBasic = {
       ...basicProfile,
       profile_picture_url: selectedAvatar,
-      address
+      address: finalAddress,
+      street_address: streetAddress,
+      city,
+      state_province: stateProvince,
+      postal_code: postalCode,
+      country
     };
 
     const finalProf = {
@@ -933,35 +954,85 @@ export default function OnboardingWizard({ state }) {
                   </div>
                 ) : (
                   <div style={{ background: '#f8fafc', border: '1px solid #dae0e9', borderRadius: '8px', padding: '14px', marginTop: '12px', marginBottom: '16px' }}>
-                    {!showSimulatedVerify ? (
-                      <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }} className="responsive-split-grid">
-                        {/* QR Code Container */}
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
-                          <img 
-                            src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(typeof window !== 'undefined' ? window.location.origin + '/verify-mobile?id=' + customer.customer_id : '')}`}
-                            alt="ID Verification QR Code" 
-                            style={{ width: '100px', height: '100px', border: '1px solid #dae0e9', borderRadius: '6px', padding: '4px', background: '#ffffff' }} 
-                          />
-                          <span style={{ fontSize: '9px', fontWeight: '700', color: '#64748b' }}>MOBILE HANDOFF QR</span>
-                        </div>
+                    {/* Consent Gate */}
+                    <div style={{ background: 'rgba(10, 102, 194, 0.03)', border: '1px solid rgba(10, 102, 194, 0.1)', borderRadius: '6px', padding: '10px', marginBottom: '12px' }}>
+                      <h5 style={{ margin: '0 0 4px 0', fontSize: '11px', fontWeight: '800', color: '#0a66c2', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                        ⚖️ Biometric Information Privacy Agreement
+                      </h5>
+                      <p style={{ margin: '0 0 8px 0', fontSize: '10px', color: '#5c6670', lineHeight: '1.3' }}>
+                        By checking the box below, you consent to the collection, processing, and storage of your facial selfie and document portrait. Your biometric indicators are processed solely for automated identity vetting and are permanently deleted immediately after validation.
+                      </p>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <input 
+                          type="checkbox" 
+                          id="biometricConsentChk"
+                          checked={biometricConsent}
+                          onChange={(e) => setBiometricConsent(e.target.checked)}
+                          style={{ width: '13px', height: '13px', cursor: 'pointer' }}
+                        />
+                        <label htmlFor="biometricConsentChk" style={{ fontSize: '10px', fontWeight: '700', color: '#1f2937', cursor: 'pointer', userSelect: 'none' }}>
+                          I agree to the Biometric Vetting & Storage Terms
+                        </label>
+                      </div>
+                    </div>
 
-                        {/* Instructions */}
-                        <div style={{ flex: 1 }}>
-                          <h4 style={{ margin: '0 0 4px 0', fontSize: '13px', fontWeight: '800', color: '#0a66c2' }}>🛡️ Quick Mobile ID Verification</h4>
-                          <p style={{ margin: '0 0 10px 0', fontSize: '11.5px', color: '#5c6670', lineHeight: '1.4' }}>
-                            Scan this code using your phone camera to capture your documents and selfie in real-time. The desktop advances instantly when completed.
-                          </p>
-                          <button 
-                            type="button" 
-                            onClick={() => setShowSimulatedVerify(true)}
-                            className="btn-secondary"
-                            style={{ fontSize: '10px', padding: '4px 10px', borderRadius: '12px' }}
-                          >
-                            💻 Run Desktop Verification Simulator
-                          </button>
-                        </div>
+                    {!biometricConsent ? (
+                      <div style={{ textAlign: 'center', padding: '15px 0' }}>
+                        <p style={{ fontSize: '11px', color: '#64748b', margin: '0 0 10px 0' }}>
+                          Please accept the Biometric Agreement to activate mobile ID scanning or local simulator.
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSuccess('Biometric scan skipped. Proceeding with basic address/SSN tier...');
+                            setTimeout(() => setSuccess(''), 2500);
+                          }}
+                          className="btn-secondary"
+                          style={{ fontSize: '10.5px', padding: '5px 12px', border: '1px solid #dae0e9', color: '#ef4444' }}
+                        >
+                          Skip Biometric ID Scanning & Proceed ➔
+                        </button>
                       </div>
                     ) : (
+                      <>
+                        {!showSimulatedVerify ? (
+                          <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }} className="responsive-split-grid">
+                            {/* QR Code Container */}
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                              <img 
+                                src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(typeof window !== 'undefined' ? window.location.origin + '/verify-mobile?id=' + customer.customer_id : '')}`}
+                                alt="ID Verification QR Code" 
+                                style={{ width: '100px', height: '100px', border: '1px solid #dae0e9', borderRadius: '6px', padding: '4px', background: '#ffffff' }} 
+                              />
+                              <span style={{ fontSize: '9px', fontWeight: '700', color: '#64748b' }}>MOBILE HANDOFF QR</span>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setBiometricConsent(false);
+                                }}
+                                style={{ fontSize: '9px', padding: '3px 8px', border: 'none', background: 'none', color: '#f43f5e', textDecoration: 'underline', marginTop: '4px', cursor: 'pointer' }}
+                              >
+                                Skip / Revoke
+                              </button>
+                            </div>
+
+                            {/* Instructions */}
+                            <div style={{ flex: 1 }}>
+                              <h4 style={{ margin: '0 0 4px 0', fontSize: '13px', fontWeight: '800', color: '#0a66c2' }}>🛡️ Quick Mobile ID Verification</h4>
+                              <p style={{ margin: '0 0 10px 0', fontSize: '11.5px', color: '#5c6670', lineHeight: '1.4' }}>
+                                Scan this code using your phone camera to capture your documents and selfie in real-time. The desktop advances instantly when completed.
+                              </p>
+                              <button 
+                                type="button" 
+                                onClick={() => setShowSimulatedVerify(true)}
+                                className="btn-secondary"
+                                style={{ fontSize: '10px', padding: '4px 10px', borderRadius: '12px' }}
+                              >
+                                💻 Run Desktop Verification Simulator
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
                       <div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', borderBottom: '1px solid rgba(0,0,0,0.06)', paddingBottom: '4px' }}>
                           <h4 style={{ margin: 0, fontSize: '12px', fontWeight: '800', color: '#0a66c2' }}>💻 Desktop Camera Identity Simulation</h4>
@@ -1054,8 +1125,10 @@ export default function OnboardingWizard({ state }) {
                         )}
                       </div>
                     )}
-                  </div>
+                  </>
                 )}
+              </div>
+            )}
 
                 <div style={styles.sectionDivider}>
                   <span>🛡 OPTIONAL CREDENTIALS (UPGRADES TO GOLD VERIFICATION TIER)</span>
@@ -1064,29 +1137,77 @@ export default function OnboardingWizard({ state }) {
                   Providing your physical address and SSN triggers our simulated Cognito background check, giving you a gold highlighted badge in the networking directory.
                 </p>
 
-                <div className="responsive-grid-2" style={styles.formRow2Col}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1rem' }}>
                   <div style={styles.inputGroup}>
-                    <label style={styles.label}>Physical Address</label>
+                    <label style={styles.label}>Street Address</label>
                     <input
                       type="text"
-                      placeholder="e.g. 100 Securities Blvd, New York, NY"
-                      value={address}
-                      onChange={(e) => setAddress(e.target.value)}
+                      placeholder="e.g. 100 Securities Blvd"
+                      value={streetAddress}
+                      onChange={(e) => setStreetAddress(e.target.value)}
                       style={styles.input}
                     />
                   </div>
+                  <div className="responsive-grid-2" style={styles.formRow2Col}>
+                    <div style={styles.inputGroup}>
+                      <label style={styles.label}>City</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. New York"
+                        value={city}
+                        onChange={(e) => setCity(e.target.value)}
+                        style={styles.input}
+                      />
+                    </div>
+                    <div style={styles.inputGroup}>
+                      <label style={styles.label}>State / Province</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. NY"
+                        value={stateProvince}
+                        onChange={(e) => setStateProvince(e.target.value)}
+                        style={styles.input}
+                      />
+                    </div>
+                  </div>
+                  <div className="responsive-grid-2" style={styles.formRow2Col}>
+                    <div style={styles.inputGroup}>
+                      <label style={styles.label}>Zip / Postal Code</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. 10005"
+                        value={postalCode}
+                        onChange={(e) => setPostalCode(e.target.value)}
+                        style={styles.input}
+                      />
+                    </div>
+                    <div style={styles.inputGroup}>
+                      <label style={styles.label}>Country</label>
+                      <select
+                        value={country}
+                        onChange={(e) => setCountry(e.target.value)}
+                        style={styles.input}
+                      >
+                        <option value="United States">United States</option>
+                        <option value="Germany">Germany (EU)</option>
+                        <option value="United Kingdom">United Kingdom</option>
+                        <option value="Canada">Canada</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
 
-                  <div style={styles.inputGroup}>
-                    <label style={styles.label}>Social Security Number (SSN)</label>
-                    <input
-                      type="text"
-                      placeholder="XXX-XX-XXXX"
-                      value={ssn}
-                      maxLength={11}
-                      onChange={(e) => handleSsnChange(e.target.value)}
-                      style={styles.input}
-                    />
-                  </div>
+                <div style={styles.inputGroup}>
+                  <label style={styles.label}>Social Security Number (SSN)</label>
+                  <input
+                    type="text"
+                    placeholder="XXX-XX-XXXX"
+                    value={ssn}
+                    maxLength={11}
+                    onChange={(e) => handleSsnChange(e.target.value)}
+                    style={styles.input}
+                  />
                 </div>
 
                 {/* Work Experience dynamic list */}

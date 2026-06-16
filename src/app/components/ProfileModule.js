@@ -47,6 +47,12 @@ export default function ProfileModule({ state }) {
   const [dob, setDob] = useState(basicProfile.dob);
   const [nationality, setNationality] = useState(basicProfile.nationality);
   const [address, setAddress] = useState(basicProfile.address);
+  const [streetAddress, setStreetAddress] = useState(basicProfile.street_address || '');
+  const [city, setCity] = useState(basicProfile.city || '');
+  const [stateProvince, setStateProvince] = useState(basicProfile.state_province || '');
+  const [postalCode, setPostalCode] = useState(basicProfile.postal_code || '');
+  const [country, setCountry] = useState(basicProfile.country || 'United States');
+  const [showPrivacyCenter, setShowPrivacyCenter] = useState(false);
   const [bio, setBio] = useState(basicProfile.bio);
   
   // Professional resume states
@@ -124,9 +130,20 @@ export default function ProfileModule({ state }) {
     e.preventDefault();
     
     // Write directly to customers, basic_profile, and professional_profile tables!
+    const finalAddress = streetAddress ? `${streetAddress}, ${city}, ${stateProvince} ${postalCode}, ${country}` : addressCred;
     updateProfiles(
       { first_name: firstName, last_name: lastName, phone, ssn },
-      { dob, nationality, address: addressCred, bio },
+      { 
+        dob, 
+        nationality, 
+        address: finalAddress,
+        street_address: streetAddress,
+        city,
+        state_province: stateProvince,
+        postal_code: postalCode,
+        country,
+        bio 
+      },
       { headline, summary, skills, experience, education }
     );
 
@@ -329,6 +346,11 @@ export default function ProfileModule({ state }) {
 
   // Directory filter logic
   const filteredDirectory = directory.filter((member) => {
+    // Privacy filter: if member has opted out of data sharing, hide them from other users
+    if (member.basicProfile?.opt_out_data_sharing && member.customer_id !== customer.customer_id) {
+      return false;
+    }
+
     const matchesSearch = 
       `${member.first_name} ${member.last_name}`.toLowerCase().includes(searchQuery.toLowerCase()) ||
       member.professionalProfile?.headline?.toLowerCase().includes(searchQuery.toLowerCase());
@@ -603,26 +625,71 @@ export default function ProfileModule({ state }) {
                     <span>🛡 OPTIONAL CREDENTIALS (GOLD TIER OVERLAY)</span>
                   </div>
 
-                  <div className="responsive-grid-2" style={styles.formRow2Col}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1rem', width: '100%' }}>
                     <div style={styles.inputGroup}>
-                      <label style={styles.label}>Physical Address</label>
+                      <label style={styles.label}>Street Address</label>
                       <input
                         type="text"
-                        value={addressCred}
-                        onChange={(e) => setAddressCred(e.target.value)}
+                        value={streetAddress}
+                        onChange={(e) => setStreetAddress(e.target.value)}
                         style={styles.input}
                       />
                     </div>
-                    <div style={styles.inputGroup}>
-                      <label style={styles.label}>SSN (Formatted)</label>
-                      <input
-                        type="text"
-                        value={ssn}
-                        maxLength={11}
-                        onChange={(e) => handleSsnChange(e.target.value)}
-                        style={styles.input}
-                      />
+                    <div className="responsive-grid-2" style={styles.formRow2Col}>
+                      <div style={styles.inputGroup}>
+                        <label style={styles.label}>City</label>
+                        <input
+                          type="text"
+                          value={city}
+                          onChange={(e) => setCity(e.target.value)}
+                          style={styles.input}
+                        />
+                      </div>
+                      <div style={styles.inputGroup}>
+                        <label style={styles.label}>State / Province</label>
+                        <input
+                          type="text"
+                          value={stateProvince}
+                          onChange={(e) => setStateProvince(e.target.value)}
+                          style={styles.input}
+                        />
+                      </div>
                     </div>
+                    <div className="responsive-grid-2" style={styles.formRow2Col}>
+                      <div style={styles.inputGroup}>
+                        <label style={styles.label}>Zip / Postal Code</label>
+                        <input
+                          type="text"
+                          value={postalCode}
+                          onChange={(e) => setPostalCode(e.target.value)}
+                          style={styles.input}
+                        />
+                      </div>
+                      <div style={styles.inputGroup}>
+                        <label style={styles.label}>Country</label>
+                        <select
+                          value={country}
+                          onChange={(e) => setCountry(e.target.value)}
+                          style={styles.input}
+                        >
+                          <option value="United States">United States</option>
+                          <option value="Germany">Germany (EU)</option>
+                          <option value="United Kingdom">United Kingdom</option>
+                          <option value="Canada">Canada</option>
+                          <option value="Other">Other</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div style={styles.inputGroup}>
+                    <label style={styles.label}>SSN (Formatted)</label>
+                    <input
+                      type="text"
+                      value={ssn}
+                      maxLength={11}
+                      onChange={(e) => handleSsnChange(e.target.value)}
+                      style={styles.input}
+                    />
                   </div>
 
                   <div style={styles.inputGroup}>
@@ -1298,6 +1365,112 @@ export default function ProfileModule({ state }) {
                         </form>
                       </div>
                     )}
+                  </>
+                )}
+              </div>
+
+              {/* Privacy Compliance & Data Sovereignty Center */}
+              <div className="glass-panel" style={styles.card}>
+                <div 
+                  style={{ ...styles.cardHeader, cursor: 'pointer', userSelect: 'none' }} 
+                  onClick={() => setShowPrivacyCenter(!showPrivacyCenter)}
+                >
+                  <h3 style={styles.cardTitle}>
+                    {showPrivacyCenter ? '− ' : '＋ '}🛡️ Privacy & Compliance
+                  </h3>
+                </div>
+                {showPrivacyCenter && (
+                  <>
+                    <p style={styles.cardDesc}>GDPR & CCPA Data Sovereignty Dashboard. Maintain control over your database records, biometrics, and indexing feeds.</p>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '0.75rem' }}>
+                      {/* Access My Data */}
+                      <div style={{ padding: '0.75rem', background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: '6px' }}>
+                        <h4 style={{ margin: '0 0 2px 0', fontSize: '0.8rem', fontWeight: '800', color: 'var(--color-text-primary)' }}>Right to Access (GDPR Art. 15 / CCPA)</h4>
+                        <p style={{ margin: '0 0 8px 0', fontSize: '0.68rem', color: 'var(--color-text-secondary)', lineHeight: '1.3' }}>
+                          Download a copy of your complete platform data ledger (profiles, role flags, document hashes, and security logs) as a structured JSON file.
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const dataExport = {
+                              customer_id: customer.customer_id,
+                              email: customer.email,
+                              first_name: customer.first_name,
+                              last_name: customer.last_name,
+                              phone: customer.phone,
+                              status: customer.status,
+                              role_flags: customer.role_flags,
+                              basicProfile,
+                              professionalProfile,
+                              investorProfile,
+                              settings,
+                              exported_at: new Date().toISOString()
+                            };
+                            const blob = new Blob([JSON.stringify(dataExport, null, 2)], { type: 'application/json' });
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = `peerbridge_data_${customer.customer_id}.json`;
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                            URL.revokeObjectURL(url);
+                            setSuccessMsg('Platform data ledger compiled and downloaded successfully!');
+                            setTimeout(() => setSuccessMsg(''), 3000);
+                          }}
+                          className="btn-secondary"
+                          style={{ fontSize: '0.7rem', padding: '0.4rem 0.8rem' }}
+                        >
+                          📥 Download My Data Ledger (JSON)
+                        </button>
+                      </div>
+
+                      {/* Opt-out of Data Sharing */}
+                      <div style={{ padding: '0.75rem', background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: '6px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
+                          <div>
+                            <h4 style={{ margin: '0 0 2px 0', fontSize: '0.8rem', fontWeight: '800', color: 'var(--color-text-primary)' }}>Opt-Out of Data Sharing</h4>
+                            <p style={{ margin: 0, fontSize: '0.68rem', color: 'var(--color-text-secondary)', lineHeight: '1.3' }}>
+                              When enabled, your profile is completely hidden from the public network directory and third-party APIs.
+                            </p>
+                          </div>
+                          <input
+                            type="checkbox"
+                            checked={basicProfile.opt_out_data_sharing || false}
+                            onChange={(e) => {
+                              updateProfiles(null, { opt_out_data_sharing: e.target.checked }, null);
+                              setSuccessMsg(e.target.checked ? 'Opted out of directory sharing. Profile hidden.' : 'Directory sharing enabled.');
+                              setTimeout(() => setSuccessMsg(''), 3000);
+                            }}
+                            style={{ ...styles.checkbox, cursor: 'pointer', flexShrink: 0 }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Right to be Forgotten / Delete Account */}
+                      <div style={{ padding: '0.75rem', background: 'rgba(244, 63, 94, 0.02)', border: '1px solid rgba(244, 63, 94, 0.15)', borderRadius: '6px' }}>
+                        <h4 style={{ margin: '0 0 2px 0', fontSize: '0.8rem', fontWeight: '800', color: '#f43f5e' }}>Right to Erasure (GDPR Art. 17 / CCPA)</h4>
+                        <p style={{ margin: '0 0 8px 0', fontSize: '0.68rem', color: 'var(--color-text-secondary)', lineHeight: '1.3' }}>
+                          Permanently delete your user profile, professional logs, uploaded identity documents, and credentials from all servers and caches. <strong>This action is irreversible.</strong>
+                        </p>
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            if (window.confirm("WARNING: Are you absolutely sure you want to delete your Peer Bridge account and permanently erase all associated data? This action cannot be undone.")) {
+                              setSuccessMsg('Initiating compliance erasure sweep...');
+                              setTimeout(async () => {
+                                await state.deleteUserAccount();
+                              }, 1500);
+                            }
+                          }}
+                          className="btn-secondary"
+                          style={{ fontSize: '0.7rem', padding: '0.4rem 0.8rem', borderColor: '#f43f5e', color: '#f43f5e' }}
+                        >
+                          ⚠️ Permanently Erase My Account & Data
+                        </button>
+                      </div>
+                    </div>
                   </>
                 )}
               </div>

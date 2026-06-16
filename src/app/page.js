@@ -1891,8 +1891,10 @@ export default function Home() {
                         const roles = item.role_flags || [];
                         const headline = item.professionalProfile?.headline || '';
                         const bio = item.basicProfile?.bio || item.affiliateProfile?.bio || '';
+                        const city = item.basicProfile?.city || '';
+                        const state = item.basicProfile?.state_province || '';
                         const address = item.basicProfile?.address || '';
-                        const locationStr = address.split(',').slice(-2).join(',').trim() || item.basicProfile?.nationality || 'Global Node';
+                        const locationStr = (city && state) ? `${city}, ${state}` : (address.split(',').slice(-2).join(',').trim() || item.basicProfile?.nationality || 'Global Node');
                         const specialty = item.affiliateProfile?.specialty || '';
 
                         return (

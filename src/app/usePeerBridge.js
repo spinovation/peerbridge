@@ -29,6 +29,11 @@ const INITIAL_BASIC_PROFILE = {
   gender: 'Female',
   nationality: 'United States',
   address: '100 Cyberdyne Way, Los Angeles, CA 90001',
+  street_address: '100 Cyberdyne Way',
+  city: 'Los Angeles',
+  state_province: 'CA',
+  postal_code: '90001',
+  country: 'United States',
   profile_picture_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&q=80',
   bio: 'Active angel investor focusing on climate technology and deep med-tech initiatives. Ex-Director at CleanFlow Venture Fund.'
 };
@@ -1594,6 +1599,11 @@ export function usePeerBridge() {
       gender: '',
       nationality: 'United States',
       address: '',
+      street_address: '',
+      city: '',
+      state_province: '',
+      postal_code: '',
+      country: 'United States',
       profile_picture_url: '',
       bio: selectedRole === 'Investor' 
         ? 'Accredited member focusing on modern growth markets.'
@@ -1950,6 +1960,47 @@ export function usePeerBridge() {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('pb_auth');
     }
+  };
+
+  const deleteUserAccount = async () => {
+    if (!customer?.customer_id) return { success: false, error: 'No active user found.' };
+    const userId = customer.customer_id;
+
+    // 1. If Firestore is active, delete the records
+    if (isFirebaseConfigured && db) {
+      try {
+        const { doc, deleteDoc } = await import('firebase/firestore');
+        await deleteDoc(doc(db, 'customers', userId));
+        await deleteDoc(doc(db, 'basic_profiles', userId));
+        await deleteDoc(doc(db, 'professional_profiles', userId));
+        await deleteDoc(doc(db, 'entrepreneur_profiles', userId));
+        await deleteDoc(doc(db, 'investor_profiles', userId));
+        await deleteDoc(doc(db, 'affiliate_profiles', userId));
+        await deleteDoc(doc(db, 'pb_directory', userId));
+      } catch (err) {
+        console.error("Firestore data deletion failed:", err);
+      }
+    }
+
+    // 2. Clear local storage keys
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('pb_cust');
+      localStorage.removeItem('pb_basic');
+      localStorage.removeItem('pb_prof');
+      localStorage.removeItem('pb_ent');
+      localStorage.removeItem('pb_inv_prof');
+      localStorage.removeItem('pb_aff_prof');
+      localStorage.removeItem('pb_connections');
+      localStorage.removeItem('pb_active_module');
+    }
+
+    // 3. Remove from directory state list
+    const updatedDir = directory.filter(m => m.customer_id !== userId);
+    sync('pb_directory', updatedDir, setDirectory);
+
+    // 4. Log out user
+    logout();
+    return { success: true };
   };
 
   // Helper to update the active user's details inside the shared directory
@@ -3080,6 +3131,7 @@ export function usePeerBridge() {
     loginWithCredentials,
     loginAsDemo,
     logout,
+    deleteUserAccount,
     updateProfiles,
     updateEntrepreneurProfile,
     updateInvestorProfile,
