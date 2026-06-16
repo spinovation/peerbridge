@@ -2434,7 +2434,12 @@ export function usePeerBridge() {
     setInvites(prevInvites => {
       const updated = prevInvites.map(inv => {
         if (inv.code === codeToAssign) {
-          const queueMsg = `Bulk invitation email queued for: [${emails.join(', ')}] on ${new Date().toLocaleDateString()}`;
+          const timeString = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          const dateString = new Date().toLocaleDateString();
+          const isSingle = emails.length === 1;
+          const queueMsg = isSingle
+            ? `Invitation email queued for: [${emails[0]}] on ${dateString} at ${timeString}`
+            : `Bulk invitation emails queued for: [${emails.join(', ')}] on ${dateString} at ${timeString}`;
           if (inv.logs.includes(queueMsg)) return inv;
           return {
             ...inv,
