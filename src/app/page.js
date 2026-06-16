@@ -148,12 +148,13 @@ export default function Home() {
     const inv = state.investorProfile || {};
 
     const hasId = true; // Email verified
+    const hasIdVerified = cust.id_verified || false;
     const hasJobVal = prof.experience && prof.experience.length > 0;
     const hasAcadVal = prof.education && prof.education.length > 0;
     const hasWealthVal = inv.accreditation_status || false;
     const hasAddressAndSsn = basic.address?.trim()?.length > 3 && cust.ssn?.trim()?.length > 0;
 
-    const colorId = hasId ? (hasAddressAndSsn ? '#d4af37' : '#00f2fe') : 'var(--border-color)';
+    const colorId = hasIdVerified ? '#10b981' : (hasId ? (hasAddressAndSsn ? '#d4af37' : '#00f2fe') : 'var(--border-color)');
     const colorJob = hasJobVal ? '#8f00ff' : 'var(--border-color)';
     const colorAcad = hasAcadVal ? '#6366f1' : 'var(--border-color)';
     const colorWealth = hasWealthVal ? '#10b981' : 'var(--border-color)';
@@ -169,9 +170,9 @@ export default function Home() {
           <circle cx="60" cy="60" r={radius} fill="none" stroke={colorAcad} strokeWidth="8" strokeDasharray="72.5 241.6" strokeDashoffset="-157" strokeLinecap="round" />
           <circle cx="60" cy="60" r={radius} fill="none" stroke={colorJob} strokeWidth="8" strokeDasharray="72.5 241.6" strokeDashoffset="-235.5" strokeLinecap="round" />
         </svg>
-        {basic.profile_picture_url ? (
+        {(basic.profile_picture_url || cust.id_selfie_url) ? (
           <img 
-            src={basic.profile_picture_url} 
+            src={basic.profile_picture_url || cust.id_selfie_url} 
             alt={state.user.name} 
             style={{ width: '42px', height: '42px', borderRadius: '50%', objectFit: 'cover', zIndex: 1 }} 
           />
@@ -3089,11 +3090,19 @@ export default function Home() {
                 fontWeight: '800',
                 padding: '0.12rem 0.35rem',
                 borderRadius: '4px',
-                background: state.user.isVerified ? 'rgba(16, 185, 129, 0.1)' : 'rgba(244, 63, 94, 0.1)',
-                color: state.user.isVerified ? '#10b981' : '#f43f5e',
-                border: state.user.isVerified ? '1px solid rgba(16, 185, 129, 0.2)' : '1px solid rgba(244, 63, 94, 0.2)'
+                background: state.customer?.id_verified 
+                  ? 'rgba(16, 185, 129, 0.1)' 
+                  : (state.customer?.verification_otp ? 'rgba(10, 102, 194, 0.1)' : 'rgba(244, 63, 94, 0.1)'),
+                color: state.customer?.id_verified 
+                  ? '#10b981' 
+                  : (state.customer?.verification_otp ? '#0a66c2' : '#f43f5e'),
+                border: state.customer?.id_verified 
+                  ? '1px solid rgba(16, 185, 129, 0.2)' 
+                  : (state.customer?.verification_otp ? '1px solid rgba(10, 102, 194, 0.2)' : '1px solid rgba(244, 63, 94, 0.2)')
               }}>
-                {state.user.isVerified ? 'Vetted' : 'Required'}
+                {state.customer?.id_verified 
+                  ? 'ID Verified' 
+                  : (state.customer?.verification_otp ? 'Email Vetted' : 'Required')}
               </strong>
             </div>
 

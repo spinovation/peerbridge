@@ -1472,6 +1472,73 @@ export function usePeerBridge() {
     }
   }, []);
 
+  // Set up real-time listener for the active customer document whenever customer_id changes
+  useEffect(() => {
+    if (!customer?.customer_id || !isFirebaseConfigured || !db) return;
+    
+    let unsubscribeCustomer = () => {};
+    try {
+      const custDocRef = doc(db, 'customers', customer.customer_id);
+      unsubscribeCustomer = onSnapshot(custDocRef, (docSnap) => {
+        if (docSnap.exists()) {
+          const custData = docSnap.data();
+          
+          setCustomer(prev => {
+            // Check if values have actually changed
+            if (JSON.stringify(prev) === JSON.stringify(custData)) {
+              return prev;
+            }
+            localStorage.setItem('pb_cust', JSON.stringify(custData));
+            return custData;
+          });
+
+          // Sync with directory in state
+          setDirectory(prevDir => {
+            let updated = false;
+            const newDir = (prevDir || []).map(m => {
+              if (m.customer_id === custData.customer_id) {
+                const isMatch = m.status === custData.status && 
+                                m.isOnboarded === custData.isOnboarded &&
+                                m.id_verified === custData.id_verified &&
+                                m.id_selfie_url === custData.id_selfie_url;
+                if (!isMatch) {
+                  updated = true;
+                  return {
+                    ...m,
+                    status: custData.status || m.status,
+                    isOnboarded: custData.isOnboarded !== undefined ? custData.isOnboarded : m.isOnboarded,
+                    ssn: custData.ssn || m.ssn,
+                    id_verified: custData.id_verified || m.id_verified,
+                    id_document_type: custData.id_document_type || m.id_document_type,
+                    id_document_files: custData.id_document_files || m.id_document_files,
+                    id_selfie_url: custData.id_selfie_url || m.id_selfie_url,
+                    basicProfile: {
+                      ...m.basicProfile,
+                      profile_picture_url: custData.id_selfie_url || m.basicProfile?.profile_picture_url
+                    }
+                  };
+                }
+              }
+              return m;
+            });
+            if (updated) {
+              localStorage.setItem('pb_directory', JSON.stringify(newDir));
+            }
+            return newDir;
+          });
+        }
+      }, (err) => {
+        console.error("Failed to subscribe to customer document updates:", err);
+      });
+    } catch (err) {
+      console.error("Failed to setup customer Firestore listener:", err);
+    }
+
+    return () => {
+      unsubscribeCustomer();
+    };
+  }, [customer?.customer_id]);
+
   // Sync utilities
   const sync = (key, val, setter) => {
     setter(val);

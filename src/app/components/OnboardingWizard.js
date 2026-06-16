@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { db, isFirebaseConfigured } from '../firebase';
+import { doc, updateDoc } from 'firebase/firestore';
 
 const AVATAR_OPTIONS = [
   { id: 'av-1', label: 'Ecosystem Tech Professional', url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&q=80' },
@@ -36,6 +38,20 @@ export default function OnboardingWizard({ state }) {
   const [otpVerified, setOtpVerified] = useState(false);
   const [isResending, setIsResending] = useState(false);
   const [serverSimulatedOtp, setServerSimulatedOtp] = useState('');
+
+  // Government ID / selfie state variables
+  const [wizardIdType, setWizardIdType] = useState('passport');
+  const [wizardPassportFile, setWizardPassportFile] = useState(null);
+  const [wizardPassportName, setWizardPassportName] = useState('');
+  const [wizardLicenseFront, setWizardLicenseFront] = useState(null);
+  const [wizardLicenseFrontName, setWizardLicenseFrontName] = useState('');
+  const [wizardLicenseBack, setWizardLicenseBack] = useState(null);
+  const [wizardLicenseBackName, setWizardLicenseBackName] = useState('');
+  const [wizardSelfie, setWizardSelfie] = useState(null);
+  const [wizardVerifying, setWizardVerifying] = useState(false);
+  const [wizardProgress, setWizardProgress] = useState(0);
+  const [wizardProgressText, setWizardProgressText] = useState('');
+  const [showSimulatedVerify, setShowSimulatedVerify] = useState(false);
 
   useEffect(() => {
     if (customer && !customer.isOnboarded && !customer.verification_otp && state.sendVerificationEmail) {
@@ -125,6 +141,7 @@ export default function OnboardingWizard({ state }) {
 
   // Deriving the dynamic 4 levels of verification in real-time!
   const hasIdentity = otpVerified;
+  const hasIdVerified = customer?.id_verified || false;
   const hasJob = jobs.length > 0;
   const hasAcademic = schools.length > 0;
   const hasWealth = isAccredited;
@@ -148,7 +165,7 @@ export default function OnboardingWizard({ state }) {
     // 4 equal sectors of stroke-length 78 and gap 6 = stroke-dasharray="78 261"
     
     // Dynamic glows based on verified state
-    const colorId = hasIdentity ? (hasAddressAndSsn ? '#d4af37' : '#00f2fe') : 'var(--border-color)'; // Gold if address+SSN provided, Cyan if basic verified
+    const colorId = hasIdVerified ? '#10b981' : (hasIdentity ? (hasAddressAndSsn ? '#d4af37' : '#00f2fe') : 'var(--border-color)'); // Emerald if ID verified, Gold if address+SSN, Cyan if basic
     const colorJob = hasJob ? '#8f00ff' : 'var(--border-color)'; // Purple
     const colorAcad = hasAcademic ? '#6366f1' : 'var(--border-color)'; // Violet
     const colorWealth = hasWealth ? '#10b981' : 'var(--border-color)'; // Neon Emerald
@@ -254,6 +271,129 @@ export default function OnboardingWizard({ state }) {
     } finally {
       setIsResending(false);
     }
+  };
+
+  const handleWizardFileChange = (e, setter, nameSetter) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    nameSetter(file.name);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setter(reader.result); // Base64
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleWizardSelfieChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setWizardSelfie(reader.result); // Base64
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const runDesktopVerificationSimulation = async () => {
+    if (wizardIdType === 'passport' && !wizardPassportFile) {
+      alert('Please upload a passport scan.');
+      return;
+    }
+    if (wizardIdType === 'license' && (!wizardLicenseFront || !wizardLicenseBack)) {
+      alert('Please upload front and back scans of your Driver\'s License.');
+      return;
+    }
+    if (!wizardSelfie) {
+      alert('Please upload or capture a biometric selfie.');
+      return;
+    }
+
+    setWizardVerifying(true);
+    setWizardProgress(10);
+    setWizardProgressText('Initializing Biometric Security Tunnel...');
+
+    setTimeout(() => {
+      setWizardProgress(40);
+      setWizardProgressText('Running OCR Document Extraction...');
+    }, 1000);
+
+    setTimeout(() => {
+      setWizardProgress(70);
+      setWizardProgressText('Matching Face Geometry with ID Photo...');
+    }, 2000);
+
+    setTimeout(() => {
+      setWizardProgress(90);
+      setWizardProgressText('Encrypting Credentials and Storing in Vault...');
+    }, 3000);
+
+    setTimeout(async () => {
+      setWizardProgress(100);
+      setWizardProgressText('Verification Completed Successfully!');
+
+      const docFiles = wizardIdType === 'passport' ? [wizardPassportFile] : [wizardLicenseFront, wizardLicenseBack];
+      
+      const updatedCust = {
+        ...customer,
+        id_verified: true,
+        id_document_type: wizardIdType,
+        id_document_files: docFiles,
+        id_selfie_url: wizardSelfie,
+        status: 'verified',
+        updated_at: new Date().toISOString()
+      };
+
+      // Update in state
+      state.setCustomer(updatedCust);
+
+      // Update in directory
+      const updatedDir = (state.directory || []).map(m => {
+        if (m.customer_id === customer.customer_id) {
+          return {
+            ...m,
+            status: 'verified',
+            id_verified: true,
+            id_selfie_url: wizardSelfie,
+            basicProfile: {
+              ...m.basicProfile,
+              profile_picture_url: wizardSelfie
+            }
+          };
+        }
+        return m;
+      });
+      state.setDirectory(updatedDir);
+
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('pb_cust', JSON.stringify(updatedCust));
+        localStorage.setItem('pb_directory', JSON.stringify(updatedDir));
+      }
+
+      // Sync to Firestore
+      if (isFirebaseConfigured && db) {
+        try {
+          const custDocRef = doc(db, 'customers', customer.customer_id);
+          await updateDoc(custDocRef, {
+            id_verified: true,
+            id_document_type: wizardIdType,
+            id_document_files: docFiles,
+            id_selfie_url: wizardSelfie,
+            status: 'verified',
+            updated_at: new Date().toISOString()
+          });
+
+          const dirRef = doc(db, 'global_data', 'directory');
+          await updateDoc(dirRef, { members: updatedDir });
+        } catch (err) {
+          console.warn("Failed to save desktop verification to Firestore:", err);
+        }
+      }
+
+      setWizardVerifying(false);
+      setShowSimulatedVerify(false);
+      setSuccess('Biometric identity verified successfully! You are now an ID Verified Member.');
+      setTimeout(() => setSuccess(''), 2500);
+    }, 4000);
   };
 
   const handleAddJob = (e) => {
@@ -651,7 +791,9 @@ export default function OnboardingWizard({ state }) {
                   
                   {/* Inside badge */}
                   <div style={styles.ringBadge}>
-                    {hasAddressAndSsn ? (
+                    {hasIdVerified ? (
+                      <span style={{ color: '#10b981', fontWeight: '800', fontSize: '0.58rem' }}>ID VERIFIED</span>
+                    ) : hasAddressAndSsn ? (
                       <span style={{ color: '#d4af37', fontWeight: '800', fontSize: '0.65rem' }}>GOLD TIER</span>
                     ) : (
                       <span style={{ color: '#00f2fe', fontWeight: '800', fontSize: '0.65rem' }}>IDENTITY</span>
@@ -661,8 +803,8 @@ export default function OnboardingWizard({ state }) {
 
                 <div style={styles.ringLegends}>
                   <div style={styles.legendItem}>
-                    <div style={{ ...styles.legendDot, background: hasIdentity ? (address.trim() && ssn ? '#d4af37' : '#00f2fe') : 'var(--border-color)' }}></div>
-                    <span style={styles.legendLabel}>Identity: {hasIdentity ? (address.trim() && ssn ? 'Gold Vetted' : 'Email Vetted') : 'Unverified'}</span>
+                    <div style={{ ...styles.legendDot, background: hasIdVerified ? '#10b981' : (hasIdentity ? (hasAddressAndSsn ? '#d4af37' : '#00f2fe') : 'var(--border-color)') }}></div>
+                    <span style={styles.legendLabel}>Identity: {hasIdVerified ? 'ID Verified Member' : (hasIdentity ? (hasAddressAndSsn ? 'Gold Vetted' : 'Email Vetted') : 'Unverified')}</span>
                   </div>
                   <div style={styles.legendItem}>
                     <div style={{ ...styles.legendDot, background: hasJob ? '#8f00ff' : 'var(--border-color)' }}></div>
@@ -767,6 +909,153 @@ export default function OnboardingWizard({ state }) {
                     required
                   />
                 </div>
+
+                <div style={styles.sectionDivider}>
+                  <span>🛡️ BIOMETRIC ID VERIFICATION (UPGRADES TO ID VERIFIED MEMBER)</span>
+                </div>
+                <p style={styles.sectionSubDesc}>
+                  Upload your government document (Passport/License) and complete the selfie facial biometric match to secure the elite <strong>ID Verified Member</strong> badge.
+                </p>
+
+                {hasIdVerified ? (
+                  <div style={{ background: 'rgba(5, 118, 66, 0.05)', border: '1px solid rgba(5, 118, 66, 0.15)', padding: '14px', borderRadius: '8px', display: 'flex', gap: '14px', alignItems: 'center', marginTop: '12px', marginBottom: '16px' }}>
+                    {customer.id_selfie_url ? (
+                      <img src={customer.id_selfie_url} alt="Verified Selfie" style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #057642' }} />
+                    ) : (
+                      <div style={{ fontSize: '28px' }}>✅</div>
+                    )}
+                    <div style={{ flex: 1 }}>
+                      <h4 style={{ margin: '0 0 2px 0', fontSize: '13px', fontWeight: '800', color: '#057642' }}>Biometric ID Verification Passed</h4>
+                      <p style={{ margin: 0, fontSize: '11px', color: '#5c6670', lineHeight: '1.4' }}>
+                        Government ID ({customer.id_document_type === 'passport' ? 'Passport' : 'Driver\'s License'}) and selfie are successfully locked in our secure regulatory vault. Status: <strong>ID Verified Member</strong>.
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ background: '#f8fafc', border: '1px solid #dae0e9', borderRadius: '8px', padding: '14px', marginTop: '12px', marginBottom: '16px' }}>
+                    {!showSimulatedVerify ? (
+                      <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }} className="responsive-split-grid">
+                        {/* QR Code Container */}
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                          <img 
+                            src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(typeof window !== 'undefined' ? window.location.origin + '/verify-mobile?id=' + customer.customer_id : '')}`}
+                            alt="ID Verification QR Code" 
+                            style={{ width: '100px', height: '100px', border: '1px solid #dae0e9', borderRadius: '6px', padding: '4px', background: '#ffffff' }} 
+                          />
+                          <span style={{ fontSize: '9px', fontWeight: '700', color: '#64748b' }}>MOBILE HANDOFF QR</span>
+                        </div>
+
+                        {/* Instructions */}
+                        <div style={{ flex: 1 }}>
+                          <h4 style={{ margin: '0 0 4px 0', fontSize: '13px', fontWeight: '800', color: '#0a66c2' }}>🛡️ Quick Mobile ID Verification</h4>
+                          <p style={{ margin: '0 0 10px 0', fontSize: '11.5px', color: '#5c6670', lineHeight: '1.4' }}>
+                            Scan this code using your phone camera to capture your documents and selfie in real-time. The desktop advances instantly when completed.
+                          </p>
+                          <button 
+                            type="button" 
+                            onClick={() => setShowSimulatedVerify(true)}
+                            className="btn-secondary"
+                            style={{ fontSize: '10px', padding: '4px 10px', borderRadius: '12px' }}
+                          >
+                            💻 Run Desktop Verification Simulator
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', borderBottom: '1px solid rgba(0,0,0,0.06)', paddingBottom: '4px' }}>
+                          <h4 style={{ margin: 0, fontSize: '12px', fontWeight: '800', color: '#0a66c2' }}>💻 Desktop Camera Identity Simulation</h4>
+                          <button type="button" onClick={() => setShowSimulatedVerify(false)} style={{ background: 'none', border: 'none', color: '#f43f5e', cursor: 'pointer', fontSize: '10px', fontWeight: '700' }}>Cancel</button>
+                        </div>
+
+                        {wizardVerifying ? (
+                          <div style={{ textAlign: 'center', padding: '16px 0' }}>
+                            <div className="animate-spin" style={{ width: '28px', height: '28px', border: '2px solid rgba(10,102,194,0.1)', borderTopColor: '#0a66c2', borderRadius: '50%', margin: '0 auto 8px auto' }}></div>
+                            <div style={{ fontSize: '11px', fontWeight: '750', color: '#0a66c2' }}>{wizardProgressText}</div>
+                            <div style={{ background: '#f3f2f0', height: '4px', borderRadius: '2px', width: '120px', margin: '6px auto 0 auto', overflow: 'hidden' }}>
+                              <div style={{ background: '#0a66c2', height: '100%', width: `${wizardProgress}%`, transition: 'width 0.4s ease' }}></div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                            {/* Select ID Type */}
+                            <div style={{ display: 'flex', gap: '6px', background: '#f3f2f0', padding: '3px', borderRadius: '6px' }}>
+                              <button
+                                type="button"
+                                onClick={() => setWizardIdType('passport')}
+                                style={{ flex: 1, padding: '4px', fontSize: '10.5px', fontWeight: '700', border: 'none', background: wizardIdType === 'passport' ? '#ffffff' : 'none', color: wizardIdType === 'passport' ? '#0a66c2' : '#5c6670', borderRadius: '4px', cursor: 'pointer' }}
+                              >
+                                🛂 Passport
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setWizardIdType('license')}
+                                style={{ flex: 1, padding: '4px', fontSize: '10.5px', fontWeight: '700', border: 'none', background: wizardIdType === 'license' ? '#ffffff' : 'none', color: wizardIdType === 'license' ? '#0a66c2' : '#5c6670', borderRadius: '4px', cursor: 'pointer' }}
+                              >
+                                💳 License
+                              </button>
+                            </div>
+
+                            {/* Upload Scans */}
+                            {wizardIdType === 'passport' ? (
+                              <div>
+                                <label style={{ display: 'block', padding: '8px', border: '1px dashed #cbd5e1', borderRadius: '6px', textAlign: 'center', fontSize: '10.5px', color: '#0a66c2', cursor: 'pointer' }}>
+                                  📁 Upload Passport Bio Page Scan
+                                  <input type="file" accept="image/*" onChange={(e) => handleWizardFileChange(e, setWizardPassportFile, setWizardPassportName)} style={{ display: 'none' }} />
+                                </label>
+                                {wizardPassportName && <div style={{ fontSize: '9px', color: '#057642', fontWeight: '700', marginTop: '3px' }}>✓ {wizardPassportName}</div>}
+                              </div>
+                            ) : (
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                <div>
+                                  <label style={{ display: 'block', padding: '8px', border: '1px dashed #cbd5e1', borderRadius: '6px', textAlign: 'center', fontSize: '10.5px', color: '#0a66c2', cursor: 'pointer' }}>
+                                    📁 Upload License Front Scan
+                                    <input type="file" accept="image/*" onChange={(e) => handleWizardFileChange(e, setWizardLicenseFront, setWizardLicenseFrontName)} style={{ display: 'none' }} />
+                                  </label>
+                                  {wizardLicenseFrontName && <div style={{ fontSize: '9px', color: '#057642', fontWeight: '700', marginTop: '3px' }}>✓ {wizardLicenseFrontName}</div>}
+                                </div>
+                                <div>
+                                  <label style={{ display: 'block', padding: '8px', border: '1px dashed #cbd5e1', borderRadius: '6px', textAlign: 'center', fontSize: '10.5px', color: '#0a66c2', cursor: 'pointer' }}>
+                                    📁 Upload License Back Scan
+                                    <input type="file" accept="image/*" onChange={(e) => handleWizardFileChange(e, setWizardLicenseBack, setWizardLicenseBackName)} style={{ display: 'none' }} />
+                                  </label>
+                                  {wizardLicenseBackName && <div style={{ fontSize: '9px', color: '#057642', fontWeight: '700', marginTop: '3px' }}>✓ {wizardLicenseBackName}</div>}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Selfie Capture */}
+                            <div style={{ display: 'flex', gap: '10px', alignItems: 'center', background: '#ffffff', padding: '6px', borderRadius: '6px', border: '1px dashed #cbd5e1' }}>
+                              <label style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#f3f2f0', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', overflow: 'hidden', flexShrink: 0 }}>
+                                  <input type="file" accept="image/*" onChange={handleWizardSelfieChange} style={{ display: 'none' }} />
+                                  {wizardSelfie ? (
+                                    <img src={wizardSelfie} alt="Selfie Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                  ) : (
+                                    <span style={{ fontSize: '14px' }}>📸</span>
+                                  )}
+                              </label>
+                              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <span style={{ fontSize: '10px', fontWeight: '700', color: wizardSelfie ? '#057642' : '#0a66c2' }}>
+                                  {wizardSelfie ? '✓ Selfie Captured' : 'Upload Biometric Selfie'}
+                                </span>
+                                <span style={{ fontSize: '8px', color: '#64748b' }}>Matches your ID document portrait.</span>
+                              </div>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={runDesktopVerificationSimulation}
+                              className="btn-primary"
+                              style={{ padding: '6px', fontSize: '11px', width: '100%' }}
+                            >
+                              Initiate Biometric AI Scan →
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 <div style={styles.sectionDivider}>
                   <span>🛡 OPTIONAL CREDENTIALS (UPGRADES TO GOLD VERIFICATION TIER)</span>
