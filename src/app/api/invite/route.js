@@ -14,7 +14,7 @@ export async function POST(req) {
       });
     }
 
-    const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
+    const fromEmail = process.env.RESEND_FROM_EMAIL || 'invite@peerbridge.ai';
     const emailList = Array.isArray(emails) ? emails : [emails];
 
     if (emailList.length === 0) {
