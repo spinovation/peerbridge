@@ -1502,6 +1502,9 @@ export function usePeerBridge() {
     const firstName = nameParts[0] || 'User';
     const lastName = nameParts.slice(1).join(' ') || '';
 
+    // Generate actual verification OTP
+    const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+
     // Create aligned mock database profiles
     const newCustomer = {
       customer_id: generateRandomId('cust'),
@@ -1513,6 +1516,7 @@ export function usePeerBridge() {
       status: 'active',
       isOnboarded: false,
       ssn: '',
+      verification_otp: generatedOtp,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     };
@@ -1610,6 +1614,7 @@ export function usePeerBridge() {
       status: newCustomer.status,
       isOnboarded: newCustomer.isOnboarded,
       ssn: newCustomer.ssn,
+      verification_otp: newCustomer.verification_otp,
       basicProfile: newBasicProfile,
       professionalProfile: newProfessionalProfile,
       entrepreneurProfile: selectedRole === 'Entrepreneur' ? newEntrepreneurProfile : null,
@@ -1634,7 +1639,57 @@ export function usePeerBridge() {
 
     addNotification('System', 'Welcome to Peer Bridge! Please complete your document KYC checks to unlock investments.');
 
+    // Dispatch verification OTP email in the background
+    sendVerificationEmail(newCustomer.email, newCustomer.verification_otp);
+
     return { success: true };
+  };
+
+  const sendVerificationEmail = async (email, otp) => {
+    try {
+      const response = await fetch('/api/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, otp })
+      });
+      const data = await response.json();
+      console.log("Verification email dispatch response:", data);
+      return data;
+    } catch (error) {
+      console.error("Failed to send verification email:", error);
+      return { success: false, error: error.message };
+    }
+  };
+
+  const resendVerificationOtp = async () => {
+    if (!customer || !customer.email) {
+      return { success: false, error: 'No active user found to send verification code.' };
+    }
+    const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
+    const updatedCust = {
+      ...customer,
+      verification_otp: newOtp,
+      updated_at: new Date().toISOString()
+    };
+    
+    // Update local state and Firestore
+    sync('pb_cust', updatedCust, setCustomer);
+
+    // Also update this member's entry in the directory registry
+    const updatedDir = directory.map(m => {
+      if (m.customer_id === customer.customer_id) {
+        return {
+          ...m,
+          verification_otp: newOtp
+        };
+      }
+      return m;
+    });
+    sync('pb_directory', updatedDir, setDirectory);
+
+    // Send the new code via email
+    const res = await sendVerificationEmail(customer.email, newOtp);
+    return res;
   };
 
   const loginAsDemo = () => {
@@ -2953,6 +3008,8 @@ export function usePeerBridge() {
     
     // Database writing actions
     loginWithInvite,
+    sendVerificationEmail,
+    resendVerificationOtp,
     loginWithCredentials,
     loginAsDemo,
     logout,

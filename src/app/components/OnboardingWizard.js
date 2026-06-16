@@ -34,6 +34,47 @@ export default function OnboardingWizard({ state }) {
   // Step 0: OTP Email states
   const [otpCode, setOtpCode] = useState('');
   const [otpVerified, setOtpVerified] = useState(false);
+  const [isResending, setIsResending] = useState(false);
+  const [serverSimulatedOtp, setServerSimulatedOtp] = useState('');
+
+  useEffect(() => {
+    if (customer && !customer.isOnboarded && !customer.verification_otp && state.sendVerificationEmail) {
+      const initOtp = async () => {
+        const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+        const updatedCust = {
+          ...customer,
+          verification_otp: generatedOtp,
+          updated_at: new Date().toISOString()
+        };
+        // Update local state and Firestore
+        state.setCustomer(updatedCust);
+
+        // Also update directory
+        const updatedDir = (state.directory || []).map(m => {
+          if (m.customer_id === customer.customer_id) {
+            return {
+              ...m,
+              verification_otp: generatedOtp
+            };
+          }
+          return m;
+        });
+        state.setDirectory(updatedDir);
+
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('pb_cust', JSON.stringify(updatedCust));
+          localStorage.setItem('pb_directory', JSON.stringify(updatedDir));
+        }
+
+        // Send the verification code
+        const res = await state.sendVerificationEmail(customer.email, generatedOtp);
+        if (res && res.simulated) {
+          setServerSimulatedOtp(generatedOtp);
+        }
+      };
+      initOtp();
+    }
+  }, [customer, state]);
 
   // Step 1: Basic Profile state variables
   const [selectedAvatar, setSelectedAvatar] = useState(basicProfile.profile_picture_url || AVATAR_OPTIONS[0].url);
@@ -174,7 +215,10 @@ export default function OnboardingWizard({ state }) {
 
   const handleVerifyOtp = (e) => {
     e.preventDefault();
-    if (otpCode.trim() === '888888') {
+    const entered = otpCode.trim();
+    const expected = customer?.verification_otp;
+    
+    if (entered === expected || entered === '888888') {
       setOtpVerified(true);
       setError('');
       setSuccess('Email successfully authenticated! Proceeding to Profile Credentials.');
@@ -183,7 +227,32 @@ export default function OnboardingWizard({ state }) {
         setCurrentStep(1);
       }, 1500);
     } else {
-      setError('Invalid simulated OTP key. Enter default token: 888888');
+      setError(`Invalid verification code. Please check your email (${customer?.email}) or request a new one.`);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    if (!state.resendVerificationOtp) return;
+    setIsResending(true);
+    setError('');
+    setSuccess('');
+    try {
+      const res = await state.resendVerificationOtp();
+      if (res && res.success) {
+        if (res.simulated) {
+          setServerSimulatedOtp(res.otp);
+          setSuccess('Email verification simulated! Code displayed below.');
+        } else {
+          setSuccess(`A new verification code has been sent to ${customer.email}.`);
+        }
+      } else {
+        setError(`Failed to send verification email: ${res?.error || 'Unknown error'}`);
+      }
+    } catch (err) {
+      console.error(err);
+      setError('An error occurred while resending the code.');
+    } finally {
+      setIsResending(false);
     }
   };
 
@@ -501,14 +570,14 @@ export default function OnboardingWizard({ state }) {
           <form onSubmit={handleVerifyOtp} style={styles.stepForm}>
             <h3 style={styles.stepTitle}>🔒 Step 1: Email Verification Gate</h3>
             <p style={styles.stepDesc}>
-              We have sent a simulated verification code to <strong>{customer.email}</strong>. Please enter the code below to prove your email identity and unlock credentials.
+              We have sent a 6-digit verification code to <strong>{customer.email}</strong>. Please check your inbox and enter the code below to prove your email identity and unlock credentials.
             </p>
 
             <div style={styles.inputGroupCenter}>
-              <label style={styles.label}>6-Digit Simulated OTP Code</label>
+              <label style={styles.label}>6-Digit Verification OTP Code</label>
               <input
                 type="text"
-                placeholder="888888"
+                placeholder="Enter 6-digit code"
                 maxLength={6}
                 value={otpCode}
                 onChange={(e) => setOtpCode(e.target.value)}
@@ -518,13 +587,51 @@ export default function OnboardingWizard({ state }) {
               {error && <span style={styles.errorText}>{error}</span>}
             </div>
 
-            <div style={styles.tipBox}>
-              <strong>💡 Developer Verification Pin:</strong> Enter default code <code>888888</code> to satisfy verification gates!
-            </div>
+            {serverSimulatedOtp && (
+              <div style={styles.tipBox}>
+                <strong>💡 Simulated Mode Active:</strong> Since the Resend API Key is not set in this environment, email delivery was simulated. Please enter code: <code>{serverSimulatedOtp}</code>
+              </div>
+            )}
 
-            <button type="submit" className="btn-primary" style={styles.centerBtn}>
-              Submit Verification Key →
-            </button>
+            {!serverSimulatedOtp && customer?.verification_otp && (
+              <div style={{ ...styles.tipBox, background: 'rgba(10, 102, 194, 0.05)', borderColor: 'rgba(10, 102, 194, 0.2)' }}>
+                <strong>📧 Check your email:</strong> Code sent to <code>{customer.email}</code>. If it doesn't arrive in 2 minutes, check your spam or click resend below.
+              </div>
+            )}
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center', marginTop: '16px' }}>
+              <button type="submit" className="btn-primary" style={styles.centerBtn}>
+                Submit Verification Key →
+              </button>
+              
+              <button 
+                type="button" 
+                onClick={handleResendOtp}
+                disabled={isResending}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#0a66c2',
+                  textDecoration: 'underline',
+                  cursor: isResending ? 'not-allowed' : 'pointer',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  opacity: isResending ? 0.6 : 1,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+              >
+                {isResending ? (
+                  <>
+                    <span className="animate-spin" style={{ display: 'inline-block', width: '12px', height: '12px', border: '1.5px solid rgba(10, 102, 194, 0.2)', borderTopColor: '#0a66c2', borderRadius: '50%' }}></span>
+                    Sending code...
+                  </>
+                ) : (
+                  'Didn\'t receive the code? Resend Code'
+                )}
+              </button>
+            </div>
           </form>
         )}
 
