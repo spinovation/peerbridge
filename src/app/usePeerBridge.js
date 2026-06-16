@@ -1072,6 +1072,12 @@ export function usePeerBridge() {
         return;
       }
 
+      if (key === 'pb_invites') {
+        const docRef = doc(db, 'global_data', 'invites');
+        await setDoc(docRef, { invites: val });
+        return;
+      }
+
       let userId = null;
       if (key === 'pb_cust' && val && val.customer_id) {
         userId = val.customer_id;
@@ -1419,8 +1425,49 @@ export function usePeerBridge() {
         }
       }
 
+      // Fetch shared global invites from Firestore dynamically in real-time (if configured)
+      let unsubscribeInvites = () => {};
+      if (isFirebaseConfigured) {
+        try {
+          const invitesRef = doc(db, 'global_data', 'invites');
+          unsubscribeInvites = onSnapshot(invitesRef, (docSnap) => {
+            if (docSnap.exists()) {
+              const invitesData = docSnap.data();
+              if (invitesData && Array.isArray(invitesData.invites)) {
+                // Self-healing merge to guarantee all initial default invites exist
+                const mergedInvites = [...invitesData.invites];
+                let healed = false;
+                DEFAULT_INVITES.forEach(initInvite => {
+                  const exists = mergedInvites.some(i => i.code.toUpperCase() === initInvite.code.toUpperCase());
+                  if (!exists) {
+                    mergedInvites.push(initInvite);
+                    healed = true;
+                  }
+                });
+                setInvites(mergedInvites);
+                localStorage.setItem('pb_invites', JSON.stringify(mergedInvites));
+                if (healed) {
+                  setDoc(invitesRef, { invites: mergedInvites }).catch(e => {
+                    console.warn("Failed to write healed invites to Firestore:", e);
+                  });
+                }
+              }
+            } else {
+              setDoc(invitesRef, { invites: DEFAULT_INVITES }).catch(e => {
+                console.warn("Failed to initialize invites in Firestore:", e);
+              });
+            }
+          }, (err) => {
+            console.error("Failed to subscribe to invites from Firestore:", err);
+          });
+        } catch (err) {
+          console.error("Failed to setup invites Firestore listener:", err);
+        }
+      }
+
       return () => {
         unsubscribeRequests();
+        unsubscribeInvites();
       };
     }
   }, []);
@@ -2375,6 +2422,7 @@ export function usePeerBridge() {
           if (typeof window !== 'undefined') {
             localStorage.setItem('pb_invites', JSON.stringify(updated));
           }
+          writeToFirestore('pb_invites', updated);
           return updated;
         });
       } else if (data.simulated) {
@@ -2391,6 +2439,7 @@ export function usePeerBridge() {
           if (typeof window !== 'undefined') {
             localStorage.setItem('pb_invites', JSON.stringify(updated));
           }
+          writeToFirestore('pb_invites', updated);
           return updated;
         });
       } else {
@@ -2407,6 +2456,7 @@ export function usePeerBridge() {
           if (typeof window !== 'undefined') {
             localStorage.setItem('pb_invites', JSON.stringify(updated));
           }
+          writeToFirestore('pb_invites', updated);
           return updated;
         });
       }
@@ -2426,6 +2476,7 @@ export function usePeerBridge() {
         if (typeof window !== 'undefined') {
           localStorage.setItem('pb_invites', JSON.stringify(updated));
         }
+        writeToFirestore('pb_invites', updated);
         return updated;
       });
     });
@@ -2451,6 +2502,7 @@ export function usePeerBridge() {
       if (typeof window !== 'undefined') {
         localStorage.setItem('pb_invites', JSON.stringify(updated));
       }
+      writeToFirestore('pb_invites', updated);
       return updated;
     });
 
