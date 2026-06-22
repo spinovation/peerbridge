@@ -18,12 +18,12 @@ export default function SalesAdminModule({ state }) {
   ]);
   const [optimizerKeyword, setOptimizerKeyword] = useState('peer bridge');
   
-  const logsEndRef = useRef(null);
+  const logsContainerRef = useRef(null);
 
-  // Auto-scroll logs
+  // Auto-scroll logs inside the terminal container only
   useEffect(() => {
-    if (activeAdminTab === 'seo_geo' && logsEndRef.current) {
-      logsEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    if (activeAdminTab === 'seo_geo' && logsContainerRef.current) {
+      logsContainerRef.current.scrollTop = logsContainerRef.current.scrollHeight;
     }
   }, [crawlerLogs, activeAdminTab]);
 
@@ -1930,7 +1930,7 @@ export default function SalesAdminModule({ state }) {
                   ⚡ Trigger Sweep
                 </button>
               </div>
-              <div style={{ height: '200px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.35rem', fontFamily: 'monospace', fontSize: '0.76rem', color: '#e0e0e0', scrollbarWidth: 'thin' }}>
+              <div ref={logsContainerRef} style={{ height: '200px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.35rem', fontFamily: 'monospace', fontSize: '0.76rem', color: '#e0e0e0', scrollbarWidth: 'thin' }}>
                 {crawlerLogs.map((log, idx) => (
                   <div key={idx} style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-start', borderBottom: '1px dashed #2a2a2a', paddingBottom: '0.25rem' }}>
                     <span style={{ color: '#8c8c8c', flexShrink: 0 }}>[{new Date(log.timestamp).toLocaleTimeString()}]</span>
@@ -1957,7 +1957,6 @@ export default function SalesAdminModule({ state }) {
                     <span style={{ color: '#aaaaaa', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{log.notes}</span>
                   </div>
                 ))}
-                <div ref={logsEndRef}></div>
               </div>
             </div>
           </div>
