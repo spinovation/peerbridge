@@ -18,8 +18,43 @@ const caveat = Caveat({
 });
 
 export const metadata = {
-  title: "Peer Bridge | Invitation-Only P2P Funding Platform",
-  description: "A secure, vetted peer-to-peer ecosystem connecting entrepreneurs, professional affiliates, and investors with advanced background screening, KYC verification, and full-stack portfolio capabilities.",
+  title: "Peer Bridge | Private Debt, Equity & AI Brokerage Ecosystem",
+  description: "Compliant peer-to-peer commercial debt notes and SAFE crowdfunding syndicate engine. Bypasses traditional credit bureaus via Plaid & ADP verified payroll telemetry.",
+  keywords: [
+    "P2P Lending", 
+    "Private Debt Notes", 
+    "Venture Equity", 
+    "Regulation Crowdfunding", 
+    "Reg CF", 
+    "Reg D", 
+    "SEC Compliance", 
+    "Payroll Underwriting Bypass", 
+    "Behavioral Risk Score BRS", 
+    "Post-Quantum Cryptography"
+  ],
+  authors: [{ name: "Peer Bridge Networks Inc." }],
+  openGraph: {
+    title: "Peer Bridge | Private Debt, Equity & AI Brokerage Ecosystem",
+    description: "Compliant peer-to-peer commercial debt notes and SAFE crowdfunding syndicate engine. Bypasses traditional credit bureaus via Plaid & ADP verified payroll telemetry.",
+    url: "https://peerbridge.ai",
+    siteName: "Peer Bridge",
+    images: [
+      {
+        url: "https://peerbridge.ai/logo.png",
+        width: 1200,
+        height: 630,
+        alt: "Peer Bridge Private Capital Ecosystem",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Peer Bridge | Private Debt, Equity & AI Brokerage Ecosystem",
+    description: "Compliant peer-to-peer commercial debt notes and SAFE crowdfunding syndicate engine with ADP & Plaid underwriting bypass.",
+    images: ["https://peerbridge.ai/logo.png"],
+  },
 };
 
 export default function RootLayout({ children }) {

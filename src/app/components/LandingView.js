@@ -676,6 +676,37 @@ export default function LandingView({ state }) {
         }}
       />
 
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FinancialService",
+            "name": "Peer Bridge",
+            "image": "https://peerbridge.ai/logo.png",
+            "@id": "https://peerbridge.ai/#organization",
+            "url": "https://peerbridge.ai",
+            "telephone": "+1-415-555-0199",
+            "priceRange": "$$",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "100 Pine Street, 21st Floor",
+              "addressLocality": "San Francisco",
+              "addressRegion": "CA",
+              "postalCode": "94111",
+              "addressCountry": "US"
+            },
+            "description": "Compliant peer-to-peer commercial debt notes and SAFE crowdfunding syndicate engine. Bypasses traditional credit bureaus via Plaid & ADP verified payroll telemetry.",
+            "knowsAbout": [
+              "P2P Lending",
+              "SEC Regulation Crowdfunding",
+              "Regulation D Securities",
+              "Payroll-Deducted Debt Repayments"
+            ]
+          }).replace(/</g, '\\u003c')
+        }}
+      />
+
       {/* Expanded Landing Footer */}
       <footer style={styles.footerContainer}>
         <div className="footer-grid-responsive">
