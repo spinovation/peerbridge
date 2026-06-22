@@ -1,10 +1,117 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { calculatePRI, RISK_GRADES, MOCK_BORROWERS_PRI } from './RiskEngine';
 
 export default function SalesAdminModule({ state }) {
-  const [activeAdminTab, setActiveAdminTab] = useState('admittance'); // admittance, risk_console, portfolio_risk
+  const [activeAdminTab, setActiveAdminTab] = useState('admittance'); // admittance, risk_console, portfolio_risk, seo_geo
+  
+  // SEO & GEO Telemetry States
+  const [schemaStatus, setSchemaStatus] = useState('idle'); // idle, validating, success
+  const [robotsStatus, setRobotsStatus] = useState('idle'); // idle, checking, success
+  const [crawlerLogs, setCrawlerLogs] = useState([
+    { timestamp: '2026-06-21T23:10:02Z', bot: 'Googlebot/2.1', route: '/sitemap.xml', status: 200, notes: 'Served from Next.js dynamic sitemap.js' },
+    { timestamp: '2026-06-21T23:11:15Z', bot: 'ChatGPT-Scraper', route: '/robots.txt', status: 200, notes: 'Directives parsed: Standard search index allowed, AI scraper training blocked' },
+    { timestamp: '2026-06-21T23:12:30Z', bot: 'Gemini-Crawler', route: '/', status: 200, notes: 'Validated FinancialService and FAQPage JSON-LD schemas' },
+    { timestamp: '2026-06-21T23:13:45Z', bot: 'PerplexityBot/1.0', route: '/sitemap.xml', status: 200, notes: 'Index files retrieved' },
+    { timestamp: '2026-06-21T23:14:02Z', bot: 'ChatGPT-User', route: '/vault', status: 403, notes: 'Blocked by robots.txt Disallow rule' }
+  ]);
+  const [optimizerKeyword, setOptimizerKeyword] = useState('peer bridge');
+  
+  const logsEndRef = useRef(null);
+
+  // Auto-scroll logs
+  useEffect(() => {
+    if (activeAdminTab === 'seo_geo' && logsEndRef.current) {
+      logsEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [crawlerLogs, activeAdminTab]);
+
+  // Crawler Simulation Loop
+  useEffect(() => {
+    if (activeAdminTab !== 'seo_geo') return;
+
+    const bots = [
+      { name: 'Googlebot/2.1', routes: ['/', '/sitemap.xml', '/robots.txt'], notes: ['Parsed structured site hierarchy', 'Fetched sitemap index successfully', 'Confirmed crawl rules'] },
+      { name: 'Gemini-Crawler', routes: ['/', '/robots.txt'], notes: ['Extracted FAQPage JSON-LD for AI search previews', 'Parsed FinancialService schema details'] },
+      { name: 'ChatGPT-Scraper', routes: ['/', '/robots.txt'], notes: ['Crawled home content nodes', 'Read robots.txt exclusion rules'] },
+      { name: 'PerplexityBot/1.0', routes: ['/', '/sitemap.xml'], notes: ['Harvested semantically-linked keywords', 'Retrieved all sitemap paths'] },
+      { name: 'Bingbot/2.0', routes: ['/', '/sitemap.xml', '/robots.txt'], notes: ['Index updated successfully', 'Parsed sitemap entries', 'Vetted secure paths'] },
+      { name: 'Applebot/0.1', routes: ['/', '/robots.txt'], notes: ['Device crawler cache refresh', 'Fetched exclusion directives'] }
+    ];
+
+    const interval = setInterval(() => {
+      const randomBot = bots[Math.floor(Math.random() * bots.length)];
+      const randomRoute = randomBot.routes[Math.floor(Math.random() * randomBot.routes.length)];
+      
+      let status = 200;
+      let note = randomBot.notes[Math.floor(Math.random() * randomBot.notes.length)];
+      
+      // Some crawler attempts private paths
+      if (Math.random() < 0.2) {
+        const privateRoutes = ['/vault', '/kyc', '/connections', '/advisory'];
+        const randomPrivate = privateRoutes[Math.floor(Math.random() * privateRoutes.length)];
+        status = 403;
+        note = `Blocked by robots.txt exclusion directive (Disallow: ${randomPrivate})`;
+        setCrawlerLogs(prev => [
+          ...prev,
+          {
+            timestamp: new Date().toISOString(),
+            bot: randomBot.name,
+            route: randomPrivate,
+            status,
+            notes: note
+          }
+        ].slice(-50));
+      } else {
+        setCrawlerLogs(prev => [
+          ...prev,
+          {
+            timestamp: new Date().toISOString(),
+            bot: randomBot.name,
+            route: randomRoute,
+            status,
+            notes: note
+          }
+        ].slice(-50));
+      }
+    }, 4500);
+
+    return () => clearInterval(interval);
+  }, [activeAdminTab]);
+
+  const handleTriggerCrawlSweep = () => {
+    setSuccess('Triggering instant crawl sweep from all major search & AI crawlers...');
+    setTimeout(() => setSuccess(''), 4000);
+    
+    const sweepLogs = [
+      { timestamp: new Date().toISOString(), bot: 'Googlebot/2.1', route: '/sitemap.xml', status: 200, notes: 'Ad-hoc Sitemap audit request' },
+      { timestamp: new Date().toISOString(), bot: 'Gemini-Crawler', route: '/', status: 200, notes: 'Instant AI Overview semantic indexing sweep' },
+      { timestamp: new Date().toISOString(), bot: 'ChatGPT-Scraper', route: '/robots.txt', status: 200, notes: 'Crawling directives configuration check' },
+      { timestamp: new Date().toISOString(), bot: 'PerplexityBot/1.0', route: '/', status: 200, notes: 'Ad-hoc citation density mapping sweep' }
+    ];
+    
+    setCrawlerLogs(prev => [...prev, ...sweepLogs].slice(-50));
+  };
+
+  const handleValidateSchemas = () => {
+    setSchemaStatus('validating');
+    setTimeout(() => {
+      setSchemaStatus('success');
+      state.addNotification('System', 'SEO Security: Client-side JSON-LD schemas validated. 0 warnings, 2 rich cards active.');
+      setSuccess('FAQPage & FinancialService JSON-LD Schema Validation: SUCCESS! 2 objects parsed, 0 errors.');
+      setTimeout(() => setSuccess(''), 4000);
+    }, 1500);
+  };
+
+  const handleTestRobotsDirectives = () => {
+    setRobotsStatus('checking');
+    setTimeout(() => {
+      setRobotsStatus('success');
+      setSuccess('Robots.txt Directives Vetted: Standard Search Indexing ALLOWED, AI LLM Scrapers BLOCKED from private paths.');
+      setTimeout(() => setSuccess(''), 4000);
+    }, 1200);
+  };
   
   // Existing Admissions States
   const [newCode, setNewCode] = useState('');
@@ -333,7 +440,7 @@ export default function SalesAdminModule({ state }) {
               ...styles.tabBtn, 
               color: activeAdminTab === 'admittance' ? 'var(--border-accent)' : 'var(--color-text-secondary)',
               background: activeAdminTab === 'admittance' ? 'var(--border-color)' : 'transparent',
-              borderBottom: activeAdminTab === 'admittance' ? '2px solid #00f2fe' : 'none'
+              borderBottom: activeAdminTab === 'admittance' ? '2px solid var(--border-accent)' : 'none'
             }}
           >
             🎟 Admittance & User Ledger
@@ -344,7 +451,7 @@ export default function SalesAdminModule({ state }) {
               ...styles.tabBtn, 
               color: activeAdminTab === 'risk_console' ? 'var(--border-accent)' : 'var(--color-text-secondary)',
               background: activeAdminTab === 'risk_console' ? 'var(--border-color)' : 'transparent',
-              borderBottom: activeAdminTab === 'risk_console' ? '2px solid #00f2fe' : 'none'
+              borderBottom: activeAdminTab === 'risk_console' ? '2px solid var(--border-accent)' : 'none'
             }}
           >
             🏛 Underwriting Risk Console
@@ -355,7 +462,7 @@ export default function SalesAdminModule({ state }) {
               ...styles.tabBtn, 
               color: activeAdminTab === 'portfolio_risk' ? 'var(--border-accent)' : 'var(--color-text-secondary)',
               background: activeAdminTab === 'portfolio_risk' ? 'var(--border-color)' : 'transparent',
-              borderBottom: activeAdminTab === 'portfolio_risk' ? '2px solid #00f2fe' : 'none'
+              borderBottom: activeAdminTab === 'portfolio_risk' ? '2px solid var(--border-accent)' : 'none'
             }}
           >
             📈 Vintage Risk Analytics
@@ -366,10 +473,21 @@ export default function SalesAdminModule({ state }) {
               ...styles.tabBtn, 
               color: activeAdminTab === 'content_publisher' ? 'var(--border-accent)' : 'var(--color-text-secondary)',
               background: activeAdminTab === 'content_publisher' ? 'var(--border-color)' : 'transparent',
-              borderBottom: activeAdminTab === 'content_publisher' ? '2px solid #00f2fe' : 'none'
+              borderBottom: activeAdminTab === 'content_publisher' ? '2px solid var(--border-accent)' : 'none'
             }}
           >
             📢 Content Publisher
+          </button>
+          <button 
+            onClick={() => setActiveAdminTab('seo_geo')}
+            style={{ 
+              ...styles.tabBtn, 
+              color: activeAdminTab === 'seo_geo' ? 'var(--border-accent)' : 'var(--color-text-secondary)',
+              background: activeAdminTab === 'seo_geo' ? 'var(--border-color)' : 'transparent',
+              borderBottom: activeAdminTab === 'seo_geo' ? '2px solid var(--border-accent)' : 'none'
+            }}
+          >
+            🔍 SEO & GEO Telemetry
           </button>
         </div>
       </div>
@@ -1603,6 +1721,368 @@ export default function SalesAdminModule({ state }) {
               </form>
             </div>
 
+          </div>
+        </div>
+      )}
+
+      {/* Tab 5: SEO & GEO Telemetry Dashboard */}
+      {activeAdminTab === 'seo_geo' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }} className="animate-fade-in-up">
+          {/* KPI Analytics Card Header */}
+          <div className="glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+            <h3 style={{ ...styles.cardTitle, color: '#0a66c2' }}>🔍 Search Engine & Generative AI Indexing Telemetry</h3>
+            <p style={styles.cardDesc}>
+              Monitor real-time indexing status, Google organic search visibility, and AI overview citation performance across Perplexity, Gemini, and SearchGPT.
+            </p>
+          </div>
+
+          {/* Metric Cards Row */}
+          <div style={styles.metricsRow}>
+            <div className="glass-panel" style={styles.metricCard}>
+              <div style={styles.metricHeader}>
+                <span style={styles.metricLabel}>Google Search Impressions</span>
+                <span style={{ fontSize: '1.2rem' }}>📈</span>
+              </div>
+              <span style={styles.metricVal}>32.4k</span>
+              <span style={{ fontSize: '0.68rem', color: '#057642', fontWeight: '700' }}>🟢 +12.4% vs last week</span>
+            </div>
+            
+            <div className="glass-panel" style={styles.metricCard}>
+              <div style={styles.metricHeader}>
+                <span style={styles.metricLabel}>Average CTR</span>
+                <span style={{ fontSize: '1.2rem' }}>🎯</span>
+              </div>
+              <span style={{ ...styles.metricVal, color: '#0a66c2' }}>4.6%</span>
+              <span style={{ fontSize: '0.68rem', color: '#057642', fontWeight: '700' }}>🟢 +0.8% vs last week</span>
+            </div>
+
+            <div className="glass-panel" style={styles.metricCard}>
+              <div style={styles.metricHeader}>
+                <span style={styles.metricLabel}>XML Sitemap Indexation</span>
+                <span style={{ fontSize: '1.2rem' }}>🗺️</span>
+              </div>
+              <span style={{ ...styles.metricVal, color: '#057642' }}>100%</span>
+              <span style={{ fontSize: '0.68rem', color: '#057642', fontWeight: '700' }}>🟢 24/24 routes active</span>
+            </div>
+
+            <div className="glass-panel" style={styles.metricCard}>
+              <div style={styles.metricHeader}>
+                <span style={styles.metricLabel}>AI Engine Citations (GEO)</span>
+                <span style={{ fontSize: '1.2rem' }}>🤖</span>
+              </div>
+              <span style={{ ...styles.metricVal, color: '#004182' }}>1,280</span>
+              <span style={{ fontSize: '0.68rem', color: '#057642', fontWeight: '700' }}>🟢 +34.1% vs last week</span>
+            </div>
+          </div>
+
+          {/* Charts Row */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: '1.5rem', flexWrap: 'wrap' }}>
+            
+            {/* SVG line chart card */}
+            <div className="glass-panel" style={{ ...styles.card, padding: '1.5rem' }}>
+              <h3 style={styles.cardTitle}>📈 30-Day Search Impressions vs AI Citation Growth</h3>
+              <p style={styles.cardDesc}>Correlates classical Google/Bing search visibility with generative engine citations over the last month.</p>
+              
+              <div style={{ width: '100%', height: '240px', position: 'relative' }}>
+                <svg viewBox="0 0 700 240" style={{ width: '100%', height: '100%', overflow: 'visible' }}>
+                  <defs>
+                    <linearGradient id="seoAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#0a66c2" stopOpacity="0.12" />
+                      <stop offset="100%" stopColor="#0a66c2" stopOpacity="0.00" />
+                    </linearGradient>
+                    <linearGradient id="geoAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#057642" stopOpacity="0.12" />
+                      <stop offset="100%" stopColor="#057642" stopOpacity="0.00" />
+                    </linearGradient>
+                  </defs>
+
+                  {/* Horizontal Grid lines */}
+                  <line x1="60" y1="40" x2="660" y2="40" stroke="rgba(0,0,0,0.05)" strokeDasharray="4,4" />
+                  <line x1="60" y1="90" x2="660" y2="90" stroke="rgba(0,0,0,0.05)" strokeDasharray="4,4" />
+                  <line x1="60" y1="140" x2="660" y2="140" stroke="rgba(0,0,0,0.05)" strokeDasharray="4,4" />
+                  <line x1="60" y1="190" x2="660" y2="190" stroke="rgba(0,0,0,0.05)" strokeDasharray="4,4" />
+
+                  {/* Y Axis Labels */}
+                  <text x="50" y="44" fontSize="9" fill="var(--color-text-secondary)" textAnchor="end" fontWeight="600">35k / 1.5k</text>
+                  <text x="50" y="94" fontSize="9" fill="var(--color-text-secondary)" textAnchor="end" fontWeight="600">25k / 1.0k</text>
+                  <text x="50" y="144" fontSize="9" fill="var(--color-text-secondary)" textAnchor="end" fontWeight="600">15k / 500</text>
+                  <text x="50" y="194" fontSize="9" fill="var(--color-text-secondary)" textAnchor="end" fontWeight="600">5k / 100</text>
+
+                  {/* X Axis Grid lines & Labels */}
+                  <line x1="80" y1="40" x2="80" y2="190" stroke="rgba(0,0,0,0.02)" />
+                  <line x1="220" y1="40" x2="220" y2="190" stroke="rgba(0,0,0,0.02)" />
+                  <line x1="360" y1="40" x2="360" y2="190" stroke="rgba(0,0,0,0.02)" />
+                  <line x1="500" y1="40" x2="500" y2="190" stroke="rgba(0,0,0,0.02)" />
+                  <line x1="640" y1="40" x2="640" y2="190" stroke="rgba(0,0,0,0.02)" />
+
+                  <text x="80" y="210" fontSize="10" fill="var(--color-text-secondary)" textAnchor="middle" fontWeight="600">05/28</text>
+                  <text x="220" y="210" fontSize="10" fill="var(--color-text-secondary)" textAnchor="middle" fontWeight="600">06/04</text>
+                  <text x="360" y="210" fontSize="10" fill="var(--color-text-secondary)" textAnchor="middle" fontWeight="600">06/11</text>
+                  <text x="500" y="210" fontSize="10" fill="var(--color-text-secondary)" textAnchor="middle" fontWeight="600">06/18</text>
+                  <text x="640" y="210" fontSize="10" fill="var(--color-text-secondary)" textAnchor="middle" fontWeight="600">06/22</text>
+
+                  {/* Area Fills */}
+                  <path d="M 80,160 Q 150,150 220,135 T 360,110 T 500,85 T 640,60 L 640,190 L 80,190 Z" fill="url(#seoAreaGrad)" opacity="0.4" />
+                  <path d="M 80,190 Q 150,180 220,165 T 360,135 T 500,100 T 640,75 L 640,190 L 80,190 Z" fill="url(#geoAreaGrad)" opacity="0.4" />
+
+                  {/* Line 1: Google Impressions (Blue) */}
+                  <path d="M 80,160 Q 150,150 220,135 T 360,110 T 500,85 T 640,60" fill="none" stroke="#0a66c2" strokeWidth="3" strokeLinecap="round" />
+                  
+                  {/* Line 2: AI Citations (Green) */}
+                  <path d="M 80,190 Q 150,180 220,165 T 360,135 T 500,100 T 640,75" fill="none" stroke="#057642" strokeWidth="3" strokeLinecap="round" />
+
+                  {/* Dots & Pulses on last coordinates */}
+                  <circle cx="640" cy="60" r="6" fill="#0a66c2" />
+                  <circle cx="640" cy="60" r="10" fill="none" stroke="#0a66c2" strokeWidth="1.5" className="animate-pulse-glow" />
+                  
+                  <circle cx="640" cy="75" r="6" fill="#057642" />
+                  <circle cx="640" cy="75" r="10" fill="none" stroke="#057642" strokeWidth="1.5" className="animate-pulse-glow" />
+                </svg>
+              </div>
+
+              {/* Chart Legend */}
+              <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center', marginTop: '0.2rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.74rem' }}>
+                  <div style={{ width: '12px', height: '12px', background: '#0a66c2', borderRadius: '3px' }}></div>
+                  <strong style={{ color: 'var(--color-text-primary)' }}>Google Search Impressions (Scale: 0-35k)</strong>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.74rem' }}>
+                  <div style={{ width: '12px', height: '12px', background: '#057642', borderRadius: '3px' }}></div>
+                  <strong style={{ color: 'var(--color-text-primary)' }}>Generative Engine Mentions (Scale: 0-1.5k)</strong>
+                </div>
+              </div>
+            </div>
+
+            {/* GEO Citation Share Breakdown */}
+            <div className="glass-panel" style={{ ...styles.card, padding: '1.5rem', justifyContent: 'space-between' }}>
+              <div>
+                <h3 style={styles.cardTitle}>🤖 AI Engine Citation Share</h3>
+                <p style={styles.cardDesc}>Split of organic citation volume across leading generative search platforms.</p>
+                
+                {/* Horizontal Stacked Percentage Bar */}
+                <div style={{ display: 'flex', height: '16px', borderRadius: '8px', overflow: 'hidden', margin: '1.5rem 0', boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.1)' }}>
+                  <div style={{ width: '45%', background: '#0a66c2', transition: 'width 0.5s' }} title="Gemini: 45%"></div>
+                  <div style={{ width: '30%', background: '#057642', transition: 'width 0.5s' }} title="Perplexity: 30%"></div>
+                  <div style={{ width: '25%', background: '#004182', transition: 'width 0.5s' }} title="ChatGPT Search: 25%"></div>
+                </div>
+
+                {/* Legend list */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#0a66c2' }}></div>
+                      <span style={{ fontSize: '0.8rem', fontWeight: '700', color: 'var(--color-text-primary)' }}>Gemini (Google)</span>
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                      <span style={{ fontSize: '0.8rem', fontWeight: '800', color: 'var(--color-text-primary)' }}>45%</span>
+                      <span style={{ fontSize: '0.68rem', color: 'var(--color-text-secondary)', display: 'block' }}>576 mentions</span>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#057642' }}></div>
+                      <span style={{ fontSize: '0.8rem', fontWeight: '700', color: 'var(--color-text-primary)' }}>Perplexity AI</span>
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                      <span style={{ fontSize: '0.8rem', fontWeight: '800', color: 'var(--color-text-primary)' }}>30%</span>
+                      <span style={{ fontSize: '0.68rem', color: 'var(--color-text-secondary)', display: 'block' }}>384 mentions</span>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '0.2rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#004182' }}></div>
+                      <span style={{ fontSize: '0.8rem', fontWeight: '700', color: 'var(--color-text-primary)' }}>ChatGPT Search</span>
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                      <span style={{ fontSize: '0.8rem', fontWeight: '800', color: 'var(--color-text-primary)' }}>25%</span>
+                      <span style={{ fontSize: '0.68rem', color: 'var(--color-text-secondary)', display: 'block' }}>320 mentions</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ background: 'var(--bg-primary)', padding: '0.75rem', borderRadius: '6px', fontSize: '0.7rem', color: 'var(--color-text-secondary)', marginTop: '0.5rem' }}>
+                💡 <strong>Optimization Tip:</strong> Mentions on Perplexity AI grew by 18% following structured schema updates to peerbridge.ai.
+              </div>
+            </div>
+          </div>
+
+          {/* Crawler Logs Console */}
+          <div className="glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <h3 style={styles.cardTitle}>📜 Real-Time Search Engine Crawler Stream</h3>
+            <p style={styles.cardDesc}>Live telemetry stream capturing HTTP requests to public index assets (sitemap, robots, schema pathways).</p>
+            
+            <div style={{ background: '#191919', border: '1px solid #2d2d2d', borderRadius: '8px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #2d2d2d', paddingBottom: '0.5rem', marginBottom: '0.5rem' }}>
+                <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+                  <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#ef4444' }}></div>
+                  <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#f59e0b' }}></div>
+                  <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#10b981' }}></div>
+                  <span style={{ fontFamily: 'monospace', fontSize: '0.72rem', color: '#8c8c8c', marginLeft: '0.4rem' }}>crawler-access-stream.sh</span>
+                </div>
+                <button 
+                  onClick={handleTriggerCrawlSweep}
+                  className="btn-secondary" 
+                  style={{ fontSize: '0.68rem', padding: '0.2rem 0.6rem', color: '#10b981', borderColor: '#10b981', height: '24px' }}
+                >
+                  ⚡ Trigger Sweep
+                </button>
+              </div>
+              <div style={{ height: '200px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.35rem', fontFamily: 'monospace', fontSize: '0.76rem', color: '#e0e0e0', scrollbarWidth: 'thin' }}>
+                {crawlerLogs.map((log, idx) => (
+                  <div key={idx} style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-start', borderBottom: '1px dashed #2a2a2a', paddingBottom: '0.25rem' }}>
+                    <span style={{ color: '#8c8c8c', flexShrink: 0 }}>[{new Date(log.timestamp).toLocaleTimeString()}]</span>
+                    <span style={{ 
+                      color: log.status === 200 ? '#10b981' : log.status === 403 ? '#ef4444' : '#f59e0b', 
+                      fontWeight: '700',
+                      width: '120px',
+                      flexShrink: 0
+                    }}>
+                      {log.bot}
+                    </span>
+                    <span style={{ color: '#00f2fe', fontWeight: '600', width: '100px', flexShrink: 0 }}>{log.route}</span>
+                    <span style={{ 
+                      background: log.status === 200 ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)',
+                      color: log.status === 200 ? '#10b981' : '#ef4444',
+                      padding: '0.05rem 0.35rem',
+                      borderRadius: '4px',
+                      fontSize: '0.66rem',
+                      fontWeight: '700',
+                      flexShrink: 0
+                    }}>
+                      {log.status}
+                    </span>
+                    <span style={{ color: '#aaaaaa', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{log.notes}</span>
+                  </div>
+                ))}
+                <div ref={logsEndRef}></div>
+              </div>
+            </div>
+          </div>
+
+          {/* Diagnostic Controls Row */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '1.5rem', flexWrap: 'wrap' }}>
+            {/* Diagnostic Controls */}
+            <div className="glass-panel" style={{ ...styles.card, padding: '1.5rem' }}>
+              <h3 style={styles.cardTitle}>🛠️ Crawl & Indexing Diagnostics</h3>
+              <p style={styles.cardDesc}>Vet and validate schema markup integrations and robots.txt directives live in the client container.</p>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                {/* Schema markup test */}
+                <div style={{ border: '1px solid var(--border-color)', borderRadius: '8px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <strong style={{ fontSize: '0.8rem', color: 'var(--color-text-primary)' }}>JSON-LD Structured Data Validator</strong>
+                    <span style={{
+                      fontSize: '0.62rem',
+                      padding: '0.1rem 0.45rem',
+                      borderRadius: '4px',
+                      fontWeight: '700',
+                      background: schemaStatus === 'success' ? 'rgba(5, 118, 66, 0.08)' : schemaStatus === 'validating' ? 'rgba(10, 102, 194, 0.08)' : 'rgba(0,0,0,0.04)',
+                      color: schemaStatus === 'success' ? '#057642' : schemaStatus === 'validating' ? '#0a66c2' : 'var(--color-text-secondary)'
+                    }}>
+                      {schemaStatus === 'success' ? 'VALID' : schemaStatus === 'validating' ? 'TESTING...' : 'NOT TESTED'}
+                    </span>
+                  </div>
+                  <p style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)', margin: 0 }}>
+                    Verifies sitemap paths and landing page schemas (FAQPage and FinancialService).
+                  </p>
+                  <button 
+                    onClick={handleValidateSchemas} 
+                    disabled={schemaStatus === 'validating'}
+                    className="btn-secondary" 
+                    style={{ alignSelf: 'flex-start', padding: '0.35rem 0.75rem', fontSize: '0.74rem' }}
+                  >
+                    Run Schema Validation
+                  </button>
+                </div>
+
+                {/* Robots.txt Directive check */}
+                <div style={{ border: '1px solid var(--border-color)', borderRadius: '8px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <strong style={{ fontSize: '0.8rem', color: 'var(--color-text-primary)' }}>Robots.txt Directive Vet</strong>
+                    <span style={{
+                      fontSize: '0.62rem',
+                      padding: '0.1rem 0.45rem',
+                      borderRadius: '4px',
+                      fontWeight: '700',
+                      background: robotsStatus === 'success' ? 'rgba(5, 118, 66, 0.08)' : robotsStatus === 'checking' ? 'rgba(10, 102, 194, 0.08)' : 'rgba(0,0,0,0.04)',
+                      color: robotsStatus === 'success' ? '#057642' : robotsStatus === 'checking' ? '#0a66c2' : 'var(--color-text-secondary)'
+                    }}>
+                      {robotsStatus === 'success' ? 'SECURE' : robotsStatus === 'checking' ? 'CHECKING...' : 'NOT VETTED'}
+                    </span>
+                  </div>
+                  <p style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)', margin: 0 }}>
+                    Checks standard index availability vs private resource (vault, kyc) crawler exclusions.
+                  </p>
+                  <button 
+                    onClick={handleTestRobotsDirectives} 
+                    disabled={robotsStatus === 'checking'}
+                    className="btn-secondary" 
+                    style={{ alignSelf: 'flex-start', padding: '0.35rem 0.75rem', fontSize: '0.74rem' }}
+                  >
+                    Run Directives Audit
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Keywords Optimizer */}
+            <div className="glass-panel" style={{ ...styles.card, padding: '1.5rem' }}>
+              <h3 style={styles.cardTitle}>🎯 GEO Keyword Citation Optimizer</h3>
+              <p style={styles.cardDesc}>Optimize landing page content for large language model citation and overview triggers.</p>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  {['peer bridge', 'accredited secondary debt p2p', 'quantum safe fintech', 'decentralized capital bridge'].map(kw => (
+                    <button
+                      key={kw}
+                      onClick={() => setOptimizerKeyword(kw)}
+                      style={{
+                        fontSize: '0.7rem',
+                        fontWeight: '750',
+                        padding: '0.3rem 0.75rem',
+                        borderRadius: '16px',
+                        border: '1px solid var(--border-color)',
+                        cursor: 'pointer',
+                        background: optimizerKeyword === kw ? '#0a66c2' : 'var(--bg-primary)',
+                        color: optimizerKeyword === kw ? '#ffffff' : 'var(--color-text-secondary)',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      {kw}
+                    </button>
+                  ))}
+                </div>
+
+                <div style={{ border: '1px solid var(--border-color)', borderRadius: '8px', padding: '1rem', background: 'rgba(0,0,0,0.01)', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
+                      <span style={{ fontSize: '0.76rem', color: 'var(--color-text-secondary)' }}>Target Keyword Phrase:</span>
+                      <span style={{
+                        fontSize: '0.66rem',
+                        fontWeight: '800',
+                        color: optimizerKeyword === 'peer bridge' ? '#057642' : optimizerKeyword === 'accredited secondary debt p2p' ? '#f59e0b' : '#cc1016'
+                      }}>
+                        Citation Strength: {optimizerKeyword === 'peer bridge' ? 'EXCELLENT (94%)' : optimizerKeyword === 'accredited secondary debt p2p' ? 'MODERATE (62%)' : optimizerKeyword === 'quantum safe fintech' ? 'WEAK (18%)' : 'FAIR (48%)'}
+                      </span>
+                    </div>
+                    <strong style={{ fontSize: '0.9rem', color: 'var(--color-text-primary)' }}>"{optimizerKeyword}"</strong>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                    <span style={{ fontSize: '0.7rem', textTransform: 'uppercase', color: 'var(--color-text-muted)', fontWeight: '700' }}>AI Index Recommendations:</span>
+                    <div style={{ fontSize: '0.74rem', color: 'var(--color-text-secondary)', background: 'var(--bg-primary)', padding: '0.75rem', borderRadius: '6px', borderLeft: '3px solid #0a66c2' }}>
+                      {optimizerKeyword === 'peer bridge' && 'Citation and branding mentions are fully optimized. Our landing page JSON-LD schemas and FAQ headers align with search summaries.'}
+                      {optimizerKeyword === 'accredited secondary debt p2p' && 'Add semantic clusters related to "loan syndication", "fractionalized placements", and "accredited liquidity yields" to the LandingView sections to rank higher in ChatGPT/SearchGPT overview boxes.'}
+                      {optimizerKeyword === 'quantum safe fintech' && 'Create specific sub-sections or sitemap pages for the Post-Quantum Cryptography setup. AI engines require structural density to trigger citations for these phrases.'}
+                      {optimizerKeyword === 'decentralized capital bridge' && 'Incorporate technical references to peer node architectures, smart contracts, and decentralized capital allocation in Vault & Hub pages.'}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}

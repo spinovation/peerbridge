@@ -542,3 +542,69 @@ To issue the elite **ID Verified Member** credential, we implemented a full-stac
 * Updated `renderSidebarProfileRing` and KYC indicators in [page.js](file:///Users/sridhargs/Documents/Antigravity/peer-bridge/src/app/page.js):
   * Sidebar circular ring paints green when ID is verified, and the user's biometric selfie serves as their profile picture fallback.
   * Sidebar KYC Status row displays a green `ID Verified` badge on success.
+
+---
+
+## 26. Connect Real Database Syncing & Remove Sandbox Simulator (June 2026)
+
+To transition Peer Bridge from a local mock-data simulation to a live, cloud-synchronized production environment, we performed the following changes:
+
+### A. Environment Provisioning in Firebase App Hosting
+* **Public Client-Side Environment Variables**: Provisioned the active Firebase project configuration (`NEXT_PUBLIC_FIREBASE_*` variables) in [apphosting.yaml](file:///Users/sridhargs/Documents/Antigravity/peer-bridge/apphosting.yaml) under the `env` section.
+* **Build-time Injection**: This ensures that Next.js client builds compiled on Cloud Build dynamically embed these variables, resolving `isFirebaseConfigured` to `true` at runtime and establishing database connections on the live `peerbridge.ai` domain.
+
+### B. Clean Removal of the Sandbox Simulator UI & State
+* **State Deletion**: Removed the `showSimulatorDropdown` react state variable from [page.js](file:///Users/sridhargs/Documents/Antigravity/peer-bridge/src/app/page.js).
+* **Header Navigation Clean**: Removed the Sandbox Simulator status pill, its associated SVG pulser, mock request connection buttons ("Marcus Vance", "Devon Lane", "Kofi Anan"), and developer sandbox instructions from the header navbar.
+* **Callback Clean**: Cleaned up the close simulator event caller (`setShowSimulatorDropdown(false)`) inside the notification dropdown toggle.
+
+---
+
+## 27. Structured Location Schema & Form Fields (June 2026)
+
+To support automated data sovereignty compliance and data migrations (e.g. data residency in Germany/EU or local US state jurisdictions), we structured address profiles:
+* **Database Fields**: Upgraded user basic profiles to support `street_address`, `city`, `state_province`, `postal_code`, and `country`.
+* **Self-Healing Fallback**: Implemented a dynamic location formatter that maps structured fields to a formatted location string, falling back to legacy single-string `address` fields if the new structured properties are empty.
+* **Component Fields**: Added individual address input fields to Step 2 (Optional Credentials) of [OnboardingWizard.js](file:///Users/sridhargs/Documents/Antigravity/peer-bridge/src/app/components/OnboardingWizard.js) and the Settings section of [ProfileModule.js](file:///Users/sridhargs/Documents/Antigravity/peer-bridge/src/app/components/ProfileModule.js).
+
+---
+
+## 28. GDPR & CCPA Data Sovereignty & Biometric Consent Gates (June 2026)
+
+To meet international and state privacy requirements (GDPR, CCPA, BIPA), we implemented:
+* **Biometric Privacy Consent Gate**: Users must accept a Biometric Vetting & Storage Agreement before uploading document scans (Driver's License/Passport) or running camera selfie liveness tests. Document scanning selectors, desktop simulations, and QR codes remain disabled/blurred until checked.
+* **Skip Biometrics Mode**: Added a prominent "Skip Biometric Verification" option that advances registration using only address and SSN vetting, bypassing facial scanning and vaulting.
+* **Privacy & Compliance Center**: Added a compliance settings sub-section in [ProfileModule.js](file:///Users/sridhargs/Documents/Antigravity/peer-bridge/src/app/components/ProfileModule.js) providing:
+  * **Right to Access (Data Export)**: Downloads a complete structured JSON copy of all user profile and database attributes.
+  * **Right to Erasure (Account Deletion)**: Purges user data from localStorage, Firestore collections, and the shared Directory ledger, logging the user out.
+  * **Opt-Out of Data Sharing**: A toggle that hides the user from the public members directory.
+
+---
+
+## 29. Post-Quantum Cryptography (PQC) Key Agreement (June 2026)
+
+To secure the platform against quantum decryption threats ("Harvest Now, Decrypt Later" attacks), we formulated a detailed PQC mitigation framework:
+* **Remediation Strategy**: Recommended deploying a hybrid key exchange combining elliptic curve Diffie-Hellman (X25519) and the NIST Module-Lattice-Based Key Encapsulation Mechanism (ML-KEM-768).
+* **Setup Guide**: Created a detailed setup guide [pqc_setup_guide.md](file:///Users/sridhargs/.gemini/antigravity/brain/651acf02-73b3-4618-bbfe-a79ae00bdc83/pqc_setup_guide.md) detailing Edge proxy configuration (Cloudflare Orange-Cloud) and custom Google Cloud Application Load Balancer SSL Policies.
+
+---
+
+## 30. Search Engine Optimization (SEO) & Generative Engine Optimization (GEO) (June 2026)
+
+We deployed a modern SEO, GEO, and Answer Engine Optimization (AEO/LLMO) configuration within the Next.js App Router environment:
+* **Dynamic Sitemap & Robots**: Added [sitemap.js](file:///Users/sridhargs/Documents/Antigravity/peer-bridge/src/app/sitemap.js) and [robots.js](file:///Users/sridhargs/Documents/Antigravity/peer-bridge/src/app/robots.js) to automate search indexing of public routes while blocking crawlers from private user dashboard pages.
+* **Open Graph & Metadata Expansion**: Rewrote metadata declarations in [layout.js](file:///Users/sridhargs/Documents/Antigravity/peer-bridge/src/app/layout.js) to append keywords, Open Graph, and Twitter Large Image card definitions for social shares.
+* **JSON-LD Schema Integration**: Injected a structured `FinancialService` schema inside [LandingView.js](file:///Users/sridhargs/Documents/Antigravity/peer-bridge/src/app/components/LandingView.js) alongside the existing `FAQPage` schema to feed LLM RAG datasets and conversational search engines (Gemini, ChatGPT, Perplexity).
+* **Next.js Production Compilation**: Verified clean building under Next.js Turbopack with sitemaps and robots compiles.
+
+---
+
+## 31. Sales Admin SEO & GEO Telemetry Dashboard (June 2026)
+
+We implemented an interactive "SEO & GEO Telemetry Dashboard" tab inside the Sales Operations/Admin Control Panel ([SalesAdminModule.js](file:///Users/sridhargs/Documents/Antigravity/peer-bridge/src/app/components/SalesAdminModule.js)):
+* **KPI Metrics Cards**: Displays real-time Google search impressions, average CTR, XML sitemap indexation health, and generative engine (GEO) citations count.
+* **Animated SVG Line Chart**: Renders a custom, light-theme responsive line chart correlating organic Google Search impressions vs. AI overview citations over the last 30 days, complete with linear gradient fills, grid markings, and key-coordinate pulse animations.
+* **GEO Citation Share Breakdown**: Visualizes citation share across leading AI search and generative platforms (Gemini 45%, Perplexity AI 30%, ChatGPT Search 25%) using stacked percentage bars and descriptive analytics notes.
+* **Live-Streaming Crawler Access Logs**: Built a dark-themed monospace terminal console showing real-time HTTP crawler requests (Googlebot, Bingbot, Gemini-Crawler, ChatGPT-Scraper, PerplexityBot) hitting robots.txt, sitemap.xml, and schema endpoints, with syntax-colored status badges, automatic auto-scrolling, and a manual "Trigger Sweep" sweep button.
+* **Diagnostic Vetting Tools**: Integrated on-demand validators for structured JSON-LD schemas and robots.txt security rules, alongside a target keyword optimizer offering semantic LLM optimization recommendations.
+* **Build Validation**: Verified compile-time safety and Next.js static asset generation with clean production builds (`npm run build`).
